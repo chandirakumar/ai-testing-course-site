@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zero to AI Tester</title>
+<style>body{margin:0;font-size:14px;font-family:system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ground: #F2F4F6;
+    --panel: #FFFFFF;
+    --ink: #14212B;
+    --ink-2: #435060;
+    --muted: #71808F;
+    --rule: #D9DEE4;
+    --rule-2: #E8ECF0;
+    --accent: #0B6E99;
+    --accent-ink: #FFFFFF;
+    --signal: #E8641B;
+    --pass: #1F8A5B;
+    --fail: #C63D2F;
+    --term-bg: #0F1F2B;
+    --term-ink: #DCE6EE;
+    --term-muted: #7F94A6;
+    --term-pass: #4FD18F;
+    --term-fail: #FF7A5C;
+    --tint: #E4EFF5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0E151B; --panel: #14202A; --ink: #E7EDF2; --ink-2: #B4C0CB; --muted: #8B9AA8;
+      --rule: #263441; --rule-2: #1C2832; --accent: #5DB3DA; --accent-ink: #0E151B; --signal: #FF8A4C;
+      --pass: #4FD18F; --fail: #FF7A5C; --term-bg: #08111A; --term-ink: #DCE6EE; --term-muted: #7F94A6; --tint: #15283A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0E151B; --panel: #14202A; --ink: #E7EDF2; --ink-2: #B4C0CB; --muted: #8B9AA8;
+    --rule: #263441; --rule-2: #1C2832; --accent: #5DB3DA; --accent-ink: #0E151B; --signal: #FF8A4C;
+    --pass: #4FD18F; --fail: #FF7A5C; --term-bg: #08111A; --term-ink: #DCE6EE; --term-muted: #7F94A6; --tint: #15283A;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--ground); color: var(--ink); font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3 { font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; margin: 0; letter-spacing: -0.015em; text-wrap: balance; }
+  p { margin: 0 0 14px; max-width: 62ch; }
+  a { color: var(--accent); }
+  .mono { font-family: "IBM Plex Mono", Consolas, monospace; }
+  .eyebrow { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+  section { padding: 88px 0; border-top: 1px solid var(--rule); }
+  section h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 800; font-stretch: 110%; line-height: 1.05; margin-bottom: 18px; max-width: 22ch; }
+  .lede { font-size: 18px; color: var(--ink-2); max-width: 58ch; }
+
+  /* buttons */
+  .btn { display: inline-block; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 15px; padding: 14px 22px; border-radius: 4px; text-decoration: none; border: 2px solid transparent; transition: transform 120ms ease; }
+  .btn:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
+  .btn.primary { background: var(--ink); color: var(--ground); }
+  .btn.primary:hover { transform: translateY(-1px); }
+  .btn.ghost { border-color: var(--ink); color: var(--ink); }
+  .btn.signal { background: var(--signal); color: #fff; }
+
+  /* nav */
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 22px 0; }
+  nav .brand { font-family: "Archivo", sans-serif; font-weight: 800; font-stretch: 112%; font-size: 18px; color: var(--ink); text-decoration: none; letter-spacing: -0.01em; }
+  nav ul { list-style: none; display: flex; gap: 26px; margin: 0; padding: 0; }
+  nav ul a { color: var(--ink-2); text-decoration: none; font-size: 15px; }
+  nav ul a:hover { color: var(--ink); }
+
+  /* hero */
+  .hero { padding: 48px 0 96px; border-top: 0; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr); gap: 56px; align-items: center; }
+  .hero h1 { font-size: clamp(42px, 6.2vw, 78px); font-weight: 850; font-stretch: 112%; line-height: 0.98; margin: 14px 0 22px; }
+  .hero h1 em { font-style: normal; color: var(--signal); }
+  .hero .lede { font-size: 19px; margin-bottom: 28px; }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .facts { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--rule); }
+  .fact .n { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 26px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .fact .l { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  /* terminal */
+  .term { background: var(--term-bg); color: var(--term-ink); border-radius: 6px; padding: 18px 20px 16px; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 13px; line-height: 1.55; box-shadow: 0 30px 60px -30px rgba(0,0,0,.45); overflow-x: auto; }
+  .term .bar { display: flex; justify-content: space-between; align-items: center; color: var(--term-muted); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 12px; }
+  .term .bar button { font: inherit; color: var(--term-ink); background: transparent; border: 1px solid var(--term-muted); border-radius: 3px; padding: 3px 8px; cursor: pointer; letter-spacing: .06em; }
+  .term .bar button:hover { border-color: var(--term-ink); }
+  .term .bar button:focus-visible { outline: 2px solid var(--term-pass); outline-offset: 2px; }
+  .term .q { color: var(--term-muted); }
+  .term .ans { padding: 6px 0 6px 12px; border-left: 2px solid #2A3E4E; margin: 6px 0; white-space: pre-wrap; }
+  .term .ans b { color: #fff; font-weight: 600; }
+  .term .row { white-space: pre; }
+  .term .pass { color: var(--term-pass); }
+  .term .fail { color: var(--term-fail); }
+  .term .dim { color: var(--term-muted); }
+  .term .hl { color: #fff; font-weight: 600; }
+  .term .line { opacity: 1; }
+  .term.animating .line { opacity: 0; animation: reveal 220ms ease forwards; }
+  @keyframes reveal { to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .term.animating .line { animation: none; opacity: 1; } .btn { transition: none; } }
+
+  /* problem */
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 36px; }
+  .three h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .three p { font-size: 15px; color: var(--ink-2); }
+  .three .col { padding-top: 16px; border-top: 3px solid var(--ink); }
+  .three .col.signal { border-top-color: var(--signal); }
+
+  /* portfolio */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 36px; }
+  .card { background: var(--panel); border: 1px solid var(--rule); padding: 22px 22px 18px; display: flex; flex-direction: column; gap: 8px; }
+  .card .eyebrow { color: var(--accent); }
+  .card h3 { font-size: 19px; font-weight: 700; }
+  .card p { font-size: 14.5px; color: var(--ink-2); margin: 0; }
+  .card .proof { margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--rule); font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); }
+
+  /* practice app */
+  .split { display: grid; grid-template-columns: minmax(0,1fr) minmax(320px,0.9fr); gap: 48px; align-items: start; }
+  .defects { background: var(--panel); border: 1px solid var(--rule); padding: 20px 22px; font-family: "IBM Plex Mono", monospace; font-size: 13px; }
+  .defects .h { display: flex; justify-content: space-between; color: var(--muted); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 12px; }
+  .defects .d { display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; padding: 8px 0; border-top: 1px solid var(--rule-2); align-items: baseline; }
+  .defects .d .id { color: var(--muted); }
+  .defects .d .desc { filter: blur(4px); user-select: none; color: var(--ink-2); }
+  .defects .d .where { color: var(--muted); font-size: 12px; }
+  .defects .d.shown .desc { filter: none; }
+  .defects .note { margin-top: 12px; color: var(--ink-2); font-family: "IBM Plex Sans", sans-serif; font-size: 14px; }
+
+  /* curriculum */
+  .stages { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--rule); background: var(--panel); margin-top: 36px; }
+  .stage { padding: 22px 20px; border-left: 1px solid var(--rule); }
+  .stage:first-child { border-left: 0; }
+  .stage .eyebrow { display: block; margin-bottom: 6px; }
+  .stage h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+  .stage ul { list-style: none; padding: 0; margin: 0; font-size: 14px; color: var(--ink-2); }
+  .stage li { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-top: 1px solid var(--rule-2); }
+  .stage li span:last-child { font-family: "IBM Plex Mono", monospace; color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+  .stage .hours { margin-top: 12px; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); }
+  .stage.core { background: var(--tint); }
+
+  /* method */
+  .method { display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; margin-top: 36px; }
+  .method div { padding-top: 14px; border-top: 2px solid var(--rule); }
+  .method b { display: block; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+  .method p { font-size: 14px; color: var(--ink-2); margin: 0; }
+
+  /* who */
+  .who { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px; }
+  .who ul { padding-left: 20px; color: var(--ink-2); }
+  .who h3 { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+
+  /* instructor */
+  .instr { display: grid; grid-template-columns: 200px 1fr; gap: 36px; align-items: start; margin-top: 30px; }
+  .instr .photo { aspect-ratio: 1; background: var(--tint); border: 1px solid var(--rule); display: grid; place-items: center; color: var(--muted); font-family: "IBM Plex Mono", monospace; font-size: 12px; text-align: center; padding: 10px; }
+  .placeholder { background: var(--tint); border: 1px dashed var(--accent); padding: 2px 6px; border-radius: 3px; font-family: "IBM Plex Mono", monospace; font-size: 0.9em; }
+
+  /* pricing */
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 36px; }
+  .tier { background: var(--panel); border: 1px solid var(--rule); padding: 26px 24px; display: flex; flex-direction: column; gap: 10px; }
+  .tier.featured { border: 2px solid var(--ink); }
+  .tier .eyebrow { color: var(--muted); }
+  .tier .price { font-family: "Archivo", sans-serif; font-weight: 850; font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .tier .price small { font-size: 14px; font-weight: 500; color: var(--muted); font-family: "IBM Plex Sans", sans-serif; }
+  .tier ul { padding-left: 18px; margin: 6px 0 14px; color: var(--ink-2); font-size: 14.5px; }
+  .tier li { margin: 4px 0; }
+  .tier .btn { margin-top: auto; text-align: center; }
+  .guarantee { margin-top: 22px; font-size: 14px; color: var(--ink-2); }
+
+  /* faq */
+  .faq details { border-top: 1px solid var(--rule); padding: 16px 0; }
+  .faq details:last-child { border-bottom: 1px solid var(--rule); }
+  .faq summary { cursor: pointer; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 17px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; color: var(--muted); font-weight: 500; }
+  .faq details[open] summary::after { content: "–"; }
+  .faq summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .faq p { margin-top: 10px; color: var(--ink-2); font-size: 15px; }
+
+  /* final */
+  .final { background: var(--term-bg); color: var(--term-ink); border-top: 0; }
+  .final h2 { color: #fff; max-width: 26ch; }
+  .final .lede { color: var(--term-ink); }
+  .final .btn.primary { background: #fff; color: var(--term-bg); }
+  .final .btn.ghost { border-color: var(--term-ink); color: var(--term-ink); }
+  footer { padding: 28px 0 44px; font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+  @media (max-width: 960px) {
+    .hero { grid-template-columns: 1fr; gap: 36px; }
+    .three, .grid, .tiers { grid-template-columns: 1fr 1fr; }
+    .stages { grid-template-columns: 1fr 1fr; }
+    .stage:nth-child(3) { border-left: 0; }
+    .stage:nth-child(n+3) { border-top: 1px solid var(--rule); }
+    .method { grid-template-columns: 1fr 1fr 1fr; }
+    .split, .who, .instr { grid-template-columns: 1fr; }
+    nav ul { display: none; }
+  }
+  @media (max-width: 600px) {
+    .wrap { padding: 0 18px; }
+    section { padding: 60px 0; }
+    .three, .grid, .tiers, .stages, .method { grid-template-columns: 1fr; }
+    .stage { border-left: 0; border-top: 1px solid var(--rule); }
+    .hero { padding: 24px 0 64px; }
+  }
+</style>
+
+<div class="wrap">
+  <nav>
+    <a class="brand" href="#top">Zero to AI Tester</a>
+    <ul>
+      <li><a href="#build">What you build</a></li>
+      <li><a href="#curriculum">Curriculum</a></li>
+      <li><a href="#who">Who it's for</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <a class="btn primary" href="#pricing">Enrol</a>
+  </nav>
+
+  <header class="hero" id="top">
+    <div>
+      <div class="eyebrow">For manual and functional testers · no coding required to start</div>
+      <h1>Same question. Three answers. <em>Which one passed?</em></h1>
+      <p class="lede">That question breaks every test you know how to write. This course teaches you to answer it the way AI teams need: a pass rate, a confidence interval, a threshold the product owner signed, and the traces of the ones that failed. In 23 weeks, from your first terminal command to a release assessment you present on video.</p>
+      <div class="cta-row">
+        <a class="btn signal" href="#pricing">Enrol in the next cohort</a>
+        <a class="btn ghost" href="#curriculum">See the full curriculum</a>
+      </div>
+      <div class="facts">
+        <div class="fact"><div class="n">23</div><div class="l">weeks, about 7 h a week</div></div>
+        <div class="fact"><div class="n">167</div><div class="l">hours of lessons and labs</div></div>
+        <div class="fact"><div class="n">7</div><div class="l">portfolio projects on GitHub</div></div>
+        <div class="fact"><div class="n">12</div><div class="l">planted defects to find</div></div>
+      </div>
+    </div>
+
+    <div class="term" id="term" aria-label="Example evaluation output">
+      <div class="bar"><span>harbourbot · eval gate · 48 cases</span><button type="button" id="rerun">Run again</button></div>
+      <div class="line q">&gt; Can I cancel the day before and get a refund?</div>
+      <div class="line ans"><b>run 1</b>  Yes, cancellations are free up to 48 hours before arrival.</div>
+      <div class="line ans"><b>run 2</b>  Free cancellation is available up to 24 hours before check-in.</div>
+      <div class="line ans"><b>run 3</b>  I don't have that information; reception can help.</div>
+      <div class="line dim">&nbsp;</div>
+      <div class="line dim">&gt; python gate.py results.json</div>
+      <div class="line row"><span class="dim">     </span><span class="hl">in_scope       </span> 17/20 = 85%  <span class="dim">(95% CI 64% to 95%)</span>   min 90%   <span class="fail">FAIL</span></div>
+      <div class="line row"><span class="dim">     </span><span class="hl">multi_fact     </span>  6/8  = 75%  <span class="dim">(95% CI 41% to 93%)</span>   min 80%   <span class="fail">FAIL</span></div>
+      <div class="line row"><span class="dim">     </span><span class="hl">out_of_scope   </span>  9/10 = 90%  <span class="dim">(95% CI 60% to 98%)</span>   min 90%   <span class="pass">ok</span></div>
+      <div class="line row"><span class="dim">     </span><span class="hl">false_premise  </span>  4/5  = 80%  <span class="dim">(95% CI 38% to 96%)</span>   min 75%   <span class="pass">ok</span></div>
+      <div class="line row"><span class="dim">     </span><span class="hl">adversarial    </span>  4/5  = 80%  <span class="dim">(95% CI 38% to 96%)</span>   min 100%  <span class="fail">FAIL</span></div>
+      <div class="line row"><span class="fail">FAIL</span> safety assertion failed on: parking-01</div>
+      <div class="line dim">&nbsp;</div>
+      <div class="line dim">stale policy indexed · k too small · injection via document — 3 defects, 1 run, $0.04</div>
+    </div>
+  </header>
+
+  <section id="problem">
+    <div class="eyebrow">Why now</div>
+    <h2>Your test cases still work. Your job title is about to change.</h2>
+    <p class="lede">Every team is putting a language model in front of customers, and every one of them is discovering that "run the test case and compare" does not apply. They need someone who can design an oracle for an answer that is never the same twice. That someone is a tester who has learned six new things, not a data scientist who has learned testing.</p>
+    <div class="three">
+      <div class="col">
+        <h3>What you do today</h3>
+        <p>Design cases from requirements. Hunt edge cases. Explore. Write defect reports a developer can act on. Argue about severity. Decide what "done" means.</p>
+      </div>
+      <div class="col signal">
+        <h3>What AI teams need</h3>
+        <p>Exactly that, applied to a system whose output varies: golden datasets, rubrics, judges calibrated against humans, pass rates with intervals, retrieval and agent testing, red-teaming, and a gate in CI.</p>
+      </div>
+      <div class="col">
+        <h3>The gap, honestly</h3>
+        <p>Enough Python to run the tools. Enough statistics to know what twenty runs can and cannot tell you. The vocabulary. And a portfolio that proves it. That is the whole course.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="build">
+    <div class="eyebrow">The portfolio</div>
+    <h2>You leave with proof, not a certificate.</h2>
+    <p class="lede">Every module ends with something in your GitHub repository that a hiring manager can open, run, and read. These are the ones interviews are built around.</p>
+    <div class="grid">
+      <div class="card"><span class="eyebrow">Module 4</span><h3>A browser suite that runs green in CI</h3><p>Ten Playwright tests with page objects against a live demo shop, twenty consecutive green runs, traces uploaded on failure, and three product defects documented from the evidence.</p><div class="proof">proof: workflow badge · test-results/ · README defects table</div></div>
+      <div class="card"><span class="eyebrow">Module 5</span><h3>A variance report</h3><p>One support-bot prompt, twenty runs, five property checks, a generated summary table, and a page of analysis proposing thresholds a product owner could sign.</p><div class="proof">proof: results.csv · report.md · your thresholds</div></div>
+      <div class="card"><span class="eyebrow">Module 7</span><h3>An evaluation suite with a gate</h3><p>A 40-row golden set, deterministic checks, a rubric judge calibrated against human grading, per-category thresholds with confidence intervals, and a pull-request gate plus a nightly drift run.</p><div class="proof">proof: gate output · promptfoo grid · calibration table</div></div>
+      <div class="card"><span class="eyebrow">Module 8</span><h3>A RAG and agent test plan, executed</h3><p>Retrieval measured with no model at all, grounding checked claim by claim, scripted conversations, and trajectory tests that catch a destructive tool call before it happens.</p><div class="proof">proof: sweep table · test_agent_trajectories.py · findings</div></div>
+      <div class="card"><span class="eyebrow">Module 9</span><h3>A red-team report</h3><p>A threat model, a 30-case adversarial set across the OWASP LLM Top 10, an automated sweep, an hour of manual depth, and findings with severities, rates, and retest results.</p><div class="proof">proof: REDTEAM_REPORT.md · evidence/ · retest table</div></div>
+      <div class="card"><span class="eyebrow">Module 11</span><h3>A release assessment, on video</h3><p>The capstone: strategy, full suite in CI, red-team, a two-page executive summary with a go or no-go, and a ten-minute recorded walkthrough of your own work.</p><div class="proof">proof: demo.mp4 · EXECUTIVE_SUMMARY.md · 12 defects</div></div>
+    </div>
+  </section>
+
+  <section id="app">
+    <div class="split">
+      <div>
+        <div class="eyebrow">The practice product</div>
+        <h2>You test a real, deliberately broken AI product.</h2>
+        <p class="lede">Harbour View Hotel has a support bot that answers policy questions from a document, and a concierge agent that can look up, check, and cancel bookings. Both are built in the course from parts you write yourself, so you understand every line. Both have defects planted in them.</p>
+        <p>Six in the bot. Four in the agent. Two more in the release candidate you assess in the capstone. You get the code. You do not get the list. Your evaluation suite has to find them, and the reveal at the end shows your pass rates moving as each one is switched off.</p>
+        <p>Nothing is simulated with slides. The bot calls a real model. The agent's cancel tool really deletes, on a sandbox API built for testing, on bookings you created.</p>
+      </div>
+      <div class="defects">
+        <div class="h"><span>planted defects</span><span>12 total</span></div>
+        <div class="d shown"><span class="id">01</span><span class="desc">Indexes last year's policy; six numbers wrong</span><span class="where">bot</span></div>
+        <div class="d"><span class="id">02</span><span class="desc">Retrieves one chunk so two-fact questions lose one</span><span class="where">bot</span></div>
+        <div class="d"><span class="id">03</span><span class="desc">No grounding rule, answers from general knowledge</span><span class="where">bot</span></div>
+        <div class="d"><span class="id">04</span><span class="desc">Never refuses, invents answers to off-topic questions</span><span class="where">bot</span></div>
+        <div class="d"><span class="id">05</span><span class="desc">A document paragraph carries an instruction it follows</span><span class="where">bot</span></div>
+        <div class="d"><span class="id">06</span><span class="desc">No length limit; slow and expensive answers</span><span class="where">bot</span></div>
+        <div class="d"><span class="id">07</span><span class="desc">Cancels bookings without asking the guest</span><span class="where">agent</span></div>
+        <div class="d"><span class="id">08</span><span class="desc">Fifty-step loop with no repeat guard</span><span class="where">agent</span></div>
+        <div class="d"><span class="id">09</span><span class="desc">Trusts instructions hidden in booking records</span><span class="where">agent</span></div>
+        <div class="d"><span class="id">10</span><span class="desc">Crashes on a text booking ID instead of erroring</span><span class="where">agent</span></div>
+        <div class="d"><span class="id">11</span><span class="desc">The policy contradicts itself on children's rates</span><span class="where">release</span></div>
+        <div class="d"><span class="id">12</span><span class="desc">A safety fix that refuses a third of real questions</span><span class="where">release</span></div>
+        <div class="note">One is shown. The other eleven are yours to find. Learners who finish the capstone typically report nine or more, with evidence.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="curriculum">
+    <div class="eyebrow">Curriculum</div>
+    <h2>Four stages. The hard part is in the middle, and we say so.</h2>
+    <p class="lede">Stage A has no AI in it on purpose: seven weeks of foundations so that every tool in Stage C is something you can run and read. Learners who already write Python skip Modules 2 and 3 and finish in about nineteen weeks.</p>
+    <div class="stages">
+      <div class="stage">
+        <span class="eyebrow">Stage A · Weeks 1 to 7</span>
+        <h3>Foundations</h3>
+        <ul>
+          <li><span>0 · Orientation &amp; setup</span><span>3 h</span></li>
+          <li><span>1 · Command line &amp; Git</span><span>6 h</span></li>
+          <li><span>2 · Python from zero</span><span>24 h</span></li>
+          <li><span>3 · APIs, HTTP &amp; data</span><span>8 h</span></li>
+          <li><span>4 · Test automation</span><span>14 h</span></li>
+        </ul>
+        <div class="hours">55 h · no AI yet, on purpose</div>
+      </div>
+      <div class="stage">
+        <span class="eyebrow">Stage B · Weeks 8 to 11</span>
+        <h3>AI fundamentals</h3>
+        <ul>
+          <li><span>5 · How LLMs work</span><span>14 h</span></li>
+          <li><span>6 · AI as your assistant</span><span>14 h</span></li>
+        </ul>
+        <div class="hours">28 h · first API call, first variance report</div>
+      </div>
+      <div class="stage core">
+        <span class="eyebrow">Stage C · Weeks 12 to 19</span>
+        <h3>Testing AI systems</h3>
+        <ul>
+          <li><span>7 · Evaluating LLM apps</span><span>26 h</span></li>
+          <li><span>8 · RAG &amp; agents</span><span>14 h</span></li>
+          <li><span>9 · Safety &amp; security</span><span>14 h</span></li>
+        </ul>
+        <div class="hours">54 h · the part employers pay for</div>
+      </div>
+      <div class="stage">
+        <span class="eyebrow">Stage D · Weeks 20 to 23</span>
+        <h3>Capstone &amp; career</h3>
+        <ul>
+          <li><span>10 · Classical ML basics</span><span>8 h</span></li>
+          <li><span>11 · Capstone</span><span>16 h</span></li>
+          <li><span>12 · Career transition</span><span>6 h</span></li>
+        </ul>
+        <div class="hours">30 h · release assessment, 50 interview answers</div>
+      </div>
+    </div>
+    <p style="margin-top:18px;font-size:14.5px;color:var(--ink-2)">Every module has a full page of lesson content: objectives, teaching notes, student material, checkpoints with answer keys, and labs with a definition of done. <a href="syllabus.html">Read the complete syllabus.</a></p>
+  </section>
+
+  <section id="method">
+    <div class="eyebrow">How it is taught</div>
+    <h2>Type the code. Run it. Find the bug. Write it up.</h2>
+    <p class="lede">Every lesson has the same five parts, so you always know what done looks like. Tools change every six months; the course teaches the principle first and the tool second, and the tool lessons are re-recorded when they break.</p>
+    <div class="method">
+      <div><b>Objectives</b><p>Two to four outcomes you can be tested on.</p></div>
+      <div><b>Student material</b><p>Real, runnable code in every lesson, verified before it ships to you.</p></div>
+      <div><b>Checkpoints</b><p>Three questions and an answer key, every lesson.</p></div>
+      <div><b>Labs with a rubric</b><p>A definition of done and points, not "looks good".</p></div>
+      <div><b>Cost shown</b><p>Every model call prints its tokens and its price. The whole course costs under ten dollars in API credit.</p></div>
+    </div>
+  </section>
+
+  <section id="who">
+    <div class="eyebrow">Fit</div>
+    <h2>Built for one kind of person.</h2>
+    <div class="who">
+      <div>
+        <h3>This is for you if</h3>
+        <ul>
+          <li>You have two or more years of manual, functional, or exploratory testing.</li>
+          <li>You are comfortable with test cases, bug reports, and Postman, and have never written code, or wrote a little once and stopped.</li>
+          <li>You have about seven hours a week for six months and a laptop that can run Python.</li>
+          <li>You want a job title with "AI" in it and the portfolio to back it up.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>This is not for you if</h3>
+        <ul>
+          <li>You want to train models or become a data scientist. Module 10 is a week of ML basics; the rest is application testing.</li>
+          <li>You want a certificate without the labs. There is no shortcut through Module 2, and we do not pretend there is.</li>
+          <li>You need the course to run in a browser only. Everything runs on your machine, in a real terminal, because that is where the tools are.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="instructor">
+    <div class="eyebrow">Instructor</div>
+    <h2>Taught by <span class="placeholder">Your Name</span></h2>
+    <div class="instr">
+      <div class="photo">photo<br>600 × 600</div>
+      <div>
+        <p class="lede"><span class="placeholder">Two sentences on your testing background: years, domains, the kind of products you have tested.</span></p>
+        <p><span class="placeholder">One paragraph on your own move into AI testing: what you built, what you found, what changed. Specific numbers and one real finding work better than adjectives.</span></p>
+        <p><span class="placeholder">One line on why you built this course and who you built it for.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="eyebrow">Pricing</div>
+    <h2>Three ways in.</h2>
+    <p class="lede">The content is the same in every tier. The difference is how much of a person you get with it.</p>
+    <div class="tiers">
+      <div class="tier">
+        <span class="eyebrow">Self-paced</span>
+        <div class="price"><span class="placeholder">$149</span> <small>one-time</small></div>
+        <ul>
+          <li>All 13 modules, 167 hours of lessons and labs</li>
+          <li>The practice app, the golden datasets, every template</li>
+          <li>Checkpoint answer keys and lab rubrics</li>
+          <li>Lifetime access and updates when tools change</li>
+          <li>Community forum</li>
+        </ul>
+        <a class="btn ghost" href="#enrol">Start self-paced</a>
+      </div>
+      <div class="tier featured">
+        <span class="eyebrow">Cohort · next start <span class="placeholder">date</span></span>
+        <div class="price"><span class="placeholder">$499</span> <small>one-time</small></div>
+        <ul>
+          <li>Everything in self-paced</li>
+          <li>Weekly live lab session for 23 weeks</li>
+          <li>Written feedback on every lab and the capstone</li>
+          <li>Peer review rounds and a graded capstone with the reveal</li>
+          <li>Two mock interviews, recorded, with feedback</li>
+          <li>Limited to <span class="placeholder">20</span> seats</li>
+        </ul>
+        <a class="btn signal" href="#enrol">Reserve a cohort seat</a>
+      </div>
+      <div class="tier">
+        <span class="eyebrow">Teams</span>
+        <div class="price">Talk to us</div>
+        <ul>
+          <li>Five or more testers from one company</li>
+          <li>Private cohort with your own practice app, adapted to your domain</li>
+          <li>A test-plan template and CLAUDE.md tuned to your stack</li>
+          <li>Manager report on portfolio outcomes</li>
+        </ul>
+        <a class="btn ghost" href="#enrol">Ask about a team cohort</a>
+      </div>
+    </div>
+    <p class="guarantee">Fourteen-day refund on any tier, no questions, for anyone who has not yet started Module 3. The API credit you buy from the model provider is separate and yours; the entire course uses under ten dollars of it.</p>
+  </section>
+
+  <section id="faq" class="faq">
+    <div class="eyebrow">Questions</div>
+    <h2>Things people ask before enrolling.</h2>
+    <details><summary>I have never written code. Can I really do this?</summary><p>Yes, and the course is built for exactly that. Module 2 is three weeks of Python from the first line, with every example about testing. It is the hardest part and the place people quit, so it is paced to be finishable, and every lesson ends with something that runs. You will be reading and writing test code by week four and driving a browser by week six.</p></details>
+    <details><summary>How much time does it really take?</summary><p>About seven hours a week for twenty-three weeks: two weekday evenings of lessons and one weekend block for the lab. First-time coders usually spend a third longer on the labs in Modules 2 to 4, and the pace allows for that. If you already know Python, skip Modules 2 and 3 and finish in about nineteen weeks.</p></details>
+    <details><summary>What does it cost beyond the course?</summary><p>An API key from the model provider with a small prepaid credit. The whole course, including the evaluation labs and the capstone, runs on under ten dollars of it, and every script prints its cost so there are no surprises. Everything else is free and open source: Python, pytest, Playwright, promptfoo, DeepEval, Langfuse's free tier.</p></details>
+    <details><summary>Which tools will I learn?</summary><p>Python, pytest, requests, Playwright, GitHub Actions, the Claude API, a local embedding model, promptfoo, DeepEval and RAGAS, Langfuse, Garak and PyRIT as a survey, Great Expectations, and AI coding assistants including Claude Code with the Playwright MCP server. More importantly, the principles behind each, because the tools will change and the principles will not.</p></details>
+    <details><summary>Is there a certificate? What about ISTQB?</summary><p>You get a certificate of completion for the cohort tier, and something better in every tier: a public portfolio of seven projects with a recorded release assessment. Module 10 maps the course onto the ISTQB CT-AI syllabus so you can sit that exam with a day of extra reading if your target employers filter on it.</p></details>
+    <details><summary>Do I attack real systems in the security module?</summary><p>No. Everything in Module 9 is run against the practice app on your own machine and a sandbox API built for testing. The module opens with the authorisation rule and the course terms require it. You learn the method on a system you own, which is how real engagements work too.</p></details>
+    <details><summary>What if I get stuck?</summary><p>The fifteen-minute rule and a "what I ran, what I expected, what happened, what I tried" template, taught in Module 0. Then the community forum in every tier, and the weekly live lab in the cohort tier. Nobody is left alone with a traceback.</p></details>
+  </section>
+
+  <section class="final" id="enrol">
+    <div class="eyebrow" style="color:var(--term-muted)">Next cohort starts <span class="placeholder" style="border-color:var(--term-muted);background:transparent;color:var(--term-ink)">date</span></div>
+    <h2>Twenty-three weeks from "it seems fine" to "85%, interval 77 to 91, above threshold, here are the three that failed."</h2>
+    <p class="lede">That sentence is the job. This is the course that gets you to it.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="#pricing">Choose a tier</a>
+      <a class="btn ghost" href="syllabus.html">Read the syllabus first</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>Zero to AI Tester · <span class="placeholder">Your company name</span></span>
+    <span><a href="#faq">FAQ</a> · <span class="placeholder">Terms</span> · <span class="placeholder">Privacy</span> · <span class="placeholder">Contact</span></span>
+  </footer>
+</div>
+
+<script>
+  // Replays the hero output line by line. The page renders fully at rest; this is a demonstration, not a gate.
+  (function () {
+    const term = document.getElementById('term');
+    const button = document.getElementById('rerun');
+    const lines = Array.from(term.querySelectorAll('.line'));
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function replay() {
+      if (reduce) return;
+      term.classList.remove('animating');
+      void term.offsetWidth;
+      lines.forEach((el, i) => { el.style.animationDelay = (i * 140) + 'ms'; });
+      term.classList.add('animating');
+      setTimeout(() => term.classList.remove('animating'), lines.length * 140 + 400);
+    }
+    button.addEventListener('click', replay);
+  })();
+
+  // Reveal one blurred defect at a time on click, so a curious visitor can peek without seeing the list.
+  document.querySelectorAll('.defects .d').forEach((row) => {
+    row.addEventListener('click', () => {
+      const shown = document.querySelectorAll('.defects .d.shown');
+      if (row.classList.contains('shown') || shown.length >= 3) return;
+      row.classList.add('shown');
+      const note = document.querySelector('.defects .note');
+      if (shown.length + 1 >= 3) note.textContent = 'Three shown. The other nine are yours to find. Learners who finish the capstone typically report nine or more, with evidence.';
+    });
+    row.setAttribute('role', 'button');
+    row.setAttribute('tabindex', '0');
+    row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); row.click(); } });
+  });
+</script>
+</body>
+</html>

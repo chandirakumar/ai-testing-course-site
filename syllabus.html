@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zero to AI Tester</title>
+<style>body{margin:0;font-size:14px;font-family:system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #F7F8FA;
+    --panel: #FFFFFF;
+    --ink: #1C2433;
+    --ink-2: #4A5468;
+    --muted: #7A8494;
+    --rule: #DDE1E7;
+    --rule-2: #EDF0F3;
+    --accent: #0B6E99;
+    --accent-ink: #FFFFFF;
+    --tint: #E7F1F7;
+    --stage-a: #4F8AAE;
+    --stage-b: #2F9E8F;
+    --stage-c: #0B6E99;
+    --stage-d: #6B6F9E;
+    --lab: #C77A1F;
+    --lab-tint: #FBF1E3;
+    --project: #7A4FA0;
+    --project-tint: #F1EAF7;
+    --lecture-tint: #EEF1F5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #12161C;
+      --panel: #181D25;
+      --ink: #E7EAEF;
+      --ink-2: #B7BEC9;
+      --muted: #8E97A5;
+      --rule: #2B323C;
+      --rule-2: #222830;
+      --accent: #5DB3DA;
+      --accent-ink: #0F1A22;
+      --tint: #1A2A35;
+      --stage-a: #6FA4C5;
+      --stage-b: #4FB8A9;
+      --stage-c: #5DB3DA;
+      --stage-d: #9A9ED0;
+      --lab: #E0A24F;
+      --lab-tint: #2E2618;
+      --project: #B08FD4;
+      --project-tint: #27203A;
+      --lecture-tint: #222830;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #12161C;
+    --panel: #181D25;
+    --ink: #E7EAEF;
+    --ink-2: #B7BEC9;
+    --muted: #8E97A5;
+    --rule: #2B323C;
+    --rule-2: #222830;
+    --accent: #5DB3DA;
+    --accent-ink: #0F1A22;
+    --tint: #1A2A35;
+    --stage-a: #6FA4C5;
+    --stage-b: #4FB8A9;
+    --stage-c: #5DB3DA;
+    --stage-d: #9A9ED0;
+    --lab: #E0A24F;
+    --lab-tint: #2E2618;
+    --project: #B08FD4;
+    --project-tint: #27203A;
+    --lecture-tint: #222830;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 {
+    font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  .mono { font-family: "IBM Plex Mono", Consolas, monospace; font-variant-numeric: tabular-nums; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", Consolas, monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .page { max-width: 1180px; margin: 0 auto; padding: 40px 28px 80px; }
+
+  /* Header */
+  .masthead {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr);
+    gap: 40px;
+    align-items: end;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .masthead h1 {
+    font-size: clamp(40px, 6vw, 68px);
+    font-weight: 750;
+    font-stretch: 112%;
+    line-height: 0.98;
+    margin-top: 10px;
+  }
+  .masthead .lede {
+    margin: 18px 0 0;
+    max-width: 58ch;
+    font-size: 17px;
+    color: var(--ink-2);
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1px solid var(--rule);
+    background: var(--panel);
+  }
+  .fact { padding: 14px 16px; border-left: 1px solid var(--rule); }
+  .fact:first-child { border-left: 0; }
+  .fact .n {
+    font-family: "Archivo", sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    margin-top: 6px;
+  }
+  .fact .u { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+
+  /* Roadmap bar */
+  .roadmap { margin-top: 32px; }
+  .roadmap-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  .track {
+    display: flex; gap: 3px; margin-top: 12px; height: 34px;
+  }
+  .seg {
+    position: relative; min-width: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-family: "IBM Plex Mono", monospace; font-size: 11.5px;
+    border-radius: 2px;
+    text-decoration: none;
+  }
+  .seg span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding: 0 4px; }
+  .seg:hover { filter: brightness(1.08); }
+  .stages { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 14px; }
+  .stage { border-top: 3px solid; padding-top: 8px; }
+  .stage .eyebrow { color: var(--ink-2); }
+  .stage p { margin: 4px 0 0; font-size: 13.5px; color: var(--ink-2); }
+  .stage .h { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+  .split { display: flex; gap: 20px; margin-top: 14px; font-size: 13px; color: var(--ink-2); flex-wrap: wrap; }
+  .split i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+
+  /* Body grid */
+  .body { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; margin-top: 44px; }
+  .toc { position: sticky; top: 24px; align-self: start; }
+  .toc ol { list-style: none; margin: 10px 0 0; padding: 0; }
+  .toc li { border-top: 1px solid var(--rule-2); }
+  .toc a {
+    display: grid; grid-template-columns: 34px 1fr auto; gap: 8px; align-items: baseline;
+    padding: 8px 0; text-decoration: none; color: var(--ink); font-size: 13.5px;
+  }
+  .toc a:hover .t { color: var(--accent); }
+  .toc .id { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--muted); }
+  .toc .h { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .toc .stage-label { padding: 14px 0 4px; border-top: 0; }
+
+  .note {
+    margin: 0 0 28px; padding: 16px 18px; background: var(--tint); border-left: 3px solid var(--accent);
+    font-size: 14px; color: var(--ink-2);
+  }
+  .note strong { color: var(--ink); }
+
+  /* Module */
+  .module { margin-bottom: 44px; scroll-margin-top: 20px; }
+  .mod-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: end; padding-bottom: 12px; border-bottom: 1px solid var(--ink); }
+  .mod-head h2 { font-size: 24px; font-weight: 700; margin-top: 4px; }
+  .mod-head .meta { text-align: right; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); line-height: 1.7; white-space: nowrap; }
+  .mod-head .meta b { color: var(--ink); font-weight: 500; font-size: 15px; }
+  .mod-body { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 28px; margin-top: 14px; }
+
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-weight: 500; font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 6px 8px 8px; border-bottom: 1px solid var(--rule); }
+  td { padding: 8px; border-bottom: 1px solid var(--rule-2); vertical-align: top; }
+  td.id { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--muted); white-space: nowrap; width: 48px; }
+  td.hrs { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; width: 64px; }
+  th.hrs { text-align: right; }
+  td.kind { width: 82px; }
+  .chip { display: inline-block; font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.04em; padding: 2px 7px; border-radius: 3px; background: var(--lecture-tint); color: var(--ink-2); }
+  .chip.lab { background: var(--lab-tint); color: var(--lab); }
+  .chip.project { background: var(--project-tint); color: var(--project); }
+  tr.total td { border-bottom: 0; border-top: 1px solid var(--rule); font-weight: 600; }
+  tr.total td.hrs { font-weight: 500; }
+
+  .aside { font-size: 13.5px; color: var(--ink-2); display: flex; flex-direction: column; gap: 16px; }
+  .aside .blk .eyebrow { margin-bottom: 4px; display: block; }
+  .aside ul { margin: 0; padding-left: 16px; }
+  .aside li { margin: 2px 0; }
+  .aside .out { color: var(--ink); background: var(--panel); border: 1px solid var(--rule); padding: 10px 12px; }
+
+  .tail { margin-top: 56px; padding-top: 24px; border-top: 2px solid var(--ink); display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  .tail h3 { font-size: 18px; margin-bottom: 8px; }
+  .tail p, .tail li { font-size: 14.5px; color: var(--ink-2); }
+  .tail ul { padding-left: 18px; margin: 0; }
+
+  @media (max-width: 900px) {
+    .masthead, .body, .tail, .mod-body { grid-template-columns: 1fr; }
+    .toc { position: static; }
+    .stages { grid-template-columns: 1fr 1fr; }
+    .mod-head { grid-template-columns: 1fr; }
+    .mod-head .meta { text-align: left; }
+  }
+  @media (max-width: 560px) {
+    .page { padding: 24px 16px 60px; }
+    .facts { grid-template-columns: 1fr; }
+    .fact { border-left: 0; border-top: 1px solid var(--rule); }
+    .fact:first-child { border-top: 0; }
+    .stages { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .seg { transition: filter 120ms ease; }
+  }
+</style>
+
+<div class="page">
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">Course roadmap · Manual / functional tester → AI tester</div>
+      <h1>Zero to AI Tester</h1>
+      <p class="lede">A structured path for testers who have never written code. It starts at the terminal, teaches Python from nothing, and ends with a portfolio that evaluates, red-teams, and regression-tests real AI systems.</p>
+    </div>
+    <div class="facts" id="facts"></div>
+  </header>
+
+  <section class="roadmap">
+    <div class="roadmap-head">
+      <div>
+        <div class="eyebrow">The road, drawn to scale</div>
+        <div style="font-size:13.5px;color:var(--ink-2);margin-top:4px">Each segment is one module. Width is the hours it takes. Click one to jump to it.</div>
+      </div>
+      <div class="split" id="split"></div>
+    </div>
+    <div class="track" id="track"></div>
+    <div class="stages" id="stages"></div>
+  </section>
+
+  <div class="body">
+    <nav class="toc">
+      <div class="eyebrow">Index</div>
+      <ol id="toc"></ol>
+    </nav>
+
+    <main>
+      <div class="note">
+        <strong>Assumed starting point:</strong> two or more years of manual or functional testing, comfortable with test cases, bug reports, and Postman. <strong>Not assumed:</strong> any programming, any command line, any Git. <strong>Pace:</strong> about seven hours a week. A learner who already writes Python can skip Modules 2 and 3 and finish in about nineteen weeks.
+      </div>
+      <div id="modules"></div>
+
+      <div class="tail">
+        <div>
+          <h3>What the learner leaves with</h3>
+          <ul>
+            <li>A GitHub portfolio with six labs and one capstone, each with a README a hiring manager can skim.</li>
+            <li>An eval suite for a chatbot that runs on every commit and fails the build when quality drops.</li>
+            <li>A red-team report with reproducible prompt-injection findings.</li>
+            <li>A test plan template for AI features they can reuse on day one of the new job.</li>
+            <li>A resume rewritten from "manual tester" to "AI quality engineer", and fifty interview answers.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>How the hours were sized</h3>
+          <p>Lecture hours cover watching and following along. Lab hours are hands-on with a checklist and a definition of done. Project hours are open-ended work reviewed against a rubric. Beginners typically spend about a third more than the listed lab time on Modules 2 to 4, so the weekly pace leaves room for that.</p>
+          <p>Every module names an exit criterion, written the way a test plan writes it: a thing the learner can now do, verifiable by the portfolio output.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  // ---- Course data -------------------------------------------------------
+  const STAGES = [
+    { key: 'A', name: 'Foundations', color: 'var(--stage-a)', blurb: 'Terminal, Git, Python from zero, APIs, and classic test automation. Nothing about AI yet, on purpose.' },
+    { key: 'B', name: 'AI fundamentals & AI-assisted testing', color: 'var(--stage-b)', blurb: 'How LLMs actually behave, then using them to test faster. Quick wins that build confidence.' },
+    { key: 'C', name: 'Testing AI systems', color: 'var(--stage-c)', blurb: 'The core of the course: evaluation, RAG and agent testing, safety and security.' },
+    { key: 'D', name: 'Breadth, capstone & career', color: 'var(--stage-d)', blurb: 'Classical ML basics, a full capstone assessment, and the job transition.' },
+  ];
+
+  // kind: L = lecture, B = lab, P = project
+  const MODULES = [
+    { id: 0, stage: 'A', title: 'Orientation & setup', weeks: '1', prereq: 'None',
+      exit: 'Explain the two meanings of "AI tester" and have a working machine with Python, Git, and VS Code.',
+      output: 'A screenshot of your first script running, committed to GitHub.',
+      lessons: [
+        ['0.1', 'What "AI tester" really means: two jobs, one career', 'L', 0.5],
+        ['0.2', 'How the course works: labs, portfolio, pace, definition of done', 'L', 0.5],
+        ['0.3', 'Install kit: VS Code, Python, Git, GitHub account, terminal', 'B', 1.5],
+        ['0.4', 'Self-check: run the setup verifier', 'B', 0.5],
+      ]},
+    { id: 1, stage: 'A', title: 'Command line & Git', weeks: '1', prereq: 'Module 0',
+      exit: 'Move around a filesystem, run a script, keep secrets out of code, and push work to GitHub.',
+      output: 'Your portfolio repository with a README.',
+      lessons: [
+        ['1.1', 'Files, folders, paths; opening a terminal on Windows and Mac', 'L', 1],
+        ['1.2', 'Essential commands: navigate, create, list, run', 'B', 1],
+        ['1.3', 'Environment variables and API keys: keeping secrets out of code', 'L', 1],
+        ['1.4', 'Git: clone, commit, push, branches, pull requests', 'L', 1.5],
+        ['1.5', 'Writing a README people actually read', 'L', 0.5],
+        ['1.6', 'Lab: create your portfolio repository', 'B', 1],
+      ]},
+    { id: 2, stage: 'A', title: 'Python from zero', weeks: '2–4', prereq: 'Module 1',
+      exit: 'Read and write small Python programs, work with files and JSON, and write pytest tests.',
+      output: 'A test-data generator with its own pytest suite, and a spreadsheet-to-test-case converter.',
+      lessons: [
+        ['2.1', 'Why Python for testers; your first script', 'L', 1],
+        ['2.2', 'Variables, numbers, strings, f-strings', 'L', 2],
+        ['2.3', 'Lists, dictionaries, tuples, sets', 'L', 2],
+        ['2.4', 'Conditionals and loops', 'L', 2],
+        ['2.5', 'Functions and modules', 'L', 2],
+        ['2.6', 'Files: text, CSV, JSON', 'L', 2],
+        ['2.7', 'Errors and exceptions', 'L', 1],
+        ['2.8', 'Virtual environments and pip', 'L', 1],
+        ['2.9', 'Libraries you will use daily: requests, json, pathlib, datetime', 'L', 2],
+        ['2.10', 'pytest: assertions, test files, fixtures, running and reading results', 'L', 3],
+        ['2.11', 'Reading code you did not write', 'L', 1],
+        ['2.12', 'Lab: test-data generator with pytest tests', 'B', 3],
+        ['2.13', 'Mini project: spreadsheet to test-case converter', 'P', 2],
+      ]},
+    { id: 3, stage: 'A', title: 'APIs, HTTP & data formats', weeks: '5', prereq: 'Module 2',
+      exit: 'Call any REST API from Python with authentication and assert on its response.',
+      output: 'An automated API test suite for a public API.',
+      lessons: [
+        ['3.1', 'HTTP: requests, responses, status codes, headers', 'L', 1],
+        ['3.2', 'REST APIs and a Postman refresher', 'L', 1],
+        ['3.3', 'JSON in depth; YAML; Markdown', 'L', 1],
+        ['3.4', 'Calling APIs from Python: keys, tokens, auth', 'L', 2],
+        ['3.5', 'API test suite with pytest and requests', 'L', 2],
+        ['3.6', 'Lab: automate a public API', 'B', 1],
+      ]},
+    { id: 4, stage: 'A', title: 'Test automation essentials', weeks: '6–7', prereq: 'Module 3',
+      exit: 'Build a maintainable Playwright suite and run it in CI on every push.',
+      output: 'A ten-test Playwright suite for a demo web app, green in GitHub Actions.',
+      lessons: [
+        ['4.1', 'The automation pyramid; what to automate and what not to', 'L', 1],
+        ['4.2', 'Playwright with Python: setup, first test, locators', 'L', 3],
+        ['4.3', 'Page objects, fixtures, assertions, waits', 'L', 3],
+        ['4.4', 'GitHub Actions: run your tests in CI', 'L', 2],
+        ['4.5', 'Flaky tests: causes and fixes', 'L', 1],
+        ['4.6', 'Lab: ten-test suite for a demo web app', 'B', 4],
+      ]},
+    { id: 5, stage: 'B', title: 'AI & LLM fundamentals for testers', weeks: '8–9', prereq: 'Module 3',
+      exit: 'Explain how an LLM produces output, why it varies, and where a RAG or agent pipeline can fail.',
+      output: 'A variance report: one prompt, twenty runs, what changed and why.',
+      lessons: [
+        ['5.1', 'AI, ML, deep learning, generative AI: the map', 'L', 1],
+        ['5.2', 'How an LLM works: tokens, prediction, context window', 'L', 1.5],
+        ['5.3', 'Temperature, sampling, non-determinism', 'L', 1],
+        ['5.4', 'Prompting: roles, few-shot, structured output', 'L', 2],
+        ['5.5', 'Calling an LLM from Python (Claude and OpenAI-compatible APIs)', 'L', 2],
+        ['5.6', 'Embeddings and vector search', 'L', 1.5],
+        ['5.7', 'RAG pipelines, drawn as a test surface', 'L', 1.5],
+        ['5.8', 'Agents and tool calling', 'L', 1.5],
+        ['5.9', 'Failure-mode taxonomy: hallucination, refusal, drift, injection, bias, cost', 'L', 1],
+        ['5.10', 'Lab: one prompt, twenty runs, a variance report', 'B', 1],
+      ]},
+    { id: 6, stage: 'B', title: 'AI as your testing assistant', weeks: '10–11', prereq: 'Modules 4 and 5',
+      exit: 'Use AI to draft test cases, data, and automation, and review its output like a junior\'s pull request.',
+      output: 'The Module 4 suite rebuilt with AI help, plus a written critique of what it got wrong.',
+      lessons: [
+        ['6.1', 'Prompt patterns for testers', 'L', 2],
+        ['6.2', 'Test cases from requirements, and finding what AI missed', 'L', 2],
+        ['6.3', 'Synthetic test data and edge cases, PII-safe', 'L', 2],
+        ['6.4', 'Log triage, bug reports, exploratory charters', 'L', 1],
+        ['6.5', 'AI coding assistants for test code: Cursor, Claude Code, Copilot', 'L', 2],
+        ['6.6', 'Playwright MCP: agent-driven test generation', 'L', 2],
+        ['6.7', 'Reviewing AI-written tests: hollow assertions, invented selectors', 'L', 1],
+        ['6.8', 'Lab: rebuild the Module 4 suite with AI, write the critique', 'B', 2],
+      ]},
+    { id: 7, stage: 'C', title: 'Evaluating LLM applications', weeks: '12–15', prereq: 'Module 6',
+      exit: 'Design and run an evaluation suite with golden data, rubrics, and metrics, and gate a build on it.',
+      output: 'Eval suite v1 against the practice chatbot, with a results dashboard.',
+      lessons: [
+        ['7.1', 'Why pass/fail breaks; quality as a distribution', 'L', 1],
+        ['7.2', 'The oracle problem: what "expected result" means for AI', 'L', 1],
+        ['7.3', 'Golden datasets: building, sizing, maintaining', 'L', 2],
+        ['7.4', 'Rubrics and human grading', 'L', 2],
+        ['7.5', 'LLM-as-judge: design, biases, calibration', 'L', 2],
+        ['7.6', 'Metrics: exact match, similarity, faithfulness, relevance, consistency, refusal rate', 'L', 2],
+        ['7.7', 'Statistics for testers: sample size, pass@k, confidence, variance', 'L', 2],
+        ['7.8', 'promptfoo: configs, assertions, model matrices', 'L', 3],
+        ['7.9', 'DeepEval and RAGAS for RAG metrics', 'L', 3],
+        ['7.10', 'Tracing and observability with Langfuse', 'L', 2],
+        ['7.11', 'Prompt versioning and regression in CI', 'L', 2],
+        ['7.12', 'Non-functional: latency, cost, token budgets, rate limits', 'L', 1],
+        ['7.13', 'Lab: eval suite v1 against the practice chatbot', 'B', 3],
+      ]},
+    { id: 8, stage: 'C', title: 'Testing RAG & agents', weeks: '16–17', prereq: 'Module 7',
+      exit: 'Test retrieval and generation separately, verify grounding, and evaluate an agent\'s tool calls and trajectory.',
+      output: 'A RAG and agent test plan, executed on the practice app with findings.',
+      lessons: [
+        ['8.1', 'Testing retrieval on its own: recall, precision, chunking bugs', 'L', 2],
+        ['8.2', 'Grounding and citation checks', 'L', 1.5],
+        ['8.3', 'Multi-turn: memory, context loss, conversation state', 'L', 1.5],
+        ['8.4', 'Agent testing: tool-call correctness, trajectories, loops, cost guards', 'L', 3],
+        ['8.5', 'Sandboxing and mocking tools', 'L', 1],
+        ['8.6', 'Test plan for an AI feature: the template', 'L', 2],
+        ['8.7', 'Lab: RAG and agent test plan, executed on the practice app', 'B', 3],
+      ]},
+    { id: 9, stage: 'C', title: 'Safety, security & responsible AI', weeks: '18–19', prereq: 'Module 7',
+      exit: 'Run a structured red-team against an LLM app and report findings by OWASP category.',
+      output: 'A red-team report with reproducible attacks and severity ratings.',
+      lessons: [
+        ['9.1', 'OWASP Top 10 for LLM applications', 'L', 2],
+        ['9.2', 'Prompt injection: direct, indirect, via documents and tools', 'L', 2],
+        ['9.3', 'Jailbreaks and guardrail testing', 'L', 1.5],
+        ['9.4', 'Data leakage, PII, exfiltration', 'L', 1.5],
+        ['9.5', 'Red-team methodology; Garak, PyRIT, promptfoo red team', 'L', 3],
+        ['9.6', 'Bias, fairness, toxicity testing', 'L', 1.5],
+        ['9.7', 'Governance awareness: EU AI Act, NIST AI RMF, ISO 42001', 'L', 1],
+        ['9.8', 'Lab: red-team report', 'B', 1.5],
+      ]},
+    { id: 10, stage: 'D', title: 'Classical ML testing basics', weeks: '20', prereq: 'Module 2',
+      exit: 'Read a confusion matrix, validate a dataset, and describe drift to a data scientist.',
+      output: 'A data-validation notebook.',
+      lessons: [
+        ['10.1', 'ML lifecycle: data, train, evaluate, deploy', 'L', 1],
+        ['10.2', 'Classification metrics: confusion matrix, precision, recall, F1', 'L', 1.5],
+        ['10.3', 'Data validation with Great Expectations', 'L', 2],
+        ['10.4', 'Model drift and monitoring', 'L', 1.5],
+        ['10.5', 'ISTQB CT-AI syllabus map: where this course covers it', 'L', 1],
+        ['10.6', 'Lab: data-validation notebook', 'B', 1],
+      ]},
+    { id: 11, stage: 'D', title: 'Capstone', weeks: '21–22', prereq: 'Modules 7, 8, 9',
+      exit: 'Deliver a complete quality assessment of an AI product, end to end, unassisted.',
+      output: 'Strategy doc, eval suite in CI, red-team report, and a demo video.',
+      lessons: [
+        ['11.1', 'Brief: full quality assessment of the practice chatbot', 'L', 1],
+        ['11.2', 'Test strategy document', 'P', 3],
+        ['11.3', 'Eval suite running in CI', 'P', 6],
+        ['11.4', 'Red-team report', 'P', 3],
+        ['11.5', 'Demo video and write-up', 'P', 3],
+      ]},
+    { id: 12, stage: 'D', title: 'Career transition', weeks: '23', prereq: 'Module 11',
+      exit: 'Present yourself as an AI quality engineer with evidence.',
+      output: 'Rewritten resume, polished portfolio, recorded mock interview.',
+      lessons: [
+        ['12.1', 'Resume: from manual tester to AI quality engineer', 'L', 1],
+        ['12.2', 'Portfolio READMEs that get read', 'L', 1],
+        ['12.3', 'Interview question bank: fifty questions with model answers', 'L', 2],
+        ['12.4', 'LinkedIn positioning', 'L', 0.5],
+        ['12.5', 'Mock interview', 'B', 1.5],
+      ]},
+  ];
+
+  // ---- Lesson content pages, one per module ----------------------------------
+  const CONTENT = {};
+
+  // ---- Derived numbers ----------------------------------------------------
+  const KIND = { L: ['Lecture', ''], B: ['Lab', 'lab'], P: ['Project', 'project'] };
+  const fmt = n => (Math.round(n * 10) / 10).toString();
+  MODULES.forEach(m => { m.hours = m.lessons.reduce((s, l) => s + l[3], 0); });
+  const total = MODULES.reduce((s, m) => s + m.hours, 0);
+  const byKind = { L: 0, B: 0, P: 0 };
+  MODULES.forEach(m => m.lessons.forEach(l => byKind[l[2]] += l[3]));
+  const weeks = 23;
+  const stageColor = s => STAGES.find(x => x.key === s).color;
+
+  // ---- Facts ---------------------------------------------------------------
+  document.getElementById('facts').innerHTML = [
+    ['Total hours', fmt(total), 'lecture, lab and project'],
+    ['Duration', weeks, 'weeks at ~7 h/week'],
+    ['Modules', MODULES.length, '13 modules, 4 stages'],
+  ].map(([l, n, u]) => `<div class="fact"><div class="eyebrow">${l}</div><div class="n">${n}</div><div class="u">${u}</div></div>`).join('');
+
+  document.getElementById('split').innerHTML = [
+    ['Lecture', byKind.L, 'var(--muted)'],
+    ['Lab', byKind.B, 'var(--lab)'],
+    ['Project', byKind.P, 'var(--project)'],
+  ].map(([k, h, c]) => `<span><i style="background:${c}"></i>${k} <span class="mono">${fmt(h)} h</span></span>`).join('');
+
+  // ---- Track ---------------------------------------------------------------
+  document.getElementById('track').innerHTML = MODULES.map(m =>
+    `<a class="seg" href="#m${m.id}" style="flex:${m.hours} 1 0;background:${stageColor(m.stage)}" title="Module ${m.id}: ${m.title} (${fmt(m.hours)} h)"><span>M${m.id}</span></a>`
+  ).join('');
+
+  document.getElementById('stages').innerHTML = STAGES.map(s => {
+    const mods = MODULES.filter(m => m.stage === s.key);
+    const h = mods.reduce((a, m) => a + m.hours, 0);
+    return `<div class="stage" style="border-color:${s.color}">
+      <span class="eyebrow">Stage ${s.key} · ${s.name}</span>
+      <p>${s.blurb}</p>
+      <div class="h">Modules ${mods[0].id}–${mods[mods.length-1].id} · ${fmt(h)} h</div>
+    </div>`;
+  }).join('');
+
+  // ---- TOC ----------------------------------------------------------------
+  let toc = '';
+  STAGES.forEach(s => {
+    toc += `<li class="stage-label"><span class="eyebrow" style="color:${s.color}">Stage ${s.key}</span></li>`;
+    MODULES.filter(m => m.stage === s.key).forEach(m => {
+      toc += `<li><a href="#m${m.id}"><span class="id">M${m.id}</span><span class="t">${m.title}</span><span class="h">${fmt(m.hours)} h</span></a></li>`;
+    });
+  });
+  document.getElementById('toc').innerHTML = toc;
+
+  // ---- Modules -------------------------------------------------------------
+  document.getElementById('modules').innerHTML = MODULES.map(m => `
+    <section class="module" id="m${m.id}">
+      <div class="mod-head">
+        <div>
+          <span class="eyebrow" style="color:${stageColor(m.stage)}">Module ${m.id} · Stage ${m.stage}</span>
+          <h2>${m.title}</h2>
+        </div>
+        <div class="meta">Week${m.weeks.includes('–') ? 's' : ''} ${m.weeks}<br><b>${fmt(m.hours)} h</b> · ${m.lessons.length} lessons${CONTENT[m.id] ? `<br><a href="${CONTENT[m.id]}">Lesson content</a>` : ''}</div>
+      </div>
+      <div class="mod-body">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Topic</th><th>Format</th><th class="hrs">Hours</th></tr></thead>
+            <tbody>
+              ${m.lessons.map(l => `<tr>
+                <td class="id">${l[0]}</td>
+                <td>${l[1]}</td>
+                <td class="kind"><span class="chip ${KIND[l[2]][1]}">${KIND[l[2]][0]}</span></td>
+                <td class="hrs">${fmt(l[3])}</td>
+              </tr>`).join('')}
+              <tr class="total"><td></td><td>Module total</td><td></td><td class="hrs">${fmt(m.hours)}</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <aside class="aside">
+          <div class="blk"><span class="eyebrow">Prerequisite</span>${m.prereq}</div>
+          <div class="blk"><span class="eyebrow">Exit criterion</span>${m.exit}</div>
+          <div class="blk"><span class="eyebrow">Portfolio output</span><div class="out">${m.output}</div></div>
+        </aside>
+      </div>
+    </section>`).join('');
+</script>
+</body>
+</html>
