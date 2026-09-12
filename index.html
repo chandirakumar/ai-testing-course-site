@@ -151,6 +151,7 @@
   /* instructor */
   .instr { display: grid; grid-template-columns: 200px 1fr; gap: 36px; align-items: start; margin-top: 30px; }
   .instr .photo { aspect-ratio: 1; background: var(--tint); border: 1px solid var(--rule); display: grid; place-items: center; color: var(--muted); font-family: "IBM Plex Mono", monospace; font-size: 12px; text-align: center; padding: 10px; }
+  .instr .monogram { font-family: "Archivo", sans-serif; font-weight: 850; font-stretch: 112%; font-size: 96px; color: var(--accent); }
   .placeholder { background: var(--tint); border: 1px dashed var(--accent); padding: 2px 6px; border-radius: 3px; font-family: "IBM Plex Mono", monospace; font-size: 0.9em; }
 
   /* pricing */
@@ -402,13 +403,13 @@
 
   <section id="instructor">
     <div class="eyebrow">Instructor</div>
-    <h2>Taught by <span class="placeholder">Your Name</span></h2>
+    <h2>Taught by Chandru</h2>
     <div class="instr">
-      <div class="photo">photo<br>600 × 600</div>
+      <div class="photo monogram" aria-hidden="true">C</div>
       <div>
-        <p class="lede"><span class="placeholder">Two sentences on your testing background: years, domains, the kind of products you have tested.</span></p>
-        <p><span class="placeholder">One paragraph on your own move into AI testing: what you built, what you found, what changed. Specific numbers and one real finding work better than adjectives.</span></p>
-        <p><span class="placeholder">One line on why you built this course and who you built it for.</span></p>
+        <p class="lede">Chandru builds and tests software products, and wrote every lesson, lab, and line of practice code in Zero to AI Tester. The course is the path Chandru wanted and could not find: one that starts at the terminal and ends at a release assessment.</p>
+        <p>The practice product in this course, a hotel support bot and a booking agent with twelve planted defects, was built and broken deliberately so that learners find real bugs with real evaluation suites instead of watching slides. The first eval run against it fails three of five categories and one safety check, and finding out why is the job the course trains you for.</p>
+        <p>Built for testers who are told AI will replace them, by someone who thinks the opposite: the people who already know how to design a test are the people AI teams need most.</p>
       </div>
     </div>
   </section>
@@ -420,7 +421,7 @@
     <div class="tiers">
       <div class="tier">
         <span class="eyebrow">Self-paced</span>
-        <div class="price"><span class="placeholder">$149</span> <small>one-time</small></div>
+        <div class="price">$15 <small>one-time</small></div>
         <ul>
           <li>All 13 modules, 167 hours of lessons and labs</li>
           <li>The practice app, the golden datasets, every template</li>
@@ -428,20 +429,20 @@
           <li>Lifetime access and updates when tools change</li>
           <li>Community forum</li>
         </ul>
-        <a class="btn ghost" href="#enrol">Start self-paced</a>
+        <a class="btn ghost" href="mailto:chandruss93@gmail.com?subject=Zero%20to%20AI%20Tester%20%E2%80%93%20self-paced">Start self-paced · $15</a>
       </div>
       <div class="tier featured">
-        <span class="eyebrow">Cohort · next start <span class="placeholder">date</span></span>
-        <div class="price"><span class="placeholder">$499</span> <small>one-time</small></div>
+        <span class="eyebrow">Cohort · next start 5 October 2026</span>
+        <div class="price">$25 <small>one-time</small></div>
         <ul>
           <li>Everything in self-paced</li>
           <li>Weekly live lab session for 23 weeks</li>
           <li>Written feedback on every lab and the capstone</li>
           <li>Peer review rounds and a graded capstone with the reveal</li>
           <li>Two mock interviews, recorded, with feedback</li>
-          <li>Limited to <span class="placeholder">20</span> seats</li>
+          <li>Limited to 20 seats</li>
         </ul>
-        <a class="btn signal" href="#enrol">Reserve a cohort seat</a>
+        <a class="btn signal" href="mailto:chandruss93@gmail.com?subject=Zero%20to%20AI%20Tester%20%E2%80%93%20cohort%20seat">Reserve a cohort seat · $25</a>
       </div>
       <div class="tier">
         <span class="eyebrow">Teams</span>
@@ -452,7 +453,7 @@
           <li>A test-plan template and CLAUDE.md tuned to your stack</li>
           <li>Manager report on portfolio outcomes</li>
         </ul>
-        <a class="btn ghost" href="#enrol">Ask about a team cohort</a>
+        <a class="btn ghost" href="mailto:chandruss93@gmail.com?subject=Zero%20to%20AI%20Tester%20%E2%80%93%20team%20cohort">Ask about a team cohort</a>
       </div>
     </div>
     <p class="guarantee">Fourteen-day refund on any tier, no questions, for anyone who has not yet started Module 3. The API credit you buy from the model provider is separate and yours; the entire course uses under ten dollars of it.</p>
@@ -471,7 +472,7 @@
   </section>
 
   <section class="final" id="enrol">
-    <div class="eyebrow" style="color:var(--term-muted)">Next cohort starts <span class="placeholder" style="border-color:var(--term-muted);background:transparent;color:var(--term-ink)">date</span></div>
+    <div class="eyebrow" style="color:var(--term-muted)">Next cohort starts 5 October 2026 · self-paced any time</div>
     <h2>Twenty-three weeks from "it seems fine" to "85%, interval 77 to 91, above threshold, here are the three that failed."</h2>
     <p class="lede">That sentence is the job. This is the course that gets you to it.</p>
     <div class="cta-row">
@@ -481,8 +482,8 @@
   </section>
 
   <footer>
-    <span>Zero to AI Tester · <span class="placeholder">Your company name</span></span>
-    <span><a href="#faq">FAQ</a> · <span class="placeholder">Terms</span> · <span class="placeholder">Privacy</span> · <span class="placeholder">Contact</span></span>
+    <span>Zero to AI Tester · © 2026 Chandru</span>
+    <span><a href="#faq">FAQ</a> · <a href="terms.html">Terms and refunds</a> · <a href="mailto:chandruss93@gmail.com">Contact</a></span>
   </footer>
 </div>
 
