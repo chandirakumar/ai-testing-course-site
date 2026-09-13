@@ -136,6 +136,25 @@
   .tiers.two { grid-template-columns: 1fr 1fr; max-width: 820px; }
   @media (max-width: 700px) { .videos, .tiers.two { grid-template-columns: 1fr; } }
 
+
+  .tiers.one { grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr); align-items: start; max-width: 960px; }
+  .tiers.one .aside { padding: 8px 0 0 8px; font-size: 14.5px; color: var(--ink-2); }
+  .tiers.one .aside b { display: block; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 16px; color: var(--ink); margin-bottom: 8px; }
+  @media (max-width: 700px) { .tiers.one { grid-template-columns: 1fr; } }
+
+  /* interest form */
+  .interest { display: grid; grid-template-columns: minmax(0,1fr) minmax(320px,0.9fr); gap: 48px; align-items: start; margin-top: 30px; }
+  .interest form { background: var(--panel); border: 1px solid var(--rule); padding: 24px; display: grid; gap: 14px; }
+  .interest label { font-size: 14.5px; color: var(--ink); display: flex; gap: 10px; align-items: center; }
+  .interest input[type="email"] { width: 100%; font: inherit; padding: 12px 14px; border: 1px solid var(--rule); border-radius: 4px; background: var(--ground); color: var(--ink); }
+  .interest input[type="email"]:focus-visible, .interest input[type="checkbox"]:focus-visible, .interest button:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
+  .interest input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
+  .interest .courses { display: grid; gap: 8px; padding-top: 4px; }
+  .interest .eyebrow { display: block; }
+  .interest button { font: inherit; }
+  .interest .thanks { background: var(--tint); border-left: 3px solid var(--accent); padding: 14px 16px; font-size: 15px; }
+  .interest .fine { font-size: 12.5px; color: var(--muted); margin: 0; }
+
   /* curriculum */
   .stages { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--rule); background: var(--panel); margin-top: 36px; }
   .stage { padding: 22px 20px; border-left: 1px solid var(--rule); }
@@ -224,7 +243,7 @@
       <li><a href="#pricing">Pricing</a></li>
       <li><a href="#faq">FAQ</a></li>
     </ul>
-    <a class="btn primary" href="#pricing">Buy</a>
+    <a class="btn primary" href="#pricing">Buy · ₹1,499</a>
   </nav>
 
   <header class="hero" id="top">
@@ -233,7 +252,7 @@
       <h1>Same question. Three answers. <em>Which one passed?</em></h1>
       <p class="lede">That question breaks every test you know how to write. This course teaches you to answer it the way AI teams need: a pass rate, a confidence interval, a threshold the product owner signed, and the traces of the ones that failed. In 23 weeks, from your first terminal command to a release assessment you present on video.</p>
       <div class="cta-row">
-        <a class="btn signal" href="#pricing">Get the course · from $15</a>
+        <a class="btn signal" href="#pricing">Buy the course · ₹1,499</a>
         <a class="btn ghost" href="#curriculum">See the full curriculum</a>
       </div>
       <div class="facts">
@@ -434,47 +453,70 @@
 
   <section id="pricing">
     <div class="eyebrow">Pricing</div>
-    <h2>Buy once. Learn whenever you have the time.</h2>
+    <h2>One price. Everything included. Yours to keep.</h2>
     <p class="lede">You pay once on Gumroad and the complete course arrives by email within a minute, as a pack you open in your browser. No subscription, no schedule, no expiry. Work through it at seven hours a week or seven hours a month; it waits.</p>
-    <div class="tiers two">
-      <div class="tier">
-        <span class="eyebrow">Course pack</span>
-        <div class="price">$15 <small>one-time</small></div>
+    <div class="tiers one">
+      <div class="tier featured">
+        <span class="eyebrow">Zero to AI Tester · complete course</span>
+        <div class="price">₹1,499 <small>one-time · no recurring charges</small></div>
         <ul>
           <li>All 13 modules, 167 hours of lessons and labs, as browsable pages</li>
           <li>The practice app with its twelve planted defects, the golden datasets, every template</li>
-          <li>Checkpoint answer keys and lab rubrics</li>
-          <li>Keep it forever; updates emailed when the tools change</li>
+          <li>Checkpoint answer keys and lab rubrics for every module</li>
+          <li>Fifty interview questions with model answers, the resume rewrite, the portfolio README</li>
+          <li>Keep it forever; updated packs emailed when the tools change</li>
         </ul>
-        <a class="btn ghost" data-product="pack" href="#pricing">Get the course pack · $15</a>
+        <a class="btn signal" data-product="pack" href="#pricing">Buy the course · ₹1,499</a>
       </div>
-      <div class="tier featured">
-        <span class="eyebrow">Pack + feedback</span>
-        <div class="price">$25 <small>one-time</small></div>
-        <ul>
-          <li>Everything in the course pack</li>
-          <li>Written feedback by email on three labs of your choice</li>
-          <li>Your capstone reviewed against the rubric, with a written verdict</li>
-          <li>The mock-interview take-home graded, with notes on your answers</li>
-          <li>All by email, on your timeline; no live sessions to attend</li>
-        </ul>
-        <a class="btn signal" data-product="feedback" href="#pricing">Get the pack with feedback · $25</a>
+      <div class="aside">
+        <b>Before you buy</b>
+        <p>This is a digital product delivered instantly, so all sales are final and there are no refunds. Watch the two videos, read the complete syllabus, and check the "who it's for" section first. If you are unsure, email a question before paying.</p>
+        <p>The API credit you buy from the model provider for the AI modules is separate and yours; the entire course uses under ten dollars of it.</p>
       </div>
     </div>
-    <p class="guarantee">Fourteen-day refund on either tier, no questions, for anyone who has not yet started Module 3. The API credit you buy from the model provider is separate and yours; the entire course uses under ten dollars of it.</p>
   </section>
 
   <section id="faq" class="faq">
     <div class="eyebrow">Questions</div>
     <h2>Things people ask before enrolling.</h2>
-    <details><summary>How is the course delivered?</summary><p>As a pack of web pages. Gumroad emails you the download within a minute of paying. Unzip it, open the start page in any browser, and every module, lab, answer key, and template is there, offline, forever. When a tool changes and a lesson is updated, you get an email with the new pack.</p></details>
+    <details><summary>How is the course delivered?</summary><p>As a pack of web pages. Gumroad emails you the download within a minute of paying. Unzip it, open the start page in any browser, and every module, lab, answer key, and template is there, offline, forever. When a tool changes and a lesson is updated, you get an email with the new pack at no charge.</p></details>
     <details><summary>I have never written code. Can I really do this?</summary><p>Yes, and the course is built for exactly that. Module 2 is three weeks of Python from the first line, with every example about testing. It is the hardest part and the place people quit, so it is paced to be finishable, and every lesson ends with something that runs. You will be reading and writing test code by week four and driving a browser by week six.</p></details>
     <details><summary>How much time does it really take?</summary><p>About seven hours a week for twenty-three weeks: two weekday evenings of lessons and one weekend block for the lab. First-time coders usually spend a third longer on the labs in Modules 2 to 4, and the pace allows for that. If you already know Python, skip Modules 2 and 3 and finish in about nineteen weeks.</p></details>
     <details><summary>What does it cost beyond the course?</summary><p>An API key from the model provider with a small prepaid credit. The whole course, including the evaluation labs and the capstone, runs on under ten dollars of it, and every script prints its cost so there are no surprises. Everything else is free and open source: Python, pytest, Playwright, promptfoo, DeepEval, Langfuse's free tier.</p></details>
     <details><summary>Which tools will I learn?</summary><p>Python, pytest, requests, Playwright, GitHub Actions, the Claude API, a local embedding model, promptfoo, DeepEval and RAGAS, Langfuse, Garak and PyRIT as a survey, Great Expectations, and AI coding assistants including Claude Code with the Playwright MCP server. More importantly, the principles behind each, because the tools will change and the principles will not.</p></details>
     <details><summary>Is there a certificate? What about ISTQB?</summary><p>No certificate, and on purpose: a certificate of completion for a self-paced course carries little weight. What you get instead is a public portfolio of seven projects with a recorded release assessment, which is what interviews are built around. Module 10 maps the course onto the ISTQB CT-AI syllabus, so you can sit that exam with a day of extra reading if your target employers filter on it.</p></details>
     <details><summary>Do I attack real systems in the security module?</summary><p>No. Everything in Module 9 is run against the practice app on your own machine and a sandbox API built for testing. The module opens with the authorisation rule and the course terms require it. You learn the method on a system you own, which is how real engagements work too.</p></details>
-    <details><summary>What if I get stuck?</summary><p>Module 0 teaches the fifteen-minute rule and a "what I ran, what I expected, what happened, what I tried" template, and every checkpoint has an answer key. Beyond that, email works: questions get answered. The feedback tier adds written reviews of your labs and capstone, which is where most of the real unsticking happens.</p></details>
+    <details><summary>What if I get stuck?</summary><p>Module 0 teaches the fifteen-minute rule and a "what I ran, what I expected, what happened, what I tried" template, and every checkpoint has an answer key and every lab a rubric. Beyond that, email works: questions about the material get answered.</p></details>
+    <details><summary>Can I get a refund?</summary><p>No. The course is a digital product delivered in full the moment you pay, so all sales are final. That is why the syllabus, the two videos, the portfolio list, and the "who it's for" section are all on this page: read them first, and email a question if anything is unclear before buying.</p></details>
+  </section>
+
+  <section id="interest">
+    <div class="eyebrow">What comes next</div>
+    <h2>Tell me which course you want next.</h2>
+    <div class="interest">
+      <div>
+        <p class="lede">Zero to AI Tester is the first. The next courses are being planned in the same style: from zero, with real code, a broken practice product, and a portfolio at the end. Leave your email and tick what you would buy, and you will hear first when one is ready, with an early price.</p>
+        <p>No newsletter, no weekly emails. One message when a course you ticked launches, and nothing else.</p>
+      </div>
+      <form action="https://formsubmit.co/chandruss93@gmail.com" method="POST" id="interest-form">
+        <input type="hidden" name="_subject" value="Course interest from the Zero to AI Tester site">
+        <input type="hidden" name="_next" value="https://chandirakumar.github.io/ai-testing-course-site/?interest=thanks#interest">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+        <label for="interest-email" class="eyebrow">Your email</label>
+        <input id="interest-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email">
+        <span class="eyebrow">I would buy a course on</span>
+        <div class="courses">
+          <label><input type="checkbox" name="course" value="Machine Learning for testers"> Machine Learning: models, data, and how to test them</label>
+          <label><input type="checkbox" name="course" value="Agentic AI"> Agentic AI: building and testing tool-using agents</label>
+          <label><input type="checkbox" name="course" value="LLM Application Development"> LLM application development: RAG, prompts, evals, from zero</label>
+          <label><input type="checkbox" name="course" value="AI Security and Red Teaming"> AI security and red teaming, in depth</label>
+          <label><input type="checkbox" name="course" value="Data Engineering"> Data engineering: pipelines, quality, and validation</label>
+        </div>
+        <button class="btn primary" type="submit">Notify me first</button>
+        <p class="fine">Your email is used only to tell you when a course you ticked launches. Reply to any message to be removed.</p>
+      </form>
+    </div>
   </section>
 
   <section class="final" id="enrol">
@@ -482,7 +524,7 @@
     <h2>Twenty-three weeks from "it seems fine" to "85%, interval 77 to 91, above threshold, here are the three that failed."</h2>
     <p class="lede">That sentence is the job. This is the course that gets you to it.</p>
     <div class="cta-row">
-      <a class="btn primary" href="#pricing">Get the course</a>
+      <a class="btn primary" href="#pricing">Buy the course · ₹1,499</a>
       <a class="btn ghost" href="syllabus.html">Read the syllabus first</a>
     </div>
   </section>
@@ -537,17 +579,20 @@
     : `<div class="video"><div class="soon"><div><b>${v.title}</b><span>video ${i + 1} · coming soon</span></div></div></div>`
   ).join('');
 
-  // Gumroad checkout: paste the product URLs here. Until then the buttons fall back to email.
-  const GUMROAD = { pack: "", feedback: "" };
-  const FALLBACK = { pack: "mailto:chandruss93@gmail.com?subject=Zero%20to%20AI%20Tester%20%E2%80%93%20course%20pack",
-                     feedback: "mailto:chandruss93@gmail.com?subject=Zero%20to%20AI%20Tester%20%E2%80%93%20pack%20with%20feedback" };
+  // Gumroad checkout. The overlay script opens checkout in a panel without leaving the page.
+  const GUMROAD = { pack: "https://chandirakumar.gumroad.com/l/mwxww" };
   document.querySelectorAll('[data-product]').forEach((a) => {
     const key = a.dataset.product;
     if (GUMROAD[key]) { a.href = GUMROAD[key]; a.classList.add('gumroad-button'); }
-    else { a.href = FALLBACK[key]; }
   });
   if (Object.values(GUMROAD).some(Boolean)) {
     const s = document.createElement('script'); s.src = 'https://gumroad.com/js/gumroad.js'; s.defer = true; document.body.appendChild(s);
+  }
+
+  // After the interest form submits, the relay redirects back here with ?interest=thanks.
+  if (new URLSearchParams(location.search).get('interest') === 'thanks') {
+    const form = document.getElementById('interest-form');
+    form.innerHTML = '<div class="thanks">Thank you. You will hear from me once, when a course you ticked is ready.</div>';
   }
 </script>
 </body>
