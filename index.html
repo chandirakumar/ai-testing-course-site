@@ -454,7 +454,7 @@
   <section id="pricing">
     <div class="eyebrow">Pricing</div>
     <h2>One price. Everything included. Yours to keep.</h2>
-    <p class="lede">You pay once on Gumroad and the complete course arrives by email within a minute, as a pack you open in your browser. No subscription, no schedule, no expiry. Work through it at seven hours a week or seven hours a month; it waits.</p>
+    <p class="lede">You pay once, by UPI or card, and the complete course arrives by email within a minute, as a pack you open in your browser. No subscription, no schedule, no expiry. Work through it at seven hours a week or seven hours a month; it waits.</p>
     <div class="tiers one">
       <div class="tier featured">
         <span class="eyebrow">Zero to AI Tester · complete course</span>
@@ -479,7 +479,7 @@
   <section id="faq" class="faq">
     <div class="eyebrow">Questions</div>
     <h2>Things people ask before enrolling.</h2>
-    <details><summary>How is the course delivered?</summary><p>As a pack of web pages. Gumroad emails you the download within a minute of paying. Unzip it, open the start page in any browser, and every module, lab, answer key, and template is there, offline, forever. When a tool changes and a lesson is updated, you get an email with the new pack at no charge.</p></details>
+    <details><summary>How is the course delivered?</summary><p>As a pack of web pages. You get the download link by email within a minute of paying. Unzip it, open the start page in any browser, and every module, lab, answer key, and template is there, offline, forever. When a tool changes and a lesson is updated, you get an email with the new pack at no charge.</p></details>
     <details><summary>I have never written code. Can I really do this?</summary><p>Yes, and the course is built for exactly that. Module 2 is three weeks of Python from the first line, with every example about testing. It is the hardest part and the place people quit, so it is paced to be finishable, and every lesson ends with something that runs. You will be reading and writing test code by week four and driving a browser by week six.</p></details>
     <details><summary>How much time does it really take?</summary><p>About seven hours a week for twenty-three weeks: two weekday evenings of lessons and one weekend block for the lab. First-time coders usually spend a third longer on the labs in Modules 2 to 4, and the pace allows for that. If you already know Python, skip Modules 2 and 3 and finish in about nineteen weeks.</p></details>
     <details><summary>What does it cost beyond the course?</summary><p>An API key from the model provider with a small prepaid credit. The whole course, including the evaluation labs and the capstone, runs on under ten dollars of it, and every script prints its cost so there are no surprises. Everything else is free and open source: Python, pytest, Playwright, promptfoo, DeepEval, Langfuse's free tier.</p></details>
@@ -579,15 +579,10 @@
     : `<div class="video"><div class="soon"><div><b>${v.title}</b><span>video ${i + 1} · coming soon</span></div></div></div>`
   ).join('');
 
-  // Gumroad checkout. The overlay script opens checkout in a panel without leaving the page.
-  const GUMROAD = { pack: "https://chandirakumar.gumroad.com/l/mwxww" };
-  document.querySelectorAll('[data-product]').forEach((a) => {
-    const key = a.dataset.product;
-    if (GUMROAD[key]) { a.href = GUMROAD[key]; a.classList.add('gumroad-button'); }
-  });
-  if (Object.values(GUMROAD).some(Boolean)) {
-    const s = document.createElement('script'); s.src = 'https://gumroad.com/js/gumroad.js'; s.defer = true; document.body.appendChild(s);
-  }
+  // Checkout link. Paste the product URL from the payment platform here. Empty = email fallback.
+  const CHECKOUT = "";
+  const FALLBACK = "mailto:chandruss93@gmail.com?subject=Zero%20to%20AI%20Tester%20%E2%80%93%20buy%20the%20course";
+  document.querySelectorAll('[data-product]').forEach((a) => { a.href = CHECKOUT || FALLBACK; });
 
   // After the interest form submits, the relay redirects back here with ?interest=thanks.
   if (new URLSearchParams(location.search).get('interest') === 'thanks') {
