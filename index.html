@@ -580,7 +580,7 @@
   ).join('');
 
   // Checkout link. Paste the product URL from the payment platform here. Empty = email fallback.
-  const CHECKOUT = "";
+  const CHECKOUT = "https://playto.so/p/chandirakumar/zero-to-ai-tester";
   const FALLBACK = "mailto:chandruss93@gmail.com?subject=Zero%20to%20AI%20Tester%20%E2%80%93%20buy%20the%20course";
   document.querySelectorAll('[data-product]').forEach((a) => { a.href = CHECKOUT || FALLBACK; });
 
