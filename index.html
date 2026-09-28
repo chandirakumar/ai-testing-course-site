@@ -121,6 +121,19 @@
   .market td.num { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 13.5px; white-space: nowrap; color: var(--ink); }
   .market .fine { margin-top: 16px; font-size: 13px; color: var(--muted); max-width: 80ch; }
   .market .fine a { color: var(--muted); }
+  @media (max-width: 700px) {
+    .market .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 18px; }
+    .market .fact .n { font-size: 26px; }
+    .market .tbl { border: 0; background: transparent; overflow: visible; }
+    .market table, .market tbody, .market tr, .market td { display: block; min-width: 0; }
+    .market thead { display: none; }
+    .market tr { background: var(--panel); border: 1px solid var(--rule); padding: 14px 16px 6px; margin-bottom: 12px; }
+    .market td { padding: 6px 0 10px; border-bottom: 0; }
+    .market td:first-child { font-size: 16px; padding-top: 0; padding-bottom: 8px; border-bottom: 1px solid var(--rule-2); margin-bottom: 4px; }
+    .market td.num, .market td[data-label]:not(.num) { padding-left: 0; }
+    .market td[data-label]:not(:first-child)::before { content: attr(data-label); display: block; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+    .market td.num { white-space: normal; }
+  }
 
   /* portfolio */
   .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 36px; }
@@ -340,12 +353,12 @@
       <table>
         <thead><tr><th>Role</th><th>India, per year</th><th>United States</th><th>What gets you there</th></tr></thead>
         <tbody>
-          <tr class="you"><td>Manual / functional QA</td><td class="num">₹3–7 L<span class="sub">₹14–20 L at lead level</span></td><td class="num">$55–110k</td><td>Your starting point. Test design, exploration, and defect reporting all carry over.</td></tr>
-          <tr><td>SDET / automation engineer</td><td class="num">₹10–28 L<span class="sub">₹30–55 L at product companies</span></td><td class="num">$95–195k</td><td>Stage A: Python, pytest, Playwright, CI.</td></tr>
-          <tr><td>AI Test Engineer / AI Quality Engineer</td><td class="num">20–35% above SDET<span class="sub">₹42–65 L reported for specialists</span></td><td class="num">$180–240k</td><td>Stages A to C: eval suites, golden sets, rubrics, judges, a gate in CI.</td></tr>
-          <tr><td>LLM Evaluation Engineer</td><td class="num">₹15–40 L+</td><td class="num">$160k average</td><td>Modules 7 and 8: promptfoo, DeepEval, RAGAS, Langfuse, retrieval and agent testing.</td></tr>
-          <tr><td>AI Red Team Analyst</td><td class="num">₹22–50 L<span class="sub">₹50–80 L at lead level</span></td><td class="num">$80–220k</td><td>Module 9: prompt injection, leakage, guardrails, OWASP LLM Top 10, PyRIT and Garak.</td></tr>
-          <tr><td>Prompt QA / prompt engineer</td><td class="num">₹4.6–6 L average<span class="sub">₹25–60 L when paired with code</span></td><td class="num">$100k+</td><td>Module 6, plus Stage A. Prompting without code is the one path that plateaus.</td></tr>
+          <tr class="you"><td data-label="Role">Manual / functional QA</td><td class="num" data-label="India, per year">₹3–7 L<span class="sub">₹14–20 L at lead level</span></td><td class="num" data-label="United States">$55–110k</td><td data-label="What gets you there">Your starting point. Test design, exploration, and defect reporting all carry over.</td></tr>
+          <tr><td data-label="Role">SDET / automation engineer</td><td class="num" data-label="India, per year">₹10–28 L<span class="sub">₹30–55 L at product companies</span></td><td class="num" data-label="United States">$95–195k</td><td data-label="What gets you there">Stage A: Python, pytest, Playwright, CI.</td></tr>
+          <tr><td data-label="Role">AI Test Engineer / AI Quality Engineer</td><td class="num" data-label="India, per year">20–35% above SDET<span class="sub">₹42–65 L reported for specialists</span></td><td class="num" data-label="United States">$180–240k</td><td data-label="What gets you there">Stages A to C: eval suites, golden sets, rubrics, judges, a gate in CI.</td></tr>
+          <tr><td data-label="Role">LLM Evaluation Engineer</td><td class="num" data-label="India, per year">₹15–40 L+</td><td class="num" data-label="United States">$160k average</td><td data-label="What gets you there">Modules 7 and 8: promptfoo, DeepEval, RAGAS, Langfuse, retrieval and agent testing.</td></tr>
+          <tr><td data-label="Role">AI Red Team Analyst</td><td class="num" data-label="India, per year">₹22–50 L<span class="sub">₹50–80 L at lead level</span></td><td class="num" data-label="United States">$80–220k</td><td data-label="What gets you there">Module 9: prompt injection, leakage, guardrails, OWASP LLM Top 10, PyRIT and Garak.</td></tr>
+          <tr><td data-label="Role">Prompt QA / prompt engineer</td><td class="num" data-label="India, per year">₹4.6–6 L average<span class="sub">₹25–60 L when paired with code</span></td><td class="num" data-label="United States">$100k+</td><td data-label="What gets you there">Module 6, plus Stage A. Prompting without code is the one path that plateaus.</td></tr>
         </tbody>
       </table>
     </div>
