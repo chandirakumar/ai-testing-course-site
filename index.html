@@ -135,6 +135,50 @@
     .market td.num { white-space: normal; }
   }
 
+  /* problem: today vs AI */
+  .shift { display: grid; grid-template-columns: minmax(0, .8fr) auto minmax(0, 1.2fr); gap: 24px; align-items: center; margin-top: 34px; background: var(--panel); border: 1px solid var(--rule); padding: 24px 26px; }
+  .shift .eyebrow { display: block; margin-bottom: 12px; }
+  .shift p { font-size: 14px; color: var(--ink-2); margin: 10px 0 0; }
+  .shift-arrow { font-size: 34px; color: var(--muted); }
+  .verdict { display: flex; align-items: center; gap: 12px; font-size: 16px; }
+  .verdict .tick { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--pass); color: #fff; font-weight: 700; flex: none; }
+  .verdict b { color: var(--pass); }
+  .meter { margin: 0; }
+  .meter svg { display: block; width: 100%; height: auto; max-width: 520px; }
+  .meter figcaption { font-size: 14px; color: var(--ink-2); margin-top: 6px; }
+  .meter .fail { color: var(--fail); }
+  .three.compact { margin-top: 28px; }
+  .three.compact p { font-size: 14.5px; }
+  @media (max-width: 700px) { .shift { grid-template-columns: 1fr; } .shift-arrow { transform: rotate(90deg); text-align: center; } }
+
+  .salary { margin: 30px 0 0; }
+  .salary svg { display: block; width: 100%; height: auto; }
+  .salary figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  .market details { margin-top: 18px; border-top: 1px solid var(--rule); }
+  .market summary { cursor: pointer; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 15px; padding: 14px 0; list-style: none; }
+  .market summary::-webkit-details-marker { display: none; }
+  .market summary::before { content: "+ "; color: var(--muted); }
+  .market details[open] summary::before { content: "– "; }
+  .market details .tbl { margin-top: 0; }
+  @media (max-width: 700px) { .salary { overflow-x: auto; } .salary svg { min-width: 720px; } }
+
+  .weeks { margin: 28px 0 0; }
+  .weeks svg { display: block; width: 100%; height: auto; }
+  @media (max-width: 600px) { .weeks svg text { font-size: 15px; } }
+
+  .steps { list-style: none; padding: 0; margin: 36px 0 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; counter-reset: none; }
+  .steps li { position: relative; background: var(--panel); border: 1px solid var(--rule); padding: 18px 16px 14px; }
+  .steps li::after { content: "→"; position: absolute; right: -14px; top: 22px; color: var(--muted); font-size: 16px; background: var(--ground); padding: 0 2px; }
+  .steps li:last-child::after { content: none; }
+  .steps .n { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: var(--ground); font-family: "Archivo", sans-serif; font-weight: 800; font-size: 14px; margin-bottom: 10px; }
+  .steps b { display: block; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+  .steps p { font-size: 13.5px; color: var(--ink-2); margin: 0; }
+  @media (max-width: 960px) { .steps { grid-template-columns: 1fr 1fr 1fr; } .steps li::after { content: none; } }
+  @media (max-width: 600px) { .steps { grid-template-columns: 1fr; } }
+
+  .app-facts { margin-top: 6px; padding-top: 0; border-top: 0; gap: 22px 36px; margin-bottom: 16px; }
+  .app-facts .fact .n { color: var(--signal); }
+
   /* portfolio */
   .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 36px; }
   .card { background: var(--panel); border: 1px solid var(--rule); padding: 22px 22px 18px; display: flex; flex-direction: column; gap: 8px; }
@@ -322,33 +366,51 @@
   <section id="problem">
     <div class="eyebrow">Why now</div>
     <h2>Your test cases still work. Your job title is about to change.</h2>
-    <p class="lede">Every team is putting a language model in front of customers, and every one of them is discovering that "run the test case and compare" does not apply. They need someone who can design an oracle for an answer that is never the same twice. That someone is a tester who has learned six new things, not a data scientist who has learned testing.</p>
-    <div class="three">
-      <div class="col">
-        <h3>What you do today</h3>
-        <p>Design cases from requirements. Hunt edge cases. Explore. Write defect reports a developer can act on. Argue about severity. Decide what "done" means.</p>
+    <p class="lede">Every team is putting an AI assistant in front of customers. None of them can test it the old way, because the same question gets a different answer each time. They need a tester who can measure that. Not a data scientist.</p>
+    <div class="shift">
+      <div class="shift-col">
+        <span class="eyebrow">Testing today</span>
+        <div class="verdict"><span class="tick">✓</span><span>Run the case once. Compare. <b>PASS</b>.</span></div>
+        <p>One input, one expected result, one answer.</p>
       </div>
-      <div class="col signal">
-        <h3>What AI teams need</h3>
-        <p>Exactly that, applied to a system whose output varies: golden datasets, rubrics, judges calibrated against humans, pass rates with intervals, retrieval and agent testing, red-teaming, and a gate in CI.</p>
+      <div class="shift-arrow" aria-hidden="true">→</div>
+      <div class="shift-col">
+        <span class="eyebrow">Testing an AI product</span>
+        <figure class="meter">
+          <svg viewBox="0 0 520 96" role="img" aria-label="A pass rate of 85 percent measured over 48 runs, with a plausible range from 77 to 91 percent, sits below the 90 percent threshold the team agreed, so the release fails." xmlns="http://www.w3.org/2000/svg">
+            <line x1="20" y1="48" x2="500" y2="48" style="stroke:var(--rule);stroke-width:10;stroke-linecap:round"/>
+            <line x1="389.6" y1="48" x2="456.8" y2="48" style="stroke:var(--accent);stroke-opacity:.28;stroke-width:10;stroke-linecap:round"><title>Plausible true rate: 77% to 91%</title></line>
+            <circle cx="428" cy="48" r="7" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"><title>Observed: 41 of 48 passed = 85%</title></circle>
+            <line x1="452" y1="26" x2="452" y2="70" style="stroke:var(--signal);stroke-width:2;stroke-dasharray:4 3"><title>Threshold the product owner signed: 90%</title></line>
+            <text x="20" y="86" font-size="11" style="fill:var(--muted)">0%</text>
+            <text x="260" y="86" font-size="11" text-anchor="middle" style="fill:var(--muted)">50%</text>
+            <text x="500" y="86" font-size="11" text-anchor="end" style="fill:var(--muted)">100%</text>
+            <text x="440" y="22" font-size="12.5" text-anchor="end" style="fill:var(--ink);font-weight:600">85% · range 77–91</text>
+            <text x="459" y="22" font-size="11.5" text-anchor="start" style="fill:var(--signal);font-weight:600">min 90</text>
+          </svg>
+          <figcaption>Run it 48 times. Report the rate, the range, and the threshold. <b class="fail">Below threshold: not ready.</b></figcaption>
+        </figure>
       </div>
-      <div class="col">
-        <h3>The gap, honestly</h3>
-        <p>Enough Python to run the tools. Enough statistics to know what twenty runs can and cannot tell you. The vocabulary. And a portfolio that proves it. That is the whole course.</p>
-      </div>
+    </div>
+    <div class="three compact">
+      <div class="col"><h3>What you keep</h3><p>Test design, exploration, bug reports, judgment about severity.</p></div>
+      <div class="col signal"><h3>What you add</h3><p>Enough Python to run the tools, enough statistics to trust a number, and the new failure types.</p></div>
+      <div class="col"><h3>What you get</h3><p>A portfolio that proves it, and a title with "AI" in it.</p></div>
     </div>
   </section>
 
   <section id="market" class="market">
     <div class="eyebrow">The market · September 2026</div>
     <h2>The roles exist, they are hiring in India, and they pay more than the one you have.</h2>
-    <p class="lede">Dedicated AI-testing titles are still a small slice of all QA postings, but they are the fastest-growing slice and the best paid. Most of the demand shows up as SDET and QA roles that now list LLM, RAG, agent, or evaluation skills as requirements. Those are the skills in Stages A to C.</p>
+    <p class="lede">AI-testing titles are still a small slice of QA jobs, but the fastest-growing and best-paid slice. Most of the demand hides inside SDET and QA roles that now ask for LLM, RAG, or evaluation skills. Those are Stages A to C.</p>
     <div class="facts">
       <div class="fact"><div class="n">10,000+</div><div class="l">"AI testing" listings on LinkedIn India, and as many again in the US</div></div>
       <div class="fact"><div class="n">34%</div><div class="l">of QA job posts now mention AI, up from 9% in 2024</div></div>
       <div class="fact"><div class="n">+49%</div><div class="l">median pay for QA roles that ask for LLM or agent skills versus those that do not (US)</div></div>
       <div class="fact"><div class="n">1.5× to 3×</div><div class="l">what an AI-testing role pays in India compared with the manual-QA band</div></div>
     </div>
+    <figure class="salary"><svg viewBox="0 0 900 334" role="img" aria-label="Pay bands per year in India for six roles: manual QA 3 to 7 lakh, SDET 10 to 28 and up to 55 at product companies, AI test engineer 12 to 38 and 42 to 65 for specialists, LLM evaluation engineer 15 to 40, AI red team analyst 22 to 50 and up to 80 at lead level, prompt QA 4.6 to 6 and 25 to 60 with code." xmlns="http://www.w3.org/2000/svg"><line x1="270.0" y1="14" x2="270.0" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="270.0" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹0 L</text><line x1="422.5" y1="14" x2="422.5" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="422.5" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹20 L</text><line x1="575.0" y1="14" x2="575.0" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="575.0" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹40 L</text><line x1="727.5" y1="14" x2="727.5" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="727.5" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹60 L</text><line x1="880.0" y1="14" x2="880.0" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="880.0" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹80 L</text><text x="256" y="39" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">Manual / functional QA</text><text x="256" y="55" font-size="11" text-anchor="end" style="fill:var(--muted)">where you are now</text><rect x="376.8" y="27" width="45.8" height="14" rx="4" style="fill:var(--muted);fill-opacity:.14;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:3 3"><title>Manual / functional QA: up to ₹20 L at lead level</title></rect><rect x="292.9" y="27" width="30.5" height="14" rx="4" style="fill:var(--muted)"><title>Manual / functional QA: typical ₹3–7 L per year</title></rect><text x="430.5" y="38" font-size="11.5" style="fill:var(--ink-2)">₹3–7 L · up to ₹20 L at lead level</text><text x="256" y="83" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">SDET / automation engineer</text><rect x="498.8" y="71" width="190.6" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>SDET / automation engineer: ₹30–55 L at product companies</title></rect><rect x="346.2" y="71" width="137.2" height="14" rx="4" style="fill:var(--accent)"><title>SDET / automation engineer: typical ₹10–28 L per year</title></rect><text x="256" y="127" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">AI Test / AI Quality Engineer</text><rect x="590.2" y="115" width="175.4" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>AI Test / AI Quality Engineer: ₹42–65 L reported for specialists</title></rect><rect x="361.5" y="115" width="198.2" height="14" rx="4" style="fill:var(--accent)"><title>AI Test / AI Quality Engineer: typical ₹12–38 L per year</title></rect><text x="256" y="171" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">LLM Evaluation Engineer</text><rect x="384.4" y="159" width="190.6" height="14" rx="4" style="fill:var(--accent)"><title>LLM Evaluation Engineer: typical ₹15–40 L per year</title></rect><text x="256" y="215" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">AI Red Team Analyst</text><rect x="651.2" y="203" width="228.8" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>AI Red Team Analyst: ₹50–80 L at lead level</title></rect><rect x="437.8" y="203" width="213.5" height="14" rx="4" style="fill:var(--accent)"><title>AI Red Team Analyst: typical ₹22–50 L per year</title></rect><text x="256" y="259" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">Prompt QA / prompt engineer</text><rect x="460.6" y="247" width="266.9" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>Prompt QA / prompt engineer: ₹25–60 L only when paired with code</title></rect><rect x="305.1" y="247" width="10.7" height="14" rx="4" style="fill:var(--accent)"><title>Prompt QA / prompt engineer: typical ₹4.6–6 L per year</title></rect><text x="346.2" y="100" font-size="11.5" style="fill:var(--ink-2)">₹10–28 L · ₹30–55 L at product companies</text><text x="361.5" y="144" font-size="11.5" style="fill:var(--ink-2)">₹12–38 L · ₹42–65 L reported for specialists</text><text x="384.4" y="188" font-size="11.5" style="fill:var(--ink-2)">₹15–40 L</text><text x="437.8" y="232" font-size="11.5" style="fill:var(--ink-2)">₹22–50 L · ₹50–80 L at lead level</text><text x="305.1" y="276" font-size="11.5" style="fill:var(--ink-2)">₹4.6–6 L · ₹25–60 L only when paired with code</text><rect x="270" y="310" width="22" height="12" rx="3" style="fill:var(--accent)"/><text x="300" y="320" font-size="11.5" style="fill:var(--ink-2)">typical band</text><rect x="400" y="310" width="22" height="12" rx="3" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"/><text x="430" y="320" font-size="11.5" style="fill:var(--ink-2)">senior, product company, or specialist</text><rect x="690" y="310" width="22" height="12" rx="3" style="fill:var(--muted)"/><text x="720" y="320" font-size="11.5" style="fill:var(--ink-2)">where you are now</text></svg><figcaption>India, per year, September 2026. Hover a bar for the detail. The full table with US figures is below.</figcaption></figure>
+    <details><summary>Full table: India and US pay, and what gets you there</summary>
     <div class="tbl">
       <table>
         <thead><tr><th>Role</th><th>India, per year</th><th>United States</th><th>What gets you there</th></tr></thead>
@@ -362,6 +424,7 @@
         </tbody>
       </table>
     </div>
+    </details>
     <p class="fine">Compiled 28 September 2026 from LinkedIn, Indeed, and Glassdoor listings and three 2026 QA market reports (<a href="https://softwaretestpilot.com/qa-job-market-report" rel="noopener">SoftwareTestPilot</a>, <a href="https://interviewstack.io/blog/how-ai-is-changing-qa-engineer-2026" rel="noopener">InterviewStack</a>, <a href="https://scrolltest.com/test-automation-india-2026-salary-hiring-trends/" rel="noopener">ScrollTest</a>) and the <a href="https://www.knowledgehut.com/blog/security/ai-red-teamer-salary" rel="noopener">KnowledgeHut</a> red-team salary guide. These are ranges, not promises: product companies in Bengaluru and Hyderabad pay at the top of each band, services firms at the bottom, and the AI-specialist figures rest on a few hundred salary reports. No course can guarantee a salary.</p>
   </section>
 
@@ -370,12 +433,12 @@
     <h2>You leave with proof, not a certificate.</h2>
     <p class="lede">Every module ends with something in your GitHub repository that a hiring manager can open, run, and read. These are the ones interviews are built around.</p>
     <div class="grid">
-      <div class="card"><span class="eyebrow">Module 4</span><h3>A browser suite that runs green in CI</h3><p>Ten Playwright tests with page objects against a live demo shop, twenty consecutive green runs, traces uploaded on failure, and three product defects documented from the evidence.</p><div class="proof">proof: workflow badge · test-results/ · README defects table</div></div>
-      <div class="card"><span class="eyebrow">Module 5</span><h3>A variance report</h3><p>One support-bot prompt, twenty runs, five property checks, a generated summary table, and a page of analysis proposing thresholds a product owner could sign.</p><div class="proof">proof: results.csv · report.md · your thresholds</div></div>
-      <div class="card"><span class="eyebrow">Module 7</span><h3>An evaluation suite with a gate</h3><p>A 40-row golden set, deterministic checks, a rubric judge calibrated against human grading, per-category thresholds with confidence intervals, and a pull-request gate plus a nightly drift run.</p><div class="proof">proof: gate output · promptfoo grid · calibration table</div></div>
-      <div class="card"><span class="eyebrow">Module 8</span><h3>A RAG and agent test plan, executed</h3><p>Retrieval measured with no model at all, grounding checked claim by claim, scripted conversations, and trajectory tests that catch a destructive tool call before it happens.</p><div class="proof">proof: sweep table · test_agent_trajectories.py · findings</div></div>
-      <div class="card"><span class="eyebrow">Module 9</span><h3>A red-team report</h3><p>A threat model, a 30-case adversarial set across the OWASP LLM Top 10, an automated sweep, an hour of manual depth, and findings with severities, rates, and retest results.</p><div class="proof">proof: REDTEAM_REPORT.md · evidence/ · retest table</div></div>
-      <div class="card"><span class="eyebrow">Module 11</span><h3>A release assessment, on video</h3><p>The capstone: strategy, full suite in CI, red-team, a two-page executive summary with a go or no-go, and a ten-minute recorded walkthrough of your own work.</p><div class="proof">proof: demo.mp4 · EXECUTIVE_SUMMARY.md · 12 defects</div></div>
+      <div class="card"><span class="eyebrow">Module 4</span><h3>A browser suite that runs green in CI</h3><p>Ten Playwright tests against a live demo shop, twenty green runs in a row, three real defects documented.</p><div class="proof">proof: workflow badge · test-results/ · README defects table</div></div>
+      <div class="card"><span class="eyebrow">Module 5</span><h3>A variance report</h3><p>One chatbot question, twenty runs, a table of what varied, and thresholds a product owner could sign.</p><div class="proof">proof: results.csv · report.md · your thresholds</div></div>
+      <div class="card"><span class="eyebrow">Module 7</span><h3>An evaluation suite with a gate</h3><p>A 40-question golden set, a judge you calibrated by hand, and a gate that blocks a bad change from merging.</p><div class="proof">proof: gate output · promptfoo grid · calibration table</div></div>
+      <div class="card"><span class="eyebrow">Module 8</span><h3>A RAG and agent test plan, executed</h3><p>Retrieval measured on its own, answers checked claim by claim, and a test that catches a destructive action before it happens.</p><div class="proof">proof: sweep table · test_agent_trajectories.py · findings</div></div>
+      <div class="card"><span class="eyebrow">Module 9</span><h3>A red-team report</h3><p>Thirty attack cases across the OWASP LLM Top 10, an automated sweep, and findings with severities and retests.</p><div class="proof">proof: REDTEAM_REPORT.md · evidence/ · retest table</div></div>
+      <div class="card"><span class="eyebrow">Module 11</span><h3>A release assessment, on video</h3><p>The capstone: full suite in CI, red-team, a two-page go or no-go, and a ten-minute recorded walkthrough.</p><div class="proof">proof: demo.mp4 · EXECUTIVE_SUMMARY.md · 12 defects</div></div>
     </div>
   </section>
 
@@ -384,9 +447,13 @@
       <div>
         <div class="eyebrow">The practice product</div>
         <h2>You test a real, deliberately broken AI product.</h2>
-        <p class="lede">Harbour View Hotel has a support bot that answers policy questions from a document, and a concierge agent that can look up, check, and cancel bookings. Both are built in the course from parts you write yourself, so you understand every line. Both have defects planted in them.</p>
-        <p>Six in the bot. Four in the agent. Two more in the release candidate you assess in the capstone. You get the code. You do not get the list. Your evaluation suite has to find them, and the reveal at the end shows your pass rates moving as each one is switched off.</p>
-        <p>Nothing is simulated with slides. The bot calls a real model. The agent's cancel tool really deletes, on a sandbox API built for testing, on bookings you created.</p>
+        <p class="lede">Harbour View Hotel has a support bot that answers policy questions and a concierge agent that can cancel bookings. You build both from parts you write yourself, so you understand every line.</p>
+        <div class="facts app-facts">
+          <div class="fact"><div class="n">6</div><div class="l">defects hidden in the bot</div></div>
+          <div class="fact"><div class="n">4</div><div class="l">in the agent</div></div>
+          <div class="fact"><div class="n">2</div><div class="l">in the release candidate</div></div>
+        </div>
+        <p>You get the code. You do not get the list. Your evaluation suite has to find them, and the reveal at the end shows your pass rates moving as each one is switched off.</p>
       </div>
       <div class="defects">
         <div class="h"><span>planted defects</span><span>12 total</span></div>
@@ -410,7 +477,8 @@
   <section id="curriculum">
     <div class="eyebrow">Curriculum</div>
     <h2>Four stages. The hard part is in the middle, and we say so.</h2>
-    <p class="lede">Stage A has no AI in it on purpose: seven weeks of foundations so that every tool in Stage C is something you can run and read. Learners who already write Python skip Modules 2 and 3 and finish in about nineteen weeks.</p>
+    <p class="lede">Stage A has no AI in it on purpose: seven weeks of foundations so every tool later is something you can run and read. Already write Python? Skip Modules 2 and 3 and finish in nineteen weeks.</p>
+    <figure class="weeks"><svg viewBox="0 0 900 78" role="img" aria-label="Twenty-three weeks in four stages: A foundations seven weeks, B AI fundamentals four weeks, C testing AI systems eight weeks, D capstone and career four weeks." xmlns="http://www.w3.org/2000/svg"><rect x="1.0" y="0" width="271.9" height="34" rx="4" style="fill:#1F6FB5"><title>Stage A · Foundations · 7 weeks · 55 hours</title></rect><text x="12.0" y="22" font-size="13" style="fill:#fff;font-weight:700">A</text><text x="137.0" y="56" font-size="12" text-anchor="middle" style="fill:var(--ink);font-weight:600">Foundations</text><text x="137.0" y="72" font-size="11" text-anchor="middle" style="fill:var(--muted)">7 weeks · 55 h</text><rect x="274.9" y="0" width="154.5" height="34" rx="4" style="fill:#1E9E6A"><title>Stage B · AI fundamentals · 4 weeks · 28 hours</title></rect><text x="285.9" y="22" font-size="13" style="fill:#fff;font-weight:700">B</text><text x="352.2" y="56" font-size="12" text-anchor="middle" style="fill:var(--ink);font-weight:600">AI fundamentals</text><text x="352.2" y="72" font-size="11" text-anchor="middle" style="fill:var(--muted)">4 weeks · 28 h</text><rect x="431.4" y="0" width="311.0" height="34" rx="4" style="fill:#E8641B"><title>Stage C · Testing AI systems · 8 weeks · 54 hours</title></rect><text x="442.4" y="22" font-size="13" style="fill:#fff;font-weight:700">C</text><text x="587.0" y="56" font-size="12" text-anchor="middle" style="fill:var(--ink);font-weight:600">Testing AI systems</text><text x="587.0" y="72" font-size="11" text-anchor="middle" style="fill:var(--muted)">8 weeks · 54 h</text><rect x="744.5" y="0" width="154.5" height="34" rx="4" style="fill:#8A4FBF"><title>Stage D · Capstone & career · 4 weeks · 30 hours</title></rect><text x="755.5" y="22" font-size="13" style="fill:#fff;font-weight:700">D</text><text x="821.7" y="56" font-size="12" text-anchor="middle" style="fill:var(--ink);font-weight:600">Capstone & career</text><text x="821.7" y="72" font-size="11" text-anchor="middle" style="fill:var(--muted)">4 weeks · 30 h</text></svg></figure>
     <div class="stages">
       <div class="stage">
         <span class="eyebrow">Stage A · Weeks 1 to 7</span>
@@ -460,14 +528,14 @@
   <section id="method">
     <div class="eyebrow">How it is taught</div>
     <h2>Type the code. Run it. Find the bug. Write it up.</h2>
-    <p class="lede">Every lesson has the same five parts, so you always know what done looks like. Tools change every six months; the course teaches the principle first and the tool second, and the tool lessons are re-recorded when they break.</p>
-    <div class="method">
-      <div><b>Objectives</b><p>Two to four outcomes you can be tested on.</p></div>
-      <div><b>Student material</b><p>Real, runnable code in every lesson, verified before it ships to you.</p></div>
-      <div><b>Checkpoints</b><p>Three questions and an answer key, every lesson.</p></div>
-      <div><b>Labs with a rubric</b><p>A definition of done and points, not "looks good".</p></div>
-      <div><b>Cost shown</b><p>Every model call prints its tokens and its price. The whole course costs under ten dollars in API credit.</p></div>
-    </div>
+    <p class="lede">Every lesson has the same five parts, so you always know what "done" looks like.</p>
+    <ol class="steps">
+      <li><span class="n">1</span><b>Objectives</b><p>Two to four things you can be tested on.</p></li>
+      <li><span class="n">2</span><b>Real code</b><p>Runnable in every lesson, checked before it ships.</p></li>
+      <li><span class="n">3</span><b>Checkpoint</b><p>Three questions and an answer key.</p></li>
+      <li><span class="n">4</span><b>Lab with a rubric</b><p>A definition of done and points.</p></li>
+      <li><span class="n">5</span><b>Cost shown</b><p>Every AI call prints its price. Under $10 for the whole course.</p></li>
+    </ol>
   </section>
 
   <section id="who">
@@ -500,8 +568,7 @@
     <div class="instr">
       <div class="photo monogram" aria-hidden="true">C</div>
       <div>
-        <p class="lede">Chandru builds and tests software products, and wrote every lesson, lab, and line of practice code in Zero to AI Tester. The course is the path Chandru wanted and could not find: one that starts at the terminal and ends at a release assessment.</p>
-        <p>The practice product in this course, a hotel support bot and a booking agent with twelve planted defects, was built and broken deliberately so that learners find real bugs with real evaluation suites instead of watching slides. The first eval run against it fails three of five categories and one safety check, and finding out why is the job the course trains you for.</p>
+        <p class="lede">Chandru builds and tests software products, and wrote every lesson, lab, and line of practice code in Zero to AI Tester. It is the path Chandru wanted and could not find: one that starts at the terminal and ends at a release assessment.</p>
         <p>Built for testers who are told AI will replace them, by someone who thinks the opposite: the people who already know how to design a test are the people AI teams need most.</p>
       </div>
     </div>
@@ -510,7 +577,7 @@
   <section id="pricing">
     <div class="eyebrow">Pricing</div>
     <h2>One price. Everything included. Yours to keep.</h2>
-    <p class="lede">You pay once, by UPI or card, and the complete course arrives by email within a minute, as a pack you open in your browser. No subscription, no schedule, no expiry. Work through it at seven hours a week or seven hours a month; it waits.</p>
+    <p class="lede">Pay once by UPI or card. The whole course arrives by email within a minute, as pages you open in your browser. No subscription, no schedule, no expiry.</p>
     <div class="tiers one">
       <div class="tier featured">
         <span class="eyebrow">Zero to AI Tester · complete course</span>
@@ -551,7 +618,7 @@
     <h2>Tell me which course you want next.</h2>
     <div class="interest">
       <div>
-        <p class="lede">Zero to AI Tester is the first. The next courses are being planned in the same style: from zero, with real code, a broken practice product, and a portfolio at the end. Leave your email and tick what you would buy, and you will hear first when one is ready, with an early price.</p>
+        <p class="lede">More courses are planned in the same style: from zero, real code, a broken practice product, a portfolio at the end. Tick what you would buy and you hear first, with an early price.</p>
         <p>No newsletter, no weekly emails. One message when a course you ticked launches, and nothing else.</p>
       </div>
       <form action="https://formsubmit.co/chandruss93@gmail.com" method="POST" id="interest-form">
