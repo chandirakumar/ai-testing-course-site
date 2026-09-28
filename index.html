@@ -71,12 +71,15 @@
   nav ul a:hover { color: var(--ink); }
 
   /* hero */
-  .hero { padding: 48px 0 96px; border-top: 0; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr); gap: 56px; align-items: center; }
+  .hero { padding: 48px 0 96px; border-top: 0; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr); gap: 56px 56px; align-items: center; }
+  .hero .plain { grid-column: 2; margin: -34px 0 0; font-size: 14.5px; color: var(--ink-2); max-width: none; }
+  @media (max-width: 960px) { .hero .plain { grid-column: 1; margin-top: -18px; } }
   .hero h1 { font-size: clamp(42px, 6.2vw, 78px); font-weight: 850; font-stretch: 112%; line-height: 0.98; margin: 14px 0 22px; }
   .hero h1 em { font-style: normal; color: var(--signal); }
   .hero .lede { font-size: 19px; margin-bottom: 28px; }
   .cta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-  .facts { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--rule); }
+  .facts { display: grid; grid-template-columns: repeat(4, auto); justify-content: start; gap: 22px 32px; margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--rule); }
+  @media (max-width: 600px) { .facts { grid-template-columns: 1fr 1fr; } }
   .fact .n { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 26px; line-height: 1; font-variant-numeric: tabular-nums; }
   .fact .l { font-size: 13px; color: var(--muted); margin-top: 4px; }
 
@@ -335,7 +338,7 @@
     <div>
       <div class="eyebrow">For manual and functional testers · no coding required to start</div>
       <h1>Same question. Three answers. <em>Which one passed?</em></h1>
-      <p class="lede">That question breaks every test you know how to write. This course teaches you to answer it the way AI teams need: a pass rate, a confidence interval, a threshold the product owner signed, and the traces of the ones that failed. In 23 weeks, from your first terminal command to a release assessment you present on video.</p>
+      <p class="lede">That question breaks every test you know how to write. This course teaches you to answer it the way AI teams do: a pass rate, a range, a threshold, and the cases that failed. Twenty-three weeks, from your first terminal command to a release assessment you present on video.</p>
       <div class="cta-row">
         <a class="btn signal" href="#pricing">Buy the course · ₹1,499</a>
         <a class="btn ghost" href="#curriculum">See the full curriculum</a>
@@ -356,15 +359,16 @@
       <div class="line ans"><b>run 3</b>  I don't have that information; reception can help.</div>
       <div class="line dim">&nbsp;</div>
       <div class="line dim">&gt; python gate.py results.json</div>
-      <div class="line row"><span class="dim">     </span><span class="hl">in_scope       </span> 17/20 = 85%  <span class="dim">(95% CI 64% to 95%)</span>   min 90%   <span class="fail">FAIL</span></div>
-      <div class="line row"><span class="dim">     </span><span class="hl">multi_fact     </span>  6/8  = 75%  <span class="dim">(95% CI 41% to 93%)</span>   min 80%   <span class="fail">FAIL</span></div>
-      <div class="line row"><span class="dim">     </span><span class="hl">out_of_scope   </span>  9/10 = 90%  <span class="dim">(95% CI 60% to 98%)</span>   min 90%   <span class="pass">ok</span></div>
-      <div class="line row"><span class="dim">     </span><span class="hl">false_premise  </span>  4/5  = 80%  <span class="dim">(95% CI 38% to 96%)</span>   min 75%   <span class="pass">ok</span></div>
-      <div class="line row"><span class="dim">     </span><span class="hl">adversarial    </span>  4/5  = 80%  <span class="dim">(95% CI 38% to 96%)</span>   min 100%  <span class="fail">FAIL</span></div>
+      <div class="line row"><span class="hl">in_scope      </span> 17/20 = 85%   min 90%   <span class="fail">FAIL</span></div>
+      <div class="line row"><span class="hl">multi_fact    </span>  6/8  = 75%   min 80%   <span class="fail">FAIL</span></div>
+      <div class="line row"><span class="hl">out_of_scope  </span>  9/10 = 90%   min 90%   <span class="pass">ok</span></div>
+      <div class="line row"><span class="hl">false_premise </span>  4/5  = 80%   min 75%   <span class="pass">ok</span></div>
+      <div class="line row"><span class="hl">adversarial   </span>  4/5  = 80%   min 100%  <span class="fail">FAIL</span></div>
       <div class="line row"><span class="fail">FAIL</span> safety assertion failed on: parking-01</div>
       <div class="line dim">&nbsp;</div>
-      <div class="line dim">stale policy indexed · k too small · injection via document — 3 defects, 1 run, $0.04</div>
+      <div class="line dim">3 defects found · 1 run · $0.04 · ranges and traces in the full report</div>
     </div>
+    <p class="plain">In plain words: the bot answered the in-scope questions right 17 times out of 20. The bar was 18. It is not ready to ship, and this output says exactly why.</p>
   </header>
 
   <section id="watch">
