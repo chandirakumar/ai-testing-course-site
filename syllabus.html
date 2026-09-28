@@ -188,6 +188,40 @@
   }
   .note strong { color: var(--ink); }
 
+  /* Capability ladder */
+  .ladder { margin-top: 26px; }
+  .ladder svg { display: block; width: 100%; height: auto; }
+  .ladder figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .ladder-list { display: none; list-style: none; padding: 0; margin: 0; gap: 8px; }
+  .ladder-list li { border-left: 4px solid; background: var(--panel); padding: 10px 12px; font-size: 14px; color: var(--ink-2); }
+  .ladder-list li .eyebrow { display: block; margin-bottom: 2px; }
+  .ladder-list li b { color: var(--ink); }
+  @media (max-width: 700px) { .ladder svg { display: none; } .ladder-list { display: grid; } }
+
+  /* Starting point */
+  .start { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin: 0 0 28px; }
+  .start > div { background: var(--panel); border: 1px solid var(--rule); padding: 14px 16px; font-size: 14px; color: var(--ink-2); }
+  .start .eyebrow { display: block; margin-bottom: 6px; }
+  .start b { color: var(--ink); }
+  @media (max-width: 700px) { .start { grid-template-columns: 1fr; } }
+
+  /* Module summary */
+  .mod-sum { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px 28px; margin-top: 16px; }
+  .mod-sum .eyebrow { display: block; margin-bottom: 4px; }
+  .mod-sum p { margin: 0; font-size: 15px; color: var(--ink); }
+  .mod-sum .built { background: var(--panel); border: 1px solid var(--rule); padding: 12px 14px; }
+  .mod-sum .built p { font-size: 14.5px; }
+  .mix { grid-column: 1 / -1; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: center; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); }
+  .mix .bar { display: flex; gap: 2px; height: 10px; }
+  .mix .bar i { display: block; border-radius: 2px; }
+  .mix .key { white-space: nowrap; }
+  details.lessons { margin-top: 12px; border-top: 1px solid var(--rule-2); }
+  details.lessons summary { cursor: pointer; padding: 10px 0; font-size: 13.5px; color: var(--accent); list-style: none; }
+  details.lessons summary::-webkit-details-marker { display: none; }
+  details.lessons summary::before { content: "+ "; color: var(--muted); }
+  details.lessons[open] summary::before { content: "– "; }
+  @media (max-width: 700px) { .mod-sum { grid-template-columns: 1fr; } }
+
   /* Module */
   .module { margin-bottom: 44px; scroll-margin-top: 20px; }
   .mod-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: end; padding-bottom: 12px; border-bottom: 1px solid var(--ink); }
@@ -260,6 +294,14 @@
     </div>
     <div class="track" id="track"></div>
     <div class="stages" id="stages"></div>
+
+    <figure class="ladder">
+      <svg viewBox="0 0 1000 220" role="img" aria-label="Four steps: after Stage A you can run a test suite from the terminal and in CI; after Stage B you can call an AI and measure how much it varies; after Stage C you can evaluate, test and red-team an AI product; after Stage D you can present a release assessment and interview for the role." xmlns="http://www.w3.org/2000/svg">
+        <g id="lad"></g>
+      </svg>
+      <ol class="ladder-list" id="lad-list"></ol>
+      <figcaption>What you can do after each stage. Each step needs the one before it.</figcaption>
+    </figure>
   </section>
 
   <div class="body">
@@ -269,8 +311,10 @@
     </nav>
 
     <main>
-      <div class="note">
-        <strong>Assumed starting point:</strong> two or more years of manual or functional testing, comfortable with test cases, bug reports, and Postman. <strong>Not assumed:</strong> any programming, any command line, any Git. <strong>Pace:</strong> about seven hours a week. A learner who already writes Python can skip Modules 2 and 3 and finish in about nineteen weeks.
+      <div class="start">
+        <div><span class="eyebrow">You need</span><b>Two or more years</b> of manual or functional testing. Comfortable with test cases, bug reports, Postman.</div>
+        <div><span class="eyebrow">You do not need</span><b>Any code, any terminal, any Git.</b> Module 2 teaches Python from the first line.</div>
+        <div><span class="eyebrow">Pace</span><b>About seven hours a week</b> for 23 weeks. Already write Python? Skip Modules 2 and 3: about 19 weeks.</div>
       </div>
       <div id="modules"></div>
 
@@ -287,8 +331,7 @@
         </div>
         <div>
           <h3>How the hours were sized</h3>
-          <p>Lecture hours cover watching and following along. Lab hours are hands-on with a checklist and a definition of done. Project hours are open-ended work reviewed against a rubric. Beginners typically spend about a third more than the listed lab time on Modules 2 to 4, so the weekly pace leaves room for that.</p>
-          <p>Every module names an exit criterion, written the way a test plan writes it: a thing the learner can now do, verifiable by the portfolio output.</p>
+          <p>Lecture hours are watching and following along. Lab hours are hands-on with a definition of done. Project hours are open-ended work marked against a rubric. First-time coders usually spend about a third longer on the labs in Modules 2 to 4, and the weekly pace allows for it.</p>
         </div>
       </div>
     </main>
@@ -482,6 +525,10 @@
   MODULES.forEach(m => m.lessons.forEach(l => byKind[l[2]] += l[3]));
   const weeks = 23;
   const stageColor = s => STAGES.find(x => x.key === s).color;
+  const mixOf = m => { const o = { L: 0, B: 0, P: 0 }; m.lessons.forEach(l => o[l[2]] += l[3]); return o; };
+  const mixBar = m => { const o = mixOf(m), col = { L: 'var(--muted)', B: 'var(--lab)', P: 'var(--project)' };
+    return ['L', 'B', 'P'].filter(k => o[k] > 0).map(k => `<i style="flex:${o[k]} 1 0;background:${col[k]}"></i>`).join(''); };
+  const mixTitle = m => { const o = mixOf(m); return [['L', 'lecture'], ['B', 'lab'], ['P', 'project']].filter(([k]) => o[k] > 0).map(([k, n]) => `${fmt(o[k])} h ${n}`).join(' · '); };
 
   // ---- Facts ---------------------------------------------------------------
   document.getElementById('facts').innerHTML = [
@@ -531,7 +578,12 @@
         </div>
         <div class="meta">Week${m.weeks.includes('–') ? 's' : ''} ${m.weeks}<br><b>${fmt(m.hours)} h</b> · ${m.lessons.length} lessons${CONTENT[m.id] ? `<br><a href="${CONTENT[m.id]}">Lesson content</a>` : ''}</div>
       </div>
-      <div class="mod-body">
+      <div class="mod-sum">
+        <div><span class="eyebrow">After this module you can</span><p>${m.exit}</p></div>
+        <div class="built"><span class="eyebrow">You will have built</span><p>${m.output}</p></div>
+        <div class="mix"><span class="key">${fmt(m.hours)} h</span><div class="bar" title="${mixTitle(m)}">${mixBar(m)}</div><span class="key">${mixTitle(m)}</span></div>
+      </div>
+      <details class="lessons"><summary>Show the ${m.lessons.length} lessons</summary>
         <div class="tbl-wrap">
           <table>
             <thead><tr><th>#</th><th>Topic</th><th>Format</th><th class="hrs">Hours</th></tr></thead>
@@ -546,13 +598,38 @@
             </tbody>
           </table>
         </div>
-        <aside class="aside">
-          <div class="blk"><span class="eyebrow">Prerequisite</span>${m.prereq}</div>
-          <div class="blk"><span class="eyebrow">Exit criterion</span>${m.exit}</div>
-          <div class="blk"><span class="eyebrow">Portfolio output</span><div class="out">${m.output}</div></div>
-        </aside>
-      </div>
+        <p style="font-size:13px;color:var(--muted);margin:10px 0 0">Do first: ${m.prereq}.</p>
+      </details>
     </section>`).join('');
+
+  // ---- Capability ladder -------------------------------------------------------
+  (function () {
+    const steps = [
+      ['A', 'Foundations', 'run a test suite from the terminal, and in CI'],
+      ['B', 'AI fundamentals', 'call an AI from code and measure how much it varies'],
+      ['C', 'Testing AI systems', 'evaluate, test and red-team an AI product'],
+      ['D', 'Capstone & career', 'present a release assessment and interview for the role'],
+    ];
+    const g = document.getElementById('lad');
+    if (!g) return;
+    const w = 1000, colW = w / 4, riser = 32;
+    let out = '';
+    steps.forEach(([k, name, can], i) => {
+      const x = i * colW, top = 176 - i * riser;
+      const c = stageColor(k);
+      out += `<rect x="${x + 2}" y="${top}" width="${colW - 4}" height="${214 - top}" rx="3" style="fill:${c};fill-opacity:.16"/>`;
+      out += `<rect x="${x + 2}" y="${top}" width="${colW - 4}" height="6" rx="2" style="fill:${c}"/>`;
+      out += `<text x="${x + 16}" y="${top - 46}" font-size="12" style="fill:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.06em">STAGE ${k} · ${name.toUpperCase()}</text>`;
+      out += `<text x="${x + 16}" y="${top - 26}" font-size="13.5" style="fill:var(--ink);font-weight:600">After this you can</text>`;
+      const words = can.split(' '); let line = '', lines = [];
+      words.forEach(wd => { if ((line + ' ' + wd).trim().length > 34) { lines.push(line.trim()); line = wd; } else line += ' ' + wd; });
+      lines.push(line.trim());
+      lines.forEach((ln, j) => { out += `<text x="${x + 16}" y="${top + 26 + j * 17}" font-size="13" style="fill:var(--ink-2)">${ln}</text>`; });
+    });
+    g.innerHTML = out;
+    const list = document.getElementById('lad-list');
+    if (list) list.innerHTML = steps.map(([k, name, can]) => `<li style="border-color:${stageColor(k)}"><span class="eyebrow">Stage ${k} · ${name}</span><b>After this you can</b> ${can}.</li>`).join('');
+  })();
 </script>
 </body>
 </html>
