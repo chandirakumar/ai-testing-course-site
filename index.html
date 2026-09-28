@@ -106,6 +106,22 @@
   .three .col { padding-top: 16px; border-top: 3px solid var(--ink); }
   .three .col.signal { border-top-color: var(--signal); }
 
+  /* market */
+  .market .facts { margin-top: 30px; padding-top: 0; border-top: 0; gap: 22px 40px; }
+  .market .fact .n { font-size: 30px; color: var(--signal); }
+  .market .fact .l { max-width: 22ch; }
+  .market .tbl { overflow-x: auto; margin-top: 34px; border: 1px solid var(--rule); background: var(--panel); }
+  .market table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 14.5px; }
+  .market th { text-align: left; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 500; padding: 14px 16px 10px; border-bottom: 1px solid var(--rule); }
+  .market td { padding: 12px 16px; border-bottom: 1px solid var(--rule-2); vertical-align: top; color: var(--ink-2); }
+  .market td:first-child { color: var(--ink); font-weight: 600; }
+  .market td .sub { display: block; font-size: 12.5px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  .market tr.you td { background: var(--tint); }
+  .market tr.you td:first-child::after { content: " · where you are now"; font-weight: 400; color: var(--muted); }
+  .market td.num { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 13.5px; white-space: nowrap; color: var(--ink); }
+  .market .fine { margin-top: 16px; font-size: 13px; color: var(--muted); max-width: 80ch; }
+  .market .fine a { color: var(--muted); }
+
   /* portfolio */
   .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 36px; }
   .card { background: var(--panel); border: 1px solid var(--rule); padding: 22px 22px 18px; display: flex; flex-direction: column; gap: 8px; }
@@ -238,6 +254,7 @@
     <a class="brand" href="#top">Zero to AI Tester</a>
     <ul>
       <li><a href="#build">What you build</a></li>
+      <li><a href="#market">Salaries</a></li>
       <li><a href="#curriculum">Curriculum</a></li>
       <li><a href="#who">Who it's for</a></li>
       <li><a href="#pricing">Pricing</a></li>
@@ -307,6 +324,32 @@
         <p>Enough Python to run the tools. Enough statistics to know what twenty runs can and cannot tell you. The vocabulary. And a portfolio that proves it. That is the whole course.</p>
       </div>
     </div>
+  </section>
+
+  <section id="market" class="market">
+    <div class="eyebrow">The market · September 2026</div>
+    <h2>The roles exist, they are hiring in India, and they pay more than the one you have.</h2>
+    <p class="lede">Dedicated AI-testing titles are still a small slice of all QA postings, but they are the fastest-growing slice and the best paid. Most of the demand shows up as SDET and QA roles that now list LLM, RAG, agent, or evaluation skills as requirements. Those are the skills in Stages A to C.</p>
+    <div class="facts">
+      <div class="fact"><div class="n">10,000+</div><div class="l">"AI testing" listings on LinkedIn India, and as many again in the US</div></div>
+      <div class="fact"><div class="n">34%</div><div class="l">of QA job posts now mention AI, up from 9% in 2024</div></div>
+      <div class="fact"><div class="n">+49%</div><div class="l">median pay for QA roles that ask for LLM or agent skills versus those that do not (US)</div></div>
+      <div class="fact"><div class="n">1.5× to 3×</div><div class="l">what an AI-testing role pays in India compared with the manual-QA band</div></div>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Role</th><th>India, per year</th><th>United States</th><th>What gets you there</th></tr></thead>
+        <tbody>
+          <tr class="you"><td>Manual / functional QA</td><td class="num">₹3–7 L<span class="sub">₹14–20 L at lead level</span></td><td class="num">$55–110k</td><td>Your starting point. Test design, exploration, and defect reporting all carry over.</td></tr>
+          <tr><td>SDET / automation engineer</td><td class="num">₹10–28 L<span class="sub">₹30–55 L at product companies</span></td><td class="num">$95–195k</td><td>Stage A: Python, pytest, Playwright, CI.</td></tr>
+          <tr><td>AI Test Engineer / AI Quality Engineer</td><td class="num">20–35% above SDET<span class="sub">₹42–65 L reported for specialists</span></td><td class="num">$180–240k</td><td>Stages A to C: eval suites, golden sets, rubrics, judges, a gate in CI.</td></tr>
+          <tr><td>LLM Evaluation Engineer</td><td class="num">₹15–40 L+</td><td class="num">$160k average</td><td>Modules 7 and 8: promptfoo, DeepEval, RAGAS, Langfuse, retrieval and agent testing.</td></tr>
+          <tr><td>AI Red Team Analyst</td><td class="num">₹22–50 L<span class="sub">₹50–80 L at lead level</span></td><td class="num">$80–220k</td><td>Module 9: prompt injection, leakage, guardrails, OWASP LLM Top 10, PyRIT and Garak.</td></tr>
+          <tr><td>Prompt QA / prompt engineer</td><td class="num">₹4.6–6 L average<span class="sub">₹25–60 L when paired with code</span></td><td class="num">$100k+</td><td>Module 6, plus Stage A. Prompting without code is the one path that plateaus.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fine">Compiled 28 September 2026 from LinkedIn, Indeed, and Glassdoor listings and three 2026 QA market reports (<a href="https://softwaretestpilot.com/qa-job-market-report" rel="noopener">SoftwareTestPilot</a>, <a href="https://interviewstack.io/blog/how-ai-is-changing-qa-engineer-2026" rel="noopener">InterviewStack</a>, <a href="https://scrolltest.com/test-automation-india-2026-salary-hiring-trends/" rel="noopener">ScrollTest</a>) and the <a href="https://www.knowledgehut.com/blog/security/ai-red-teamer-salary" rel="noopener">KnowledgeHut</a> red-team salary guide. These are ranges, not promises: product companies in Bengaluru and Hyderabad pay at the top of each band, services firms at the bottom, and the AI-specialist figures rest on a few hundred salary reports. No course can guarantee a salary.</p>
   </section>
 
   <section id="build">
