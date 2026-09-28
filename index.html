@@ -273,6 +273,13 @@
   .tier .btn { margin-top: auto; text-align: center; }
   .guarantee { margin-top: 22px; font-size: 14px; color: var(--ink-2); }
 
+  .tiers.one .aside .checks { margin: 8px 0 14px; padding-left: 22px; color: var(--ink-2); }
+  .tiers.one .aside .checks li { margin: 4px 0; }
+  .tiers.one .aside .checks li::marker { font-family: "IBM Plex Mono", Consolas, monospace; color: var(--muted); }
+  .tiers.one .aside .final-line { margin-bottom: 18px; }
+  .bill { margin: 0; }
+  .bill svg { display: block; width: 100%; max-width: 420px; height: auto; }
+
   /* faq */
   .faq details { border-top: 1px solid var(--rule); padding: 16px 0; }
   .faq details:last-child { border-bottom: 1px solid var(--rule); }
@@ -581,24 +588,39 @@
   <section id="pricing">
     <div class="eyebrow">Pricing</div>
     <h2>One price. Everything included. Yours to keep.</h2>
-    <p class="lede">Pay once by UPI or card. The whole course arrives by email within a minute, as pages you open in your browser. No subscription, no schedule, no expiry.</p>
+    <p class="lede">Pay once by UPI or card. The whole course arrives by email within a minute, as pages you open in your browser. No subscription, no expiry.</p>
     <div class="tiers one">
       <div class="tier featured">
         <span class="eyebrow">Zero to AI Tester · complete course</span>
-        <div class="price">₹1,499 <small>one-time · no recurring charges</small></div>
+        <div class="price">₹1,499 <small>one-time</small></div>
         <ul>
-          <li>All 13 modules, 167 hours of lessons and labs, as browsable pages</li>
-          <li>The practice app with its twelve planted defects, the golden datasets, every template</li>
-          <li>Checkpoint answer keys and lab rubrics for every module</li>
-          <li>Fifty interview questions with model answers, the resume rewrite, the portfolio README</li>
-          <li>Keep it forever; updated packs emailed when the tools change</li>
+          <li>13 modules, 167 hours, as pages in your browser</li>
+          <li>The practice app with 12 planted defects, datasets, templates</li>
+          <li>Answer keys and lab rubrics for every lesson</li>
+          <li>50 interview questions with answers, resume rewrite, portfolio README</li>
+          <li>Yours forever; updated packs emailed when tools change</li>
         </ul>
         <a class="btn signal" data-product="pack" href="#pricing">Buy the course · ₹1,499</a>
       </div>
       <div class="aside">
         <b>Before you buy</b>
-        <p>This is a digital product delivered instantly, so all sales are final and there are no refunds. Watch the two videos, read the complete syllabus, and check the "who it's for" section first. If you are unsure, email a question before paying.</p>
-        <p>The API credit you buy from the model provider for the AI modules is separate and yours; the entire course uses under ten dollars of it.</p>
+        <ol class="checks">
+          <li><a href="#watch">Watch the two videos</a></li>
+          <li><a href="syllabus.html">Read the complete syllabus</a></li>
+          <li><a href="#who">Check "who it's for"</a></li>
+        </ol>
+        <p class="final-line"><strong>All sales are final.</strong> It is a digital product delivered in full the moment you pay, so there are no refunds. Unsure? <a href="mailto:chandruss93@gmail.com">Email a question first.</a></p>
+        <figure class="bill">
+          <svg viewBox="0 0 420 112" role="img" aria-label="The whole bill: the course is 1,499 rupees, AI credit for the practice modules is about ten dollars bought from the model provider, and every other tool is free." xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="30" width="262" height="30" rx="4" style="fill:var(--signal)"/>
+            <rect x="268" y="30" width="150" height="30" rx="4" style="fill:var(--accent);fill-opacity:.45"/>
+            <text x="14" y="50" font-size="12.5" style="fill:#fff;font-weight:700">₹1,499 the course</text>
+            <text x="278" y="50" font-size="12.5" style="fill:var(--ink);font-weight:700">~$10 AI credit</text>
+            <text x="2" y="18" font-size="11" style="fill:var(--muted)">the whole bill, start to finish</text>
+            <text x="2" y="84" font-size="11" style="fill:var(--muted)">AI credit is bought from the model provider, from Module 5 on.</text>
+            <text x="2" y="100" font-size="11" style="fill:var(--muted)">Every other tool in the course is free.</text>
+          </svg>
+        </figure>
       </div>
     </div>
   </section>
