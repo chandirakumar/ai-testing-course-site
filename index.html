@@ -283,6 +283,21 @@
   .bill svg { display: block; width: 100%; max-width: 420px; height: auto; }
 
   /* faq */
+  .qs-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 40px; margin-top: 34px; align-items: start; }
+  .qs details { border-top: 1px solid var(--rule); padding: 16px 0; }
+  .qs details:last-child { border-bottom: 1px solid var(--rule); }
+  .qs summary { cursor: pointer; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 17px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  .qs summary::-webkit-details-marker { display: none; }
+  .qs summary::after { content: "+"; color: var(--muted); font-weight: 500; }
+  .qs details[open] summary::after { content: "–"; }
+  .qs summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .qs details p { margin-top: 10px; color: var(--ink-2); font-size: 15px; }
+  .qs details .where { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; color: var(--accent); margin-top: 8px; }
+  .qs-side { background: var(--panel); border: 1px solid var(--rule); border-top: 3px solid var(--accent); padding: 22px 22px 20px; }
+  .qs-side b { display: block; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 19px; line-height: 1.25; margin-bottom: 8px; }
+  .qs-side p { font-size: 14.5px; color: var(--ink-2); margin: 0 0 16px; }
+  .qs-side .fine { font-size: 12.5px; color: var(--muted); margin: 12px 0 0; }
+  @media (max-width: 800px) { .qs-grid { grid-template-columns: 1fr; gap: 26px; } }
   .faq details { border-top: 1px solid var(--rule); padding: 16px 0; }
   .faq details:last-child { border-bottom: 1px solid var(--rule); }
   .faq summary { cursor: pointer; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 17px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
@@ -340,7 +355,7 @@
       <p class="lede">That question breaks every test you know how to write. This course teaches you to answer it the way AI teams do: a pass rate, a range, a threshold, and the cases that failed. Twenty-three weeks, from your first terminal command to a release assessment you present on video.</p>
       <div class="cta-row">
         <a class="btn signal" href="#pricing">Buy the course · ₹1,499</a>
-        <a class="btn ghost" href="#curriculum">See the full curriculum</a>
+        <a class="btn ghost" href="primer.html">Read the first 15 minutes free</a>
       </div>
       <div class="facts">
         <div class="fact"><div class="n">23</div><div class="l">weeks, about 7 h a week</div></div>
@@ -412,6 +427,27 @@
       <div class="col"><h3>What you keep</h3><p>Test design, exploration, bug reports, judgment about severity.</p></div>
       <div class="col signal"><h3>What you add</h3><p>Enough Python to run the tools, enough statistics to trust a number, and the new failure types.</p></div>
       <div class="col"><h3>What you get</h3><p>A portfolio that proves it, and a title with "AI" in it.</p></div>
+    </div>
+  </section>
+
+  <section id="questions" class="qs">
+    <div class="eyebrow">Free sample · no sign-up</div>
+    <h2>What is a token? A model? RAG?</h2>
+    <p class="lede">You keep hearing these words and nobody stops to explain them. The course starts by answering 22 of them in plain language, in your first 15 minutes. Guess first, then open one.</p>
+    <div class="qs-grid">
+      <div>
+        <details><summary>What is a model?</summary><p>A model is a program that learned its behaviour from examples instead of being written as rules. Nobody typed &quot;if the guest asks about dogs, say 25&quot;. It read a huge amount of text and learned what a sensible reply looks like. That is why you cannot find the line of code that caused a wrong answer.</p><div class="where">Taught properly in Lesson 5.1</div></details>
+        <details><summary>What is a token?</summary><p>The unit a model reads and writes: a word or a piece of a word. &quot;Cancellation&quot; might be two or three tokens. It matters to a tester because cost, speed, and size limits are all counted in tokens, not in words.</p><div class="where">Taught properly in Lesson 5.2</div></details>
+        <details><summary>What is RAG, and why is it needed?</summary><p>Retrieval-augmented generation. A model knows nothing about your company&#x27;s documents and its general knowledge stops at a cutoff date. RAG fixes both: when a question arrives, the system first searches your documents for the relevant passages, then hands them to the model and says &quot;answer from these&quot;. Without it the bot guesses. With it, the bot can still go wrong in two new places: the search can fetch the wrong passage, or the model can ignore the right one. You will test both.</p><div class="where">Taught properly in Lessons 5.7 and 8.1</div></details>
+        <details><summary>Why does the same question get different answers?</summary><p>The model does not look up an answer. It builds one, a token at a time, and at each step it picks from several likely options with a little randomness. A setting called temperature controls how much. So one run tells you very little, and that single fact is why AI testing is a different job.</p><div class="where">Taught properly in Lessons 5.3 and 7.1</div></details>
+        <details><summary>Do I have to become a programmer?</summary><p>No. You need enough Python to loop over a list of questions, call an API, and write a line that says &quot;this must be true&quot;. That is a few weeks of learning, and Stage A teaches exactly that and stops.</p><div class="where">Taught properly in Module 2</div></details>
+      </div>
+      <aside class="qs-side">
+        <b>17 more answers, and your first AI test.</b>
+        <p>The opening page of the course is free to read: every question, a 10-minute experiment you can run with any chatbot, and one picture that maps the whole vocabulary.</p>
+        <a class="btn primary" href="primer.html">Read the first 15 minutes free</a>
+        <p class="fine">No email, no account. It is the same page buyers get.</p>
+      </aside>
     </div>
   </section>
 
@@ -610,6 +646,7 @@
       <div class="aside">
         <b>Before you buy</b>
         <ol class="checks">
+          <li><a href="primer.html">Read the first 15 minutes free</a></li>
           <li><a href="#watch">Watch the two videos</a></li>
           <li><a href="syllabus.html">Read the complete syllabus</a></li>
           <li><a href="#who">Check "who it's for"</a></li>
@@ -634,7 +671,7 @@
     <div class="eyebrow">Questions</div>
     <h2>Things people ask before enrolling.</h2>
     <details open><summary>How is the course delivered?</summary><p><strong>As a pack of web pages, by email, within a minute of paying.</strong> Unzip it, open the start page in any browser, and everything is there offline, forever. When a lesson is updated you get a new pack at no charge.</p></details>
-    <details><summary>Can I get a refund?</summary><p><strong>No. All sales are final.</strong> It is a digital product delivered in full the moment you pay, which is why the syllabus, the videos, and the "who it's for" section are public. Email a question first if anything is unclear.</p></details>
+    <details><summary>Can I get a refund?</summary><p><strong>No. All sales are final.</strong> It is a digital product delivered in full the moment you pay, which is why the syllabus, the videos, and <a href="primer.html">the first 15 minutes of the course</a> are free before you pay. Email a question first if anything is unclear.</p></details>
     <details><summary>What does it cost beyond the course?</summary><p><strong>About ten dollars of AI credit, bought from the model provider.</strong> Every script prints what it spent. Every other tool in the course is free and open source.</p></details>
     <details><summary>How much time does it really take?</summary><p><strong>About seven hours a week for 23 weeks.</strong> Two weekday evenings for lessons and one weekend block for the lab. Already write Python? Skip Modules 2 and 3 and finish in about 19.</p></details>
     <details><summary>I have never written code. Can I really do this?</summary><p><strong>Yes. That is who it is written for.</strong> Module 2 teaches Python from the first line with every example about testing. You will be writing test code by week four and driving a browser by week six.</p></details>
