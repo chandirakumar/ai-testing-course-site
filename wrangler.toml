@@ -4,6 +4,7 @@
 # www to apex and Always Use HTTPS are dashboard rules (Rules > Redirect Rules; SSL/TLS > Edge Certificates).
 name = "aiskillszone"
 compatibility_date = "2026-06-01"
+account_id = "b144a2930ea1f8b5aa135342d9103711"   # the AI Skills Zone account (chan.ad.ai.creator), not the Charme one
 
 routes = [
   { pattern = "aiskillszone.com", custom_domain = true },
