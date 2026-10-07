@@ -17,6 +17,9 @@ directory = "."
 binding = "ASSETS"
 not_found_handling = "404-page"
 html_handling = "auto-trailing-slash"
+# Browser navigations to paths that are not files would otherwise get the 404 page without the Worker
+# ever running; the course area must always reach the gate in src/worker.js.
+run_worker_first = ["/learn/*"]
 
 # Private course files, served only to buyers by src/worker.js. Filled by platform/publish_course.py in the course repo.
 [[kv_namespaces]]
