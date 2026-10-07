@@ -7,3 +7,4 @@ README.md
 wrangler.toml
 .nojekyll
 node_modules
+src
