@@ -299,6 +299,43 @@
   .qs-side p { font-size: 14.5px; color: var(--ink-2); margin: 0 0 16px; }
   .qs-side .fine { font-size: 12.5px; color: var(--muted); margin: 12px 0 0; }
   @media (max-width: 800px) { .qs-grid { grid-template-columns: 1fr; gap: 26px; } }
+
+  /* buy modal and login card: deep indigo glass on midnight blue (#0B0F19), the same in both page themes */
+  .glass-backdrop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 18px; background: rgba(11,15,25,.78); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .glass-backdrop[hidden] { display: none; }
+  .glass { position: relative; isolation: isolate; width: min(460px, 100%); max-height: calc(100vh - 36px); overflow: auto; color: #E6E9F5; padding: 26px 26px 22px; border-radius: 18px;
+    background: linear-gradient(160deg, rgba(255,255,255,.11), rgba(255,255,255,.045)); border: 1px solid rgba(255,255,255,.14);
+    box-shadow: 0 30px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.14); backdrop-filter: blur(22px) saturate(140%); -webkit-backdrop-filter: blur(22px) saturate(140%);
+    font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; font-size: 15.5px; line-height: 1.55; }
+  .glass::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+    background: radial-gradient(420px 220px at 15% -10%, rgba(99,102,241,.38), transparent 62%), radial-gradient(360px 240px at 110% 115%, rgba(56,189,248,.16), transparent 60%); }
+  .glass h3 { font-family: "Archivo", sans-serif; font-weight: 800; font-stretch: 110%; font-size: 26px; line-height: 1.12; letter-spacing: -0.01em; margin: 6px 0 8px; color: #FFFFFF; text-wrap: balance; }
+  .glass .g-eyebrow { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: #A5B4FC; }
+  .glass .g-sub { margin: 0 0 16px; color: #B9C0D6; }
+  .glass .g-sub b { color: #fff; font-weight: 600; }
+  .glass label { display: block; margin: 0 0 12px; font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; color: #9AA3BD; font-family: "IBM Plex Mono", Consolas, monospace; }
+  .glass input { display: block; width: 100%; margin-top: 6px; font: inherit; font-size: 16px; font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; letter-spacing: 0; text-transform: none; padding: 12px 14px; border-radius: 10px; color: #fff;
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.16); outline: none; transition: border-color 120ms, box-shadow 120ms; }
+  .glass input::placeholder { color: #6B7490; }
+  .glass input:focus-visible { border-color: #818CF8; box-shadow: 0 0 0 4px rgba(129,140,248,.22); }
+  .glass input.code { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 26px; letter-spacing: .32em; text-align: center; padding: 12px 8px 12px 18px; }
+  .glass .g-btn { display: block; width: 100%; margin-top: 6px; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 16px; padding: 14px; border: 0; border-radius: 10px; color: #fff; cursor: pointer;
+    background: linear-gradient(135deg, #6366F1, #4F46E5); box-shadow: 0 10px 30px rgba(79,70,229,.35), inset 0 1px 0 rgba(255,255,255,.18); transition: transform 120ms, filter 120ms; }
+  .glass .g-btn:hover { transform: translateY(-1px); filter: brightness(1.06); }
+  .glass .g-btn:disabled { opacity: .6; cursor: progress; transform: none; }
+  .glass .g-btn:focus-visible { outline: 3px solid #C7D2FE; outline-offset: 2px; }
+  .glass .g-err { margin: 0 0 12px; padding: 10px 12px; border-radius: 8px; font-size: 14px; color: #FECACA; background: rgba(239,68,68,.14); border: 1px solid rgba(239,68,68,.3); }
+  .glass .g-fine { margin: 14px 0 0; font-size: 13px; color: #8B93AD; }
+  .glass .g-fine a, .glass .g-sub a { color: #C7D2FE; }
+  .glass .linkish { font: inherit; background: none; border: 0; padding: 0; color: #C7D2FE; text-decoration: underline; cursor: pointer; }
+  .glass .g-x { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06); color: #CBD2E6; font-size: 20px; line-height: 1; cursor: pointer; }
+  .glass .g-x:hover { background: rgba(255,255,255,.12); }
+  .glass .g-x:focus-visible { outline: 2px solid #C7D2FE; outline-offset: 2px; }
+  .glass .g-row { display: flex; gap: 10px 16px; flex-wrap: wrap; align-items: center; font-size: 13px; color: #8B93AD; margin-top: 12px; }
+  .glass .g-secure { display: inline-flex; align-items: center; gap: 6px; }
+  .glass .g-secure i { width: 8px; height: 8px; border-radius: 50%; background: #34D399; box-shadow: 0 0 0 4px rgba(52,211,153,.18); display: inline-block; }
+  @media (prefers-reduced-motion: reduce) { .glass .g-btn, .glass input { transition: none; } .glass .g-btn:hover { transform: none; } }
+  @media (max-width: 480px) { .glass { padding: 22px 18px 18px; border-radius: 14px; } .glass h3 { font-size: 23px; } }
   .faq details { border-top: 1px solid var(--rule); padding: 16px 0; }
   .faq details:last-child { border-bottom: 1px solid var(--rule); }
   .faq summary { cursor: pointer; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 17px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
@@ -346,7 +383,7 @@
       <li><a href="#pricing">Pricing</a></li>
       <li><a href="#faq">FAQ</a></li>
     </ul>
-    <a class="btn primary" href="#pricing">Buy · ₹1,499</a>
+    <a class="btn primary" href="#pricing" data-buy>Buy · ₹1,499</a>
   </nav>
 
   <header class="hero" id="top">
@@ -355,7 +392,7 @@
       <h1>Same question. Three answers. <em>Which one passed?</em></h1>
       <p class="lede">That question breaks every test you know how to write. This course teaches you to answer it the way AI teams do: a pass rate, a range, a threshold, and the cases that failed. Twenty-three weeks, from your first terminal command to a release assessment you present on video.</p>
       <div class="cta-row">
-        <a class="btn signal" href="#pricing">Buy the course · ₹1,499</a>
+        <a class="btn signal" href="#pricing" data-buy>Buy the course · ₹1,499</a>
         <a class="btn ghost" href="primer.html">Read the first 15 minutes free</a>
       </div>
       <div class="facts">
@@ -642,7 +679,8 @@
           <li>50 interview questions with answers, resume rewrite, portfolio README</li>
           <li>Yours forever; updated packs emailed when tools change</li>
         </ul>
-        <a class="btn signal" data-product="pack" href="#pricing">Buy the course · ₹1,499</a>
+        <a class="btn signal" href="#pricing" data-buy>Buy the course · ₹1,499</a>
+        <p class="fine" style="margin-top:10px;font-size:13px;color:var(--muted)">Lifetime online access with a login. Prefer a downloadable pack instead? <a data-playto href="#pricing">Buy it on Playto</a>.</p>
       </div>
       <div class="aside">
         <b>Before you buy</b>
@@ -717,10 +755,47 @@
     <h2>Twenty-three weeks from "it seems fine" to "85%, interval 77 to 91, above threshold, here are the three that failed."</h2>
     <p class="lede">That sentence is the job. This is the course that gets you to it.</p>
     <div class="cta-row">
-      <a class="btn primary" href="#pricing">Buy the course · ₹1,499</a>
+      <a class="btn primary" href="#pricing" data-buy>Buy the course · ₹1,499</a>
       <a class="btn ghost" href="syllabus.html">Read the syllabus first</a>
     </div>
   </section>
+
+
+  <div class="glass-backdrop" id="buy" hidden role="dialog" aria-modal="true" aria-labelledby="buy-title">
+    <div class="glass">
+      <button type="button" class="g-x" data-buy-close aria-label="Close">&times;</button>
+      <div data-step="details">
+        <span class="g-eyebrow">Zero to AI Tester · lifetime access</span>
+        <h3 id="buy-title">₹1,499 once. Yours for life.</h3>
+        <p class="g-sub">Pay by UPI, card or net banking through Razorpay. Then a 6-digit code opens the course. No password, ever.</p>
+        <form id="buy-form" novalidate>
+          <label>Name<input id="buy-name" name="name" autocomplete="name" maxlength="80" placeholder="As it should appear on the receipt" required></label>
+          <label>Email<input id="buy-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="Your login codes go here" required></label>
+          <label>WhatsApp number<input id="buy-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="10-digit mobile, optional"></label>
+          <p class="g-err" id="buy-err" hidden></p>
+          <button class="g-btn" type="submit" id="buy-pay">Pay ₹1,499</button>
+          <div class="g-row"><span class="g-secure"><i></i>Secured by Razorpay</span><span>Receipt by email</span></div>
+        </form>
+        <p class="g-fine">All sales are final; the <a href="primer.html">first 15 minutes</a> are free to read first. Already bought? <a href="../learn/">Log in</a>. Prefer the downloadable pack? <a data-playto href="#pricing">Buy it on Playto</a>.</p>
+      </div>
+      <div data-step="code" hidden>
+        <span class="g-eyebrow">Payment received</span>
+        <h3>Enter the code we emailed you</h3>
+        <p class="g-sub">Sent to <b data-email></b>. Six digits, valid for ten minutes. If it is slow, check the spam folder.</p>
+        <form id="code-form" novalidate>
+          <label>Code<input id="buy-code" class="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="000000"></label>
+          <p class="g-err" id="code-err" hidden></p>
+          <button class="g-btn" type="submit" id="code-go">Open my course</button>
+        </form>
+        <p class="g-fine"><button type="button" class="linkish" data-resend>Send a new code</button> · You can also open the course any time from <a href="../learn/">aiskillszone.com/learn</a> with this email.</p>
+      </div>
+      <div data-step="done" hidden>
+        <span class="g-eyebrow">You are in</span>
+        <h3>Welcome. Opening your course…</h3>
+        <p class="g-sub">If nothing happens in a few seconds, <a href="../learn/">go to your courses</a>.</p>
+      </div>
+    </div>
+  </div>
 
   <footer>
     <span><a href="../" style="color:inherit;text-decoration:none">AI Skills Zone</a> · Zero to AI Tester · © 2026 Chandru</span>
@@ -785,13 +860,133 @@
   // Checkout link. Paste the product URL from the payment platform here. Empty = email fallback.
   const CHECKOUT = "https://playto.so/p/chandirakumar/zero-to-ai-tester";
   const FALLBACK = "mailto:chandruss93@gmail.com?subject=Zero%20to%20AI%20Tester%20%E2%80%93%20buy%20the%20course";
-  document.querySelectorAll('[data-product]').forEach((a) => { a.href = CHECKOUT || FALLBACK; });
+  window.CHECKOUT = CHECKOUT; window.FALLBACK = FALLBACK;
 
   // After the interest form submits, the relay redirects back here with ?interest=thanks.
   if (new URLSearchParams(location.search).get('interest') === 'thanks') {
     const form = document.getElementById('interest-form');
     form.innerHTML = '<div class="thanks">Thank you. You will hear from me once, when a course you ticked is ready.</div>';
   }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+  // Buy flow: details -> Razorpay Checkout -> server-side verification -> email code -> course.
+  // Secrets never touch this page: the order is created and the payment verified by edge functions.
+  (function () {
+    const PAY = {
+      supabaseUrl: "https://cxiezjegnnbkghbevqra.supabase.co",
+      publishableKey: "sb_publishable_6owpYUznjQkw2VH3kvNKVA_Ay3VNhlW",
+      course: "zero-to-ai-tester",
+      learn: "../learn/",
+      checkoutJs: "https://checkout.razorpay.com/v1/checkout.js",
+    };
+    const fn = (name) => PAY.supabaseUrl + "/functions/v1/" + name;
+    const modal = document.getElementById("buy");
+    if (!modal) return;
+    const $ = (sel) => modal.querySelector(sel);
+    const steps = Array.from(modal.querySelectorAll("[data-step]"));
+    const show = (name) => steps.forEach((s) => { s.hidden = s.dataset.step !== name; });
+    const err = (id, msg) => { const el = document.getElementById(id); el.textContent = msg || ""; el.hidden = !msg; };
+    let sb = null, lastOpener = null, buyer = null;
+    const client = () => sb || (sb = window.supabase.createClient(PAY.supabaseUrl, PAY.publishableKey));
+
+    document.querySelectorAll("[data-playto]").forEach((a) => { a.href = CHECKOUT || FALLBACK; });
+
+    function open(e) {
+      if (e) e.preventDefault();
+      lastOpener = document.activeElement;
+      err("buy-err", ""); show("details");
+      modal.hidden = false; document.body.style.overflow = "hidden";
+      setTimeout(() => $("#buy-name").focus(), 30);
+    }
+    function close() {
+      modal.hidden = true; document.body.style.overflow = "";
+      if (lastOpener && lastOpener.focus) lastOpener.focus();
+    }
+    document.querySelectorAll("[data-buy]").forEach((a) => a.addEventListener("click", open));
+    modal.querySelector("[data-buy-close]").addEventListener("click", close);
+    modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !modal.hidden) close(); });
+
+    function loadCheckout() {
+      return new Promise((resolve, reject) => {
+        if (window.Razorpay) return resolve();
+        const s = document.createElement("script"); s.src = PAY.checkoutJs; s.onload = resolve; s.onerror = () => reject(new Error("checkout_blocked"));
+        document.head.appendChild(s);
+      });
+    }
+
+    async function post(name, body) {
+      const res = await fetch(fn(name), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { const e = new Error(data.message || data.error || ("HTTP " + res.status)); e.code = data.error; throw e; }
+      return data;
+    }
+
+    $("#buy-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = $("#buy-name").value.trim(), email = $("#buy-email").value.trim().toLowerCase(), phone = $("#buy-phone").value.trim();
+      if (name.length < 2) return err("buy-err", "Please give the name for the receipt.");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return err("buy-err", "That email address does not look right.");
+      const btn = $("#buy-pay"); btn.disabled = true; btn.textContent = "Preparing your order…"; err("buy-err", "");
+      try {
+        const [order] = await Promise.all([post("create-order", { course_slug: PAY.course, name, email, phone }), loadCheckout()]);
+        buyer = { name, email, phone };
+        const rzp = new window.Razorpay({
+          key: order.key_id, amount: order.amount, currency: order.currency, order_id: order.order_id,
+          name: "AI Skills Zone", description: order.description, prefill: order.prefill,
+          notes: { course_slug: PAY.course }, theme: { color: "#4F46E5", backdrop_color: "#0B0F19" },
+          retry: { enabled: true, max_count: 3 },
+          handler: (resp) => confirm(resp),
+          modal: { ondismiss: () => { btn.disabled = false; btn.textContent = "Pay ₹1,499"; err("buy-err", "Payment window closed. Nothing was charged; try again when ready."); } },
+        });
+        rzp.on("payment.failed", (r) => { btn.disabled = false; btn.textContent = "Pay ₹1,499"; err("buy-err", (r.error && r.error.description) || "The payment did not go through. Nothing was charged."); });
+        rzp.open();
+      } catch (ex) {
+        btn.disabled = false; btn.textContent = "Pay ₹1,499";
+        if (ex.code === "already_owned") err("buy-err", "This email already owns the course. Use Log in below; there is nothing to pay.");
+        else if (ex.message === "checkout_blocked") err("buy-err", "The payment window could not load here. Open aiskillszone.com directly and try again.");
+        else err("buy-err", ex.message || "Something went wrong. Please try again.");
+      }
+    });
+
+    async function confirm(resp) {
+      const btn = $("#buy-pay"); btn.textContent = "Confirming payment…";
+      try {
+        const v = await post("verify-payment", resp);
+        if (!v.ok) throw new Error(v.message || "Could not confirm the payment.");
+        buyer.email = v.email || buyer.email;
+        await sendCode();
+        $("[data-email]").textContent = buyer.email;
+        show("code"); setTimeout(() => $("#buy-code").focus(), 30);
+      } catch (ex) {
+        btn.disabled = false; btn.textContent = "Pay ₹1,499";
+        err("buy-err", ex.message + " Your payment is safe: if money left your account, email help@aiskillszone.com with the payment id " + (resp.razorpay_payment_id || "") + ".");
+      }
+    }
+
+    async function sendCode() {
+      const { error } = await client().auth.signInWithOtp({ email: buyer.email, options: { shouldCreateUser: true } });
+      if (error) throw new Error("The code could not be sent: " + error.message);
+    }
+    modal.querySelector("[data-resend]").addEventListener("click", async (e) => {
+      e.target.disabled = true; err("code-err", "");
+      try { await sendCode(); err("code-err", "A new code is on its way."); } catch (ex) { err("code-err", ex.message); }
+      setTimeout(() => { e.target.disabled = false; }, 20000);
+    });
+
+    $("#code-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const token = $("#buy-code").value.replace(/\D/g, "");
+      if (token.length !== 6) return err("code-err", "The code is six digits.");
+      const btn = $("#code-go"); btn.disabled = true; err("code-err", "");
+      const { error } = await client().auth.verifyOtp({ email: buyer.email, token, type: "email" });
+      btn.disabled = false;
+      if (error) return err("code-err", /expired|invalid/i.test(error.message) ? "That code did not match or has expired. Send a new one and try again." : error.message);
+      show("done");
+      setTimeout(() => { location.href = PAY.learn; }, 900);
+    });
+  })();
 </script>
 </body>
 </html>
