@@ -1,0 +1,16 @@
+# Cloudflare deployment: this folder is served as static assets by a Worker with no code of its own.
+#   Deploy: npx wrangler deploy        (run from this folder; wrangler is logged in to the Cloudflare account)
+# The custom domains below are created by the deploy: DNS records and certificates are issued automatically.
+# www to apex and Always Use HTTPS are dashboard rules (Rules > Redirect Rules; SSL/TLS > Edge Certificates).
+name = "aiskillszone"
+compatibility_date = "2026-06-01"
+
+routes = [
+  { pattern = "aiskillszone.com", custom_domain = true },
+  { pattern = "www.aiskillszone.com", custom_domain = true },
+]
+
+[assets]
+directory = "."
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"

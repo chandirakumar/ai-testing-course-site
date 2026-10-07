@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zero to AI Tester · Free sample: the first 15 minutes</title>
+<link rel="canonical" href="https://aiskillszone.com/zero-to-ai-tester/primer.html">
+<meta name="description" content="The opening page of Zero to AI Tester, free to read: what is a token, a model, RAG, and 19 more first-timer questions answered in plain words, plus a 10-minute AI test you can run with any chatbot.">
+<meta property="og:title" content="Zero to AI Tester · the first 15 minutes, free">
+<meta property="og:description" content="The opening page of Zero to AI Tester, free to read: what is a token, a model, RAG, and 19 more first-timer questions answered in plain words, plus a 10-minute AI test you can run with any chatbot.">
+<meta property="og:type" content="article">
+<style>body{margin:0;font-size:14px;font-family:system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #F7F8FA; --panel: #FFFFFF; --ink: #1C2433; --ink-2: #4A5468; --muted: #7A8494;
+    --rule: #DDE1E7; --rule-2: #EDF0F3; --accent: #0B6E99; --tint: #E7F1F7;
+    --stage-a: #4F8AAE; --lab: #C77A1F; --lab-tint: #FBF1E3; --lecture-tint: #EEF1F5;
+    --code-bg: #1E2530; --code-ink: #E6EAF0; --warn: #B4471B; --warn-tint: #FCEDE6; --ok: #2E7D5B; --ok-tint: #E6F3EC;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #12161C; --panel: #181D25; --ink: #E7EAEF; --ink-2: #B7BEC9; --muted: #8E97A5;
+      --rule: #2B323C; --rule-2: #222830; --accent: #5DB3DA; --tint: #1A2A35;
+      --stage-a: #6FA4C5; --lab: #E0A24F; --lab-tint: #2E2618; --lecture-tint: #222830;
+      --code-bg: #0C1015; --code-ink: #DDE3EA; --warn: #E8875A; --warn-tint: #2E1F18; --ok: #6CC29A; --ok-tint: #17291F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #12161C; --panel: #181D25; --ink: #E7EAEF; --ink-2: #B7BEC9; --muted: #8E97A5;
+    --rule: #2B323C; --rule-2: #222830; --accent: #5DB3DA; --tint: #1A2A35;
+    --stage-a: #6FA4C5; --lab: #E0A24F; --lab-tint: #2E2618; --lecture-tint: #222830;
+    --code-bg: #0C1015; --code-ink: #DDE3EA; --warn: #E8875A; --warn-tint: #2E1F18; --ok: #6CC29A; --ok-tint: #17291F;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--ground); color: var(--ink); font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; font-size: 15.5px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3, h4 { font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+  .eyebrow { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  a { color: var(--accent); }
+  code, pre, kbd { font-family: "IBM Plex Mono", Consolas, monospace; }
+  code { font-size: 0.92em; background: var(--lecture-tint); padding: 1px 5px; border-radius: 3px; }
+  p code, li code, td code { overflow-wrap: anywhere; }
+  pre { background: var(--code-bg); color: var(--code-ink); padding: 14px 16px; border-radius: 4px; overflow-x: auto; font-size: 13.5px; line-height: 1.5; margin: 12px 0; }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  kbd { font-size: 0.85em; border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 3px; padding: 0 5px; background: var(--panel); }
+  p { margin: 0 0 12px; max-width: 72ch; }
+  ul, ol { margin: 0 0 12px; padding-left: 22px; max-width: 72ch; }
+  li { margin: 3px 0; }
+  li p { margin: 0; }
+
+  .page { max-width: 1120px; margin: 0 auto; padding: 40px 28px 80px; }
+  .masthead { padding-bottom: 24px; border-bottom: 2px solid var(--ink); display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 32px; align-items: end; }
+  .masthead h1 { font-size: clamp(34px, 5vw, 56px); font-weight: 750; font-stretch: 112%; line-height: 1; margin-top: 10px; }
+  .masthead .lede { margin-top: 14px; color: var(--ink-2); max-width: 62ch; }
+  .masthead .facts { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--muted); line-height: 1.8; text-align: right; white-space: nowrap; }
+  .masthead .facts b { color: var(--ink); font-weight: 500; }
+
+  .body { display: grid; grid-template-columns: 230px minmax(0,1fr); gap: 48px; margin-top: 36px; }
+  .toc { position: sticky; top: 24px; align-self: start; font-size: 13.5px; }
+  .toc ol { list-style: none; padding: 0; margin: 8px 0 0; }
+  .toc li { border-top: 1px solid var(--rule-2); }
+  .toc li.mod { border-top: 0; padding-top: 14px; }
+  .toc a { display: grid; grid-template-columns: 30px 1fr auto; gap: 8px; padding: 7px 0; color: var(--ink); text-decoration: none; }
+  .toc a:hover .t { color: var(--accent); }
+  .toc .id, .toc .h { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--muted); }
+
+  .prod { background: var(--panel); border: 1px solid var(--rule); padding: 18px 20px; margin-bottom: 36px; }
+  .prod h3 { font-size: 16px; margin-bottom: 8px; }
+  .prod p, .prod li { font-size: 14px; color: var(--ink-2); }
+
+  .module-head { margin: 8px 0 28px; padding-bottom: 14px; border-bottom: 1px solid var(--ink); }
+  .module-head h2 { font-size: 30px; font-weight: 700; margin-top: 4px; }
+  .module-head p { color: var(--ink-2); margin-top: 8px; }
+
+  .lesson { margin-bottom: 52px; scroll-margin-top: 20px; }
+  .lesson-head { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 20px; align-items: end; margin-bottom: 18px; }
+  .lesson-head h3 { font-size: 22px; font-weight: 700; }
+  .lesson-head .chip { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: 0.04em; padding: 3px 9px; border-radius: 3px; background: var(--lecture-tint); color: var(--ink-2); white-space: nowrap; }
+  .lesson-head .chip.lab { background: var(--lab-tint); color: var(--lab); }
+
+  .part { margin: 18px 0; }
+  .part > .eyebrow { display: block; margin-bottom: 6px; }
+  h4 { font-size: 16px; font-weight: 700; margin: 18px 0 6px; }
+
+  figure.fig { margin: 18px 0 22px; }
+  figure.fig svg { display: block; width: 100%; max-width: 100%; height: auto; color: var(--ink); font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; }
+  figure.fig figcaption { font-size: 13px; color: var(--ink-2); margin-top: 8px; line-height: 1.5; }
+  figure.fig figcaption b { color: var(--ink); font-weight: 600; }
+  .resume { background: var(--ok-tint); border-left: 3px solid var(--ok); padding: 12px 16px; margin: 0 0 26px; }
+  .resume .eyebrow { color: var(--ok); display: block; margin-bottom: 4px; }
+  .resume-row { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; justify-content: space-between; font-size: 14.5px; }
+  .resume-row small { color: var(--muted); font-size: 12.5px; }
+  .resume-actions { display: flex; gap: 10px; align-items: center; }
+  .resume-actions a, a.resume-go { font-weight: 600; }
+  .resume-actions button, .markdone { font: inherit; font-size: 13px; padding: 5px 11px; border: 1px solid var(--rule); border-radius: 3px; background: var(--panel); color: var(--ink-2); cursor: pointer; }
+  .markdone.on { border-color: var(--ok); color: var(--ok); background: var(--ok-tint); }
+  .lesson-foot { margin-top: 16px; display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--muted); }
+  .toc a.is-done .t::after { content: " \2713"; color: var(--ok); font-weight: 600; }
+  #readbar { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: var(--accent); z-index: 9; transition: width 120ms linear; }
+  details.prod { padding: 0; }
+  details.prod summary { cursor: pointer; padding: 14px 20px; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 15px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+  details.prod summary::-webkit-details-marker { display: none; }
+  details.prod summary span { font-family: "IBM Plex Sans", sans-serif; font-weight: 400; font-size: 13px; color: var(--muted); }
+  details.prod summary::after { content: "+"; color: var(--muted); }
+  details.prod[open] summary::after { content: "–"; }
+  details.prod > ul, details.prod > p { padding: 0 20px 14px; }
+  details.notes { padding: 0; }
+  details.notes summary { cursor: pointer; padding: 10px 16px; list-style: none; font-size: 14px; color: var(--ink-2); }
+  details.notes summary::-webkit-details-marker { display: none; }
+  details.notes summary .eyebrow { display: inline; margin-right: 8px; }
+  details.notes summary::after { content: " +"; color: var(--muted); }
+  details.notes[open] summary::after { content: " –"; }
+  details.notes > p, details.notes > ul { margin-left: 16px; margin-right: 16px; }
+  details.notes > p:last-child, details.notes > ul:last-child { margin-bottom: 12px; }
+  .lesson-map { margin: 0 0 30px; }
+  .lesson-map .eyebrow { display: block; margin-bottom: 8px; }
+  .lesson-map .strip { display: flex; gap: 3px; height: 30px; }
+  .lesson-map a { flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; border-radius: 3px; background: var(--lecture-tint); color: var(--ink-2); font-family: "IBM Plex Mono", monospace; font-size: 11.5px; text-decoration: none; overflow: hidden; white-space: nowrap; }
+  .lesson-map a.lab { background: var(--lab-tint); color: var(--lab); }
+  .lesson-map a.here { outline: 2px solid var(--accent); outline-offset: 1px; color: var(--ink); }
+  .lesson-map a.is-done { text-decoration: line-through; opacity: .75; }
+  .lesson-map .legend { display: flex; gap: 16px; margin-top: 8px; font-size: 12.5px; color: var(--muted); }
+  .lesson-map .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; background: var(--lecture-tint); }
+  .lesson-map .legend i.lab { background: var(--lab); }
+  .lesson-nav { display: flex; justify-content: space-between; gap: 16px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--rule); font-size: 14px; }
+  .lesson-nav a { text-decoration: none; max-width: 48%; }
+  .lesson-nav a span { display: block; font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+  .lesson-nav a.next { text-align: right; margin-left: auto; }
+  details.primer-q { border: 0; border-top: 1px solid var(--rule-2); border-radius: 0; padding: 0; margin: 0; background: transparent; }
+  details.primer-q summary { font-weight: 600; font-size: 15px; padding: 10px 0; list-style: none; cursor: pointer; }
+  details.primer-q summary::-webkit-details-marker { display: none; }
+  details.primer-q summary::before { content: "+ "; color: var(--muted); font-weight: 400; }
+  details.primer-q[open] summary::before { content: "\2013 "; }
+  details.primer-q p { margin: 0 0 6px 18px; }
+  details.primer-q .where { margin: 0 0 12px 18px; font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--accent); }
+  .try { background: var(--lab-tint); border-left: 3px solid var(--lab); padding: 12px 16px; margin: 14px 0; }
+  .try .eyebrow { color: var(--lab); display: block; margin-bottom: 4px; }
+  .try p:last-child { margin-bottom: 0; }
+  .bridge { background: var(--tint); border-left: 3px solid var(--accent); padding: 10px 14px; margin: 12px 0 0; font-size: 14.5px; color: var(--ink-2); }
+  .bridge .eyebrow { color: var(--accent); display: block; margin-bottom: 2px; }
+  .toc li.gloss a { display: block; color: var(--accent); font-size: 13px; padding: 10px 0 0; }
+  .recall { margin: 0 0 52px; padding: 20px 22px 16px; border: 1px solid var(--rule); border-top: 3px solid var(--ok); background: var(--panel); scroll-margin-top: 20px; }
+  .recall .lesson-head { margin-bottom: 8px; }
+  .recall .lesson-head .eyebrow { color: var(--ok); }
+  .recall-how { color: var(--ink-2); font-size: 14.5px; margin: 0 0 6px; }
+  .recall ol { margin: 0; padding-left: 22px; }
+  .recall ol > li { padding: 12px 0 10px; border-top: 1px solid var(--rule-2); }
+  .recall .q { font-weight: 600; margin: 0 0 6px; }
+  .recall details { margin: 0; }
+  .recall details summary { cursor: pointer; font-size: 13.5px; color: var(--accent); }
+  .recall details > p { margin: 8px 0 10px; }
+  .recall-rate { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; font-size: 13px; }
+  .recall-rate button { font: inherit; font-size: 13px; padding: 5px 11px; border: 1px solid var(--rule); border-radius: 3px; background: var(--panel); color: var(--ink-2); cursor: pointer; }
+  .recall-rate button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .recall-rate button.on[data-v="ok"] { border-color: var(--ok); color: var(--ok); background: var(--ok-tint); }
+  .recall-rate button.on[data-v="again"] { border-color: var(--lab); color: var(--lab); background: var(--lab-tint); }
+  .recall-score { margin: 12px 0 0; font-weight: 600; color: var(--ok); font-size: 14.5px; }
+  .toc li.recall-li a .id { color: var(--ok); font-weight: 600; }
+  .stage-done { margin: 0 0 52px; padding: 18px 22px; background: var(--ok-tint); border-left: 4px solid var(--ok); scroll-margin-top: 20px; }
+  .stage-done .eyebrow { color: var(--ok); display: block; margin-bottom: 6px; }
+  .stage-done .can { font-family: "Archivo", sans-serif; font-size: 20px; font-weight: 700; line-height: 1.25; margin: 0 0 8px; color: var(--ink); }
+  .stage-done p { margin: 0 0 4px; font-size: 14.5px; color: var(--ink-2); }
+  .notes { background: var(--tint); border-left: 3px solid var(--accent); padding: 12px 16px; margin: 14px 0; }
+  .notes p:last-child, .notes ul:last-child { margin-bottom: 0; }
+  .notes .eyebrow { color: var(--accent); display: block; margin-bottom: 4px; }
+  .warn { background: var(--warn-tint); border-left: 3px solid var(--warn); padding: 12px 16px; margin: 14px 0; }
+  .warn .eyebrow { color: var(--warn); display: block; margin-bottom: 4px; }
+  .warn p:last-child { margin-bottom: 0; }
+  .done { background: var(--ok-tint); border-left: 3px solid var(--ok); padding: 12px 16px; margin: 14px 0; }
+  .done .eyebrow { color: var(--ok); display: block; margin-bottom: 4px; }
+  .done ul:last-child { margin-bottom: 0; }
+
+  .tbl-wrap { overflow-x: auto; margin: 12px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th { text-align: left; font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 500; padding: 6px 8px 8px; border-bottom: 1px solid var(--rule); }
+  td { padding: 7px 8px; border-bottom: 1px solid var(--rule-2); vertical-align: top; }
+  td code { white-space: nowrap; }
+
+  details { border: 1px solid var(--rule); border-radius: 3px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+  summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  details ol, details ul { margin-top: 8px; }
+
+  .quiz ol { padding-left: 22px; }
+  .quiz li { margin: 6px 0; }
+
+  .tree { font-family: "IBM Plex Mono", monospace; font-size: 13.5px; line-height: 1.5; background: var(--panel); border: 1px solid var(--rule); padding: 12px 16px; white-space: pre; overflow-x: auto; }
+
+  .rubric td:first-child { width: 60%; }
+
+  @media (max-width: 900px) {
+    .body { grid-template-columns: minmax(0, 1fr); }
+    main { min-width: 0; }
+    .toc { position: static; }
+    .masthead { grid-template-columns: 1fr; }
+    .masthead .facts { text-align: left; white-space: normal; }
+    .lesson-head { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) { .page { padding: 24px 16px 60px; } }
+</style>
+<style>
+  .sample-bar { display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: space-between; align-items: center; font-size: 14px; margin-bottom: 26px; }
+  .sample-bar a { color: var(--ink); font-weight: 600; text-decoration: none; }
+  .sample-bar a.buy { background: var(--ink); color: var(--ground); padding: 8px 14px; border-radius: 4px; }
+  .sample-main { max-width: 860px; margin-top: 34px; }
+  .sample-cta { margin: 8px 0 0; padding: 22px 24px; border: 1px solid var(--rule); border-top: 3px solid var(--accent); background: var(--panel); }
+  .sample-cta h3 { font-size: 22px; font-weight: 700; margin: 6px 0 10px; }
+  .sample-cta p { color: var(--ink-2); margin: 0 0 14px; }
+  .sample-cta .row { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+  .sample-cta a.buy { display: inline-block; background: var(--ink); color: var(--ground); font-family: "Archivo", sans-serif; font-weight: 700; padding: 12px 20px; border-radius: 4px; text-decoration: none; }
+  .sample-cta .fine { font-size: 13px; color: var(--muted); margin: 14px 0 0; }
+  @media (max-width: 700px) {
+    figure.fig { overflow-x: auto; }
+    figure.fig svg { width: 760px; max-width: none; }
+    figure.fig figcaption { position: sticky; left: 0; }
+    figure.fig figcaption::before { content: "Swipe the picture sideways. "; color: var(--muted); }
+  }
+</style>
+
+<div class="page">
+  <div class="sample-bar"><a href="index.html">← Zero to AI Tester</a><a class="buy" href="index.html#pricing">Get the full course · ₹1,499</a></div>
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">Free sample · no sign-up · the real opening page of the course</div>
+      <h1>The first 15 minutes</h1>
+      <p class="lede">This is where the course starts, exactly as buyers see it: 22 questions every newcomer has, answered in plain words, and one small AI test you can run right now with any chatbot. If this page makes sense to you, the rest of the course will too.</p>
+    </div>
+    <div class="facts">Module 0 · Lesson 0.0<br><b>15 min</b> · 22 questions<br>1 experiment · nothing to install</div>
+  </header>
+
+  <main class="sample-main">
+      <!-- the primer, as it appears at the top of Module 0 -->
+      <section class="lesson" id="l0-0">
+        <div class="lesson-head">
+          <div><span class="eyebrow">Read first</span><h3>The questions you will be able to answer</h3></div>
+          <span class="chip">Primer · 15 min</span>
+        </div>
+
+        <div class="part">
+          <p>You are not expected to know any of the words below yet. Nobody starting this course does. This page puts them all in front of you once, in plain language, so that none of them can surprise you later. Each answer is a few sentences; the course teaches every one of them properly when its turn comes.</p>
+          <p>Read the questions first. Guess before you open an answer. The ones you get wrong are the ones you will remember.</p>
+        </div>
+
+        <div class="try"><span class="eyebrow">Your first AI test · 10 minutes · nothing to install</span>
+          <p>Open any chatbot you have: ChatGPT, Claude, Gemini, the assistant on your bank's site. In three separate fresh chats, ask the same question: <em>"I bought a kettle 40 days ago and it stopped working. Can I get a refund?"</em></p>
+          <ol>
+            <li>Write down the three answers side by side.</li>
+            <li>Mark every place they differ: the number of days, the conditions, the tone, what it asked you.</li>
+            <li>Now answer honestly: which of the three is the expected result?</li>
+          </ol>
+          <p>You cannot say, and neither can anyone else, until somebody decides what "good" means and measures it across many runs. You have just done the first step of an AI tester's job. The rest of the course is doing it properly.</p>
+        </div>
+
+<figure class="fig">
+<svg viewBox="0 0 940 350" role="img" aria-label="A map of the course vocabulary: the product row runs from a guest question through document search, the prompt, and the model to an answer, with a tool call and a prompt-injection route; the tester row runs from a golden dataset through running the eval, a rubric and judge, and pass rate against threshold to a gate." xmlns="http://www.w3.org/2000/svg"><defs><marker id="f00map-cur" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:currentColor"/></marker><marker id="f00map-lab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--lab)"/></marker></defs>
+<text x="20" y="22" font-size="11" text-anchor="start" style="fill:var(--muted);font-family:'IBM Plex Mono',Consolas,monospace">WHAT THE PRODUCT DOES</text>
+<rect x="20" y="34" width="130" height="56" rx="6" style="fill:var(--panel);stroke:currentColor;stroke-width:1.2"/>
+<text x="85.0" y="58.0" font-size="12" text-anchor="middle" style="fill:currentColor;font-weight:600">Guest question</text>
+<text x="85.0" y="74.6" font-size="10.5" text-anchor="middle" style="fill:var(--muted)">the input</text>
+<rect x="190" y="34" width="170" height="56" rx="6" style="fill:var(--panel);stroke:currentColor;stroke-width:1.2"/>
+<text x="275.0" y="58.0" font-size="12" text-anchor="middle" style="fill:currentColor;font-weight:600">Search the documents</text>
+<text x="275.0" y="74.6" font-size="10.5" text-anchor="middle" style="fill:var(--muted)">RAG: retrieval by embeddings</text>
+<rect x="400" y="34" width="170" height="56" rx="6" style="fill:var(--panel);stroke:currentColor;stroke-width:1.2"/>
+<text x="485.0" y="58.0" font-size="12" text-anchor="middle" style="fill:currentColor;font-weight:600">Prompt</text>
+<text x="485.0" y="74.6" font-size="10.5" text-anchor="middle" style="fill:var(--muted)">instructions + passages + question</text>
+<rect x="610" y="34" width="150" height="56" rx="6" style="fill:var(--panel);stroke:var(--accent);stroke-width:1.2"/>
+<text x="685.0" y="58.0" font-size="12" text-anchor="middle" style="fill:currentColor;font-weight:600">Model (LLM)</text>
+<text x="685.0" y="74.6" font-size="10.5" text-anchor="middle" style="fill:var(--muted)">predicts tokens</text>
+<rect x="800" y="34" width="120" height="56" rx="6" style="fill:var(--panel);stroke:currentColor;stroke-width:1.2"/>
+<text x="860.0" y="58.0" font-size="12" text-anchor="middle" style="fill:currentColor;font-weight:600">Answer</text>
+<text x="860.0" y="74.6" font-size="10.5" text-anchor="middle" style="fill:var(--muted)">may hallucinate</text>
+<line x1="152" y1="62" x2="188" y2="62" style="stroke:currentColor;stroke-width:1.4;fill:none" marker-end="url(#f00map-cur)"/>
+<line x1="362" y1="62" x2="398" y2="62" style="stroke:currentColor;stroke-width:1.4;fill:none" marker-end="url(#f00map-cur)"/>
+<line x1="572" y1="62" x2="608" y2="62" style="stroke:currentColor;stroke-width:1.4;fill:none" marker-end="url(#f00map-cur)"/>
+<line x1="762" y1="62" x2="798" y2="62" style="stroke:currentColor;stroke-width:1.4;fill:none" marker-end="url(#f00map-cur)"/>
+<text x="485" y="106" font-size="10.5" text-anchor="middle" style="fill:var(--muted)">counted in tokens · must fit the context window</text>
+<text x="685" y="106" font-size="10.5" text-anchor="middle" style="fill:var(--muted)">temperature: how much it varies</text>
+<rect x="610" y="128" width="150" height="46" rx="6" style="fill:var(--panel);stroke:currentColor;stroke-width:1.2"/>
+<text x="685.0" y="147.0" font-size="12" text-anchor="middle" style="fill:currentColor;font-weight:600">Tool call</text>
+<text x="685.0" y="163.6" font-size="10.5" text-anchor="middle" style="fill:var(--muted)">an agent acts</text>
+<line x1="685" y1="112" x2="685" y2="124" style="stroke:currentColor;stroke-width:1.4;fill:none" marker-end="url(#f00map-cur)"/>
+<rect x="120" y="128" width="310" height="46" rx="6" style="fill:var(--panel);stroke:var(--lab);stroke-width:1.2"/>
+<text x="275.0" y="147.0" font-size="12" text-anchor="middle" style="fill:currentColor;font-weight:600">Prompt injection</text>
+<text x="275.0" y="163.6" font-size="10.5" text-anchor="middle" style="fill:var(--muted)">hidden instructions in a document or a message</text>
+<line x1="275" y1="124" x2="275" y2="94" style="stroke:var(--lab);stroke-width:1.4;fill:none" marker-end="url(#f00map-lab)"/>
+<text x="150" y="222" font-size="11" text-anchor="start" style="fill:var(--lab);font-family:'IBM Plex Mono',Consolas,monospace">WHAT YOU WILL DO</text>
+<rect x="20" y="234" width="150" height="56" rx="6" style="fill:var(--panel);stroke:var(--lab);stroke-width:1.2"/>
+<text x="95.0" y="258.0" font-size="12" text-anchor="middle" style="fill:currentColor;font-weight:600">Golden dataset</text>
+<text x="95.0" y="274.6" font-size="10.5" text-anchor="middle" style="fill:var(--muted)">the questions to ask</text>
+<rect x="210" y="234" width="150" height="56" rx="6" style="fill:var(--panel);stroke:var(--lab);stroke-width:1.2"/>
+<text x="285.0" y="258.0" font-size="12" text-anchor="middle" style="fill:currentColor;font-weight:600">Run the eval</text>
+<text x="285.0" y="274.6" font-size="10.5" text-anchor="middle" style="fill:var(--muted)">every question, many times</text>
+<rect x="400" y="234" width="150" height="56" rx="6" style="fill:var(--panel);stroke:var(--lab);stroke-width:1.2"/>
+<text x="475.0" y="258.0" font-size="12" text-anchor="middle" style="fill:currentColor;font-weight:600">Rubric + judge</text>
+<text x="475.0" y="274.6" font-size="10.5" text-anchor="middle" style="fill:var(--muted)">grade each answer</text>
+<rect x="590" y="234" width="170" height="56" rx="6" style="fill:var(--panel);stroke:var(--lab);stroke-width:1.2"/>
+<text x="675.0" y="258.0" font-size="12" text-anchor="middle" style="fill:currentColor;font-weight:600">Pass rate vs threshold</text>
+<text x="675.0" y="274.6" font-size="10.5" text-anchor="middle" style="fill:var(--muted)">85% against a bar of 90%</text>
+<rect x="800" y="234" width="120" height="56" rx="6" style="fill:var(--panel);stroke:var(--lab);stroke-width:1.2"/>
+<text x="860.0" y="258.0" font-size="12" text-anchor="middle" style="fill:currentColor;font-weight:600">Gate</text>
+<text x="860.0" y="274.6" font-size="10.5" text-anchor="middle" style="fill:var(--muted)">ship, or block</text>
+<line x1="172" y1="262" x2="208" y2="262" style="stroke:var(--lab);stroke-width:1.4;fill:none" marker-end="url(#f00map-lab)"/>
+<line x1="362" y1="262" x2="398" y2="262" style="stroke:var(--lab);stroke-width:1.4;fill:none" marker-end="url(#f00map-lab)"/>
+<line x1="552" y1="262" x2="588" y2="262" style="stroke:var(--lab);stroke-width:1.4;fill:none" marker-end="url(#f00map-lab)"/>
+<line x1="762" y1="262" x2="798" y2="262" style="stroke:var(--lab);stroke-width:1.4;fill:none" marker-end="url(#f00map-lab)"/>
+<path d="M85,230 V94" style="stroke:var(--lab);stroke-width:1.4;fill:none;stroke-dasharray:5 4" marker-end="url(#f00map-lab)"/>
+<text x="93" y="200" font-size="10.5" text-anchor="start" style="fill:var(--lab)">you ask</text>
+<path d="M860,94 V230" style="stroke:var(--lab);stroke-width:1.4;fill:none;stroke-dasharray:5 4" marker-end="url(#f00map-lab)"/>
+<text x="852" y="200" font-size="10.5" text-anchor="end" style="fill:var(--lab)">you check</text>
+<text x="20" y="320" font-size="11" text-anchor="start" style="fill:var(--muted)">Red-teaming is doing the orange box on purpose. Drift is the top row changing while nobody touches your code.</text>
+<text x="20" y="338" font-size="11" text-anchor="start" style="fill:var(--muted)">You do not need to understand this picture yet. Come back to it after Module 5 and again after Module 7.</text>
+</svg>
+<figcaption><b>Where every word lives.</b> The top row is the product an AI engineer builds. The bottom row is your job. Almost every term in this course is one of these boxes.</figcaption>
+</figure>
+        <div class="part"><span class="eyebrow">The machine</span>
+          <details class="primer-q"><summary>What is a model?</summary><p>A model is a program that learned its behaviour from examples instead of being written as rules. Nobody typed &quot;if the guest asks about dogs, say 25&quot;. It read a huge amount of text and learned what a sensible reply looks like. That is why you cannot find the line of code that caused a wrong answer.</p><div class="where">You will learn this in Lesson 5.1</div></details>
+          <details class="primer-q"><summary>What is an LLM?</summary><p>A large language model: a model trained on text, whose one skill is predicting what comes next. ChatGPT, Claude, and Gemini are products built on LLMs. When this course says &quot;the model&quot;, it means one of these.</p><div class="where">You will learn this in Lesson 5.2</div></details>
+          <details class="primer-q"><summary>What is a prompt?</summary><p>Everything you send to the model: the instructions, any documents, and the question. Think of it as the test input. Change one word in it and the output can change a lot.</p><div class="where">You will learn this in Lesson 5.4</div></details>
+          <details class="primer-q"><summary>What is a token?</summary><p>The unit a model reads and writes: a word or a piece of a word. &quot;Cancellation&quot; might be two or three tokens. It matters to a tester because cost, speed, and size limits are all counted in tokens, not in words.</p><div class="where">You will learn this in Lesson 5.2</div></details>
+          <details class="primer-q"><summary>Why does the same question get different answers?</summary><p>The model does not look up an answer. It builds one, a token at a time, and at each step it picks from several likely options with a little randomness. A setting called temperature controls how much. So one run tells you very little, and that single fact is why AI testing is a different job.</p><div class="where">You will learn this in Lessons 5.3 and 7.1</div></details>
+          <details class="primer-q"><summary>What is a hallucination?</summary><p>An answer that sounds confident and is simply false: a fee that does not exist, a policy nobody wrote. The model is not lying; it is producing likely-sounding text. Finding these and measuring how often they happen is a large part of your work.</p><div class="where">You will learn this in Lessons 5.9 and 7.6</div></details>
+          <details class="primer-q"><summary>What is a context window?</summary><p>How much text the model can keep in view at once: the instructions, the documents, the conversation so far, and its own answer. When a long chat overflows it, the oldest parts fall out. That is why a chatbot &quot;forgets&quot; what you told it earlier.</p><div class="where">You will learn this in Lessons 5.2 and 8.3</div></details>
+        </div>
+        <div class="part"><span class="eyebrow">How AI products are built</span>
+          <details class="primer-q"><summary>What is a system prompt?</summary><p>The standing instructions the developer gives the model before any user speaks: &quot;You are the hotel&#x27;s assistant. Answer only from the policy.&quot; The user never sees it. A lot of defects are really defects in this text.</p><div class="where">You will learn this in Lesson 5.4</div></details>
+          <details class="primer-q"><summary>What is RAG, and why is it needed?</summary><p>Retrieval-augmented generation. A model knows nothing about your company&#x27;s documents and its general knowledge stops at a cutoff date. RAG fixes both: when a question arrives, the system first searches your documents for the relevant passages, then hands them to the model and says &quot;answer from these&quot;. Without it the bot guesses. With it, the bot can still go wrong in two new places: the search can fetch the wrong passage, or the model can ignore the right one. You will test both.</p><div class="where">You will learn this in Lessons 5.7 and 8.1</div></details>
+          <details class="primer-q"><summary>What is an embedding?</summary><p>A way of turning a sentence into a list of numbers so that sentences with similar meaning end up close together. It is how the search in RAG finds &quot;Are pets allowed?&quot; when the guest typed &quot;Can I bring my dog?&quot;.</p><div class="where">You will learn this in Lesson 5.6</div></details>
+          <details class="primer-q"><summary>What is an agent?</summary><p>A model that is allowed to do things, not only talk: look up a booking, check availability, cancel. It asks for a tool, your code runs it, and the model reads the result. The risk is obvious, and testing what it did, not just what it said, is its own lesson.</p><div class="where">You will learn this in Lessons 5.8 and 8.4</div></details>
+          <details class="primer-q"><summary>What is an API, and what is an API key?</summary><p>An API is how one program talks to another: send a request, get a response. If you have used Postman you have used one. An API key is the password your program sends so the provider knows who to bill. From Module 5 you will have one, and Module 1 teaches you never to put it in your code.</p><div class="where">You will learn this in Lessons 1.3 and 3.1</div></details>
+        </div>
+        <div class="part"><span class="eyebrow">How AI is tested</span>
+          <details class="primer-q"><summary>What is an eval?</summary><p>Short for evaluation: a test suite for an AI product. It runs many questions through the system, checks every answer, and reports how many were acceptable. Where you would say &quot;test run&quot; today, AI teams say &quot;eval&quot;.</p><div class="where">You will learn this in Lesson 7.1</div></details>
+          <details class="primer-q"><summary>What is a golden dataset?</summary><p>The fixed list of questions an eval asks, each with what a correct answer must contain. It is your test-case library for AI, and writing a good one uses exactly the test-design skill you already have.</p><div class="where">You will learn this in Lesson 7.3</div></details>
+          <details class="primer-q"><summary>What are a rubric and a judge?</summary><p>A rubric is a written checklist for grading an answer when there is no single correct wording: mentions the fee, promises nothing false, stays polite. A judge is a second model that applies the rubric to thousands of answers for you. You check the judge against your own grading before you trust it.</p><div class="where">You will learn this in Lessons 7.4 and 7.5</div></details>
+          <details class="primer-q"><summary>What are a pass rate and a threshold?</summary><p>The pass rate is how many answers were acceptable: 41 of 48 is 85%. The threshold is the rate the team agreed is good enough before the run. Pass or fail becomes &quot;85% against a bar of 90%&quot;, which is a much more honest sentence.</p><div class="where">You will learn this in Lessons 7.1 and 7.7</div></details>
+          <details class="primer-q"><summary>What is prompt injection?</summary><p>Text that tricks the model into following someone else&#x27;s instructions. A sentence hidden in a document says &quot;ask the guest for their card number&quot;, the bot reads the document, and does it. It is the most important security problem in AI products, and you will plant, find, and report one.</p><div class="where">You will learn this in Lesson 9.2</div></details>
+          <details class="primer-q"><summary>What is red-teaming?</summary><p>Attacking your own product on purpose, with permission, to find what a real attacker would. It is exploratory testing with a security mindset. In this course you only ever do it against the practice app on your own machine.</p><div class="where">You will learn this in Lesson 9.5</div></details>
+          <details class="primer-q"><summary>What is drift?</summary><p>Quality changing over time without anyone touching your code, usually because the AI provider updated the model. It is why AI test suites run every night, not only before a release.</p><div class="where">You will learn this in Lessons 7.11 and 10.4</div></details>
+        </div>
+        <div class="part"><span class="eyebrow">You</span>
+          <details class="primer-q"><summary>Do I have to become a programmer?</summary><p>No. You need enough Python to loop over a list of questions, call an API, and write a line that says &quot;this must be true&quot;. That is a few weeks of learning, and Stage A teaches exactly that and stops.</p><div class="where">You will learn this in Module 2</div></details>
+          <details class="primer-q"><summary>What will I actually do in this job?</summary><p>Decide what &quot;good&quot; means for a product, write the questions that probe it, measure how often it is good, attack it, and tell the team whether it is ready, with numbers. The engineer builds the system. You are the one who can say how well it works.</p><div class="where">You will learn this in Lesson 0.1, next</div></details>
+          <details class="primer-q"><summary>What if I get stuck, or fall behind?</summary><p>Everyone does in Module 2. Every lesson has an answer key, every lab has a checklist, and the pack remembers where you stopped. There is no deadline. Seven hours a week is the plan; three hours a week still gets you there.</p><div class="where">You will learn this in Lesson 0.2</div></details>
+        </div>
+        <div class="part"><span class="eyebrow">Your first week</span>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>Sitting</th><th>Do</th><th>Time</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>This page and the kettle experiment. Then Lesson 0.1.</td><td>45 min</td></tr>
+              <tr><td>2</td><td>Lesson 0.2, then install the kit in Lesson 0.3.</td><td>2 h</td></tr>
+              <tr><td>3</td><td>Run the setup checker in Lesson 0.4. Start Module 1.</td><td>1 h</td></tr>
+            </tbody>
+          </table></div>
+          <p>The next seven weeks have no AI in them on purpose: terminal, Python, APIs, and browser tests are the tools every AI test is built from. If you want to see where it is all going, you are allowed to read Lessons 5.1 to 5.3 at any time. They need no code. Then come back.</p>
+          <p>Every term on this page, and every other one in the course, is in the course glossary: 44 terms in plain words, linked from the contents list of every module.</p>
+        </div>
+      </section>
+
+
+    <div class="sample-cta">
+      <span class="eyebrow">That was the first 15 minutes of 167 hours</span>
+      <h3>The course teaches every one of these answers properly, by doing.</h3>
+      <p>Thirteen modules from your first terminal command to a release assessment you present on video. A practice AI product with 12 planted defects to find. Seven portfolio projects on your own GitHub. One payment of ₹1,499, yours to keep.</p>
+      <div class="row"><a class="buy" href="index.html#pricing">See what is included · ₹1,499</a><a href="syllabus.html">Read the full syllabus</a></div>
+      <p class="fine">All sales are final, which is why this page is free. Read it, try the experiment, then decide.</p>
+    </div>
+  </main>
+</div>
+</body>
+</html>
