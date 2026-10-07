@@ -18,6 +18,11 @@ binding = "ASSETS"
 not_found_handling = "404-page"
 html_handling = "auto-trailing-slash"
 
+# Private course files, served only to buyers by src/worker.js. Filled by platform/publish_course.py in the course repo.
+[[kv_namespaces]]
+binding = "COURSE_FILES"
+id = "0c0351a5d9ba46708b38761115840c74"
+
 # Daily keep-alive for the Supabase project (see src/worker.js). 03:17 UTC = 08:47 IST.
 [triggers]
 crons = ["17 3 * * *"]

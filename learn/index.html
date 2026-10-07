@@ -107,11 +107,25 @@
   (function () {
     const CFG = { supabaseUrl: "https://cxiezjegnnbkghbevqra.supabase.co", publishableKey: "sb_publishable_6owpYUznjQkw2VH3kvNKVA_Ay3VNhlW", buy: "../zero-to-ai-tester/#pricing" };
     const sb = window.supabase.createClient(CFG.supabaseUrl, CFG.publishableKey);
+    // The course pages are served by a Worker that cannot read this page's storage, so the access token
+    // travels in a cookie scoped to /learn. It is refreshed whenever Supabase refreshes the session.
+    function setCookie(session) {
+      if (session && session.access_token) {
+        const ttl = Math.max(60, Math.floor(session.expires_at - Date.now() / 1000));
+        document.cookie = "sb_access=" + encodeURIComponent(session.access_token) + "; Path=/learn; Max-Age=" + ttl + "; SameSite=Lax" + (location.protocol === "https:" ? "; Secure" : "");
+      } else {
+        document.cookie = "sb_access=; Path=/learn; Max-Age=0; SameSite=Lax";
+      }
+    }
+    sb.auth.onAuthStateChange((_event, session) => setCookie(session));
+    const params = new URLSearchParams(location.search);
+    const next = params.get("next") || "";
+    const safeNext = /^\/learn\/[a-z0-9-]+\//.test(next) ? next : "";
     const login = document.getElementById("login"), courses = document.getElementById("courses");
     const $ = (s) => document.querySelector(s);
     const err = (id, msg) => { const el = document.getElementById(id); el.textContent = msg || ""; el.hidden = !msg; };
     const step = (name) => login.querySelectorAll("[data-step]").forEach((s) => { s.hidden = s.dataset.step !== name; });
-    let email = (new URLSearchParams(location.search).get("email") || "").trim().toLowerCase();
+    let email = (params.get("email") || "").trim().toLowerCase();
     if (email) $("#login-email").value = email;
 
     async function send() {
@@ -141,9 +155,10 @@
       const { error } = await sb.auth.verifyOtp({ email, token, type: "email" });
       b.disabled = false;
       if (error) return err("code-err", /expired|invalid/i.test(error.message) ? "That code did not match or has expired. Send a new one." : error.message);
+      if (safeNext) { location.replace(safeNext); return; }
       await showCourses();
     });
-    courses.querySelector("[data-signout]").addEventListener("click", async () => { await sb.auth.signOut(); courses.hidden = true; login.hidden = false; step("email"); });
+    courses.querySelector("[data-signout]").addEventListener("click", async () => { await sb.auth.signOut(); setCookie(null); courses.hidden = true; login.hidden = false; step("email"); });
 
     async function showCourses() {
       const { data: { user } } = await sb.auth.getUser();
@@ -159,7 +174,10 @@
       }
       login.hidden = true; courses.hidden = false;
     }
-    sb.auth.getSession().then(({ data: { session } }) => { if (session) showCourses(); });
+    sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) { setCookie(session); if (safeNext) { location.replace(safeNext); return; } showCourses(); }
+    });
+    if (params.get("missing")) err("email-err", "That course is not on this account. Sign in with the email you bought with.");
   })();
 </script>
 </body>
