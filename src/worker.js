@@ -13,6 +13,8 @@ const COOKIE = "sb_access";
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const bare = /^\/learn\/([a-z0-9-]+)$/.exec(url.pathname);   // /learn/<course> without the slash
+    if (bare) return Response.redirect(`${url.origin}${url.pathname}/${url.search}`, 301);
     const m = GATE.exec(url.pathname);
     if (!m) return env.ASSETS.fetch(request);
 
