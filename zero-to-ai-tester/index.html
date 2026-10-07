@@ -765,34 +765,49 @@
     <div class="glass">
       <button type="button" class="g-x" data-buy-close aria-label="Close">&times;</button>
       <div data-step="details">
-        <span class="g-eyebrow">Zero to AI Tester · lifetime access</span>
+        <span class="g-eyebrow">Zero to AI Tester · lifetime access · step 1 of 3</span>
         <h3 id="buy-title">₹1,499 once. Yours for life.</h3>
-        <p class="g-sub">Pay by UPI, card or net banking through Razorpay. Then a 6-digit code opens the course. No password, ever.</p>
+        <p class="g-sub">First we confirm your email with a 6-digit code, then Razorpay takes the payment, then the course opens. No password, ever.</p>
         <form id="buy-form" novalidate>
           <label>Name<input id="buy-name" name="name" autocomplete="name" maxlength="80" placeholder="As it should appear on the receipt" required></label>
           <label>Email<input id="buy-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="Your login codes go here" required></label>
           <label>WhatsApp number<input id="buy-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="10-digit mobile, optional"></label>
           <p class="g-err" id="buy-err" hidden></p>
-          <button class="g-btn" type="submit" id="buy-pay">Pay ₹1,499</button>
-          <div class="g-row"><span class="g-secure"><i></i>Secured by Razorpay</span><span>Receipt by email</span></div>
+          <button class="g-btn" type="submit" id="buy-next">Send my code</button>
+          <div class="g-row"><span class="g-secure"><i></i>Payment by Razorpay</span><span>Receipt by email</span></div>
         </form>
+        <p class="g-fine" data-signed-in hidden>Signed in as <b data-who></b>. <button type="button" class="linkish" data-signout>Not you? Sign out</button></p>
         <p class="g-fine">All sales are final; the <a href="primer.html">first 15 minutes</a> are free to read first. Already bought? <a href="../learn/">Log in</a>. Prefer the downloadable pack? <a data-playto href="#pricing">Buy it on Playto</a>.</p>
       </div>
       <div data-step="code" hidden>
-        <span class="g-eyebrow">Payment received</span>
+        <span class="g-eyebrow">Step 2 of 3 · confirm your email</span>
         <h3>Enter the code we emailed you</h3>
         <p class="g-sub">Sent to <b data-email></b>. Six digits, valid for ten minutes. If it is slow, check the spam folder.</p>
         <form id="code-form" novalidate>
           <label>Code<input id="buy-code" class="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="000000"></label>
           <p class="g-err" id="code-err" hidden></p>
-          <button class="g-btn" type="submit" id="code-go">Open my course</button>
+          <button class="g-btn" type="submit" id="code-go">Confirm and continue</button>
         </form>
-        <p class="g-fine"><button type="button" class="linkish" data-resend>Send a new code</button> · You can also open the course any time from <a href="../learn/">aiskillszone.com/learn</a> with this email.</p>
+        <p class="g-fine"><button type="button" class="linkish" data-resend>Send a new code</button> · <button type="button" class="linkish" data-back>Change the email</button></p>
+      </div>
+      <div data-step="pay" hidden>
+        <span class="g-eyebrow">Step 3 of 3 · payment</span>
+        <h3>Email confirmed. Now the payment.</h3>
+        <p class="g-sub">Course for <b data-who2></b>. UPI, card or net banking in Razorpay's window; nothing is charged until it completes.</p>
+        <p class="g-err" id="pay-err" hidden></p>
+        <button class="g-btn" type="button" id="buy-pay">Pay ₹1,499</button>
+        <div class="g-row"><span class="g-secure"><i></i>Secured by Razorpay</span><span>Course opens the moment it completes</span></div>
+      </div>
+      <div data-step="owned" hidden>
+        <span class="g-eyebrow">Already yours</span>
+        <h3>This account already holds the course.</h3>
+        <p class="g-sub">Nothing to pay. Open it from your courses page.</p>
+        <a class="g-btn" href="../learn/zero-to-ai-tester/" style="text-align:center;text-decoration:none">Open the course</a>
       </div>
       <div data-step="done" hidden>
-        <span class="g-eyebrow">You are in</span>
+        <span class="g-eyebrow">Course activated</span>
         <h3>Welcome. Opening your course…</h3>
-        <p class="g-sub">If nothing happens in a few seconds, <a href="../learn/">go to your courses</a>.</p>
+        <p class="g-sub">A receipt is on its way to your email. If nothing happens in a few seconds, <a href="../learn/">go to your courses</a>.</p>
       </div>
     </div>
   </div>
@@ -870,14 +885,16 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-  // Buy flow: details -> Razorpay Checkout -> server-side verification -> email code -> course.
-  // Secrets never touch this page: the order is created and the payment verified by edge functions.
+  // Buy flow: details -> email code (account) -> Razorpay Checkout -> server-side verification -> course.
+  // Secrets never touch this page: orders are created and payments verified by edge functions, with the
+  // learner's own session token, so every purchase is tied to a confirmed email before money moves.
   (function () {
     const PAY = {
       supabaseUrl: "https://cxiezjegnnbkghbevqra.supabase.co",
       publishableKey: "sb_publishable_6owpYUznjQkw2VH3kvNKVA_Ay3VNhlW",
       course: "zero-to-ai-tester",
       learn: "../learn/",
+      open: "../learn/zero-to-ai-tester/",
       checkoutJs: "https://checkout.razorpay.com/v1/checkout.js",
     };
     const fn = (name) => PAY.supabaseUrl + "/functions/v1/" + name;
@@ -885,19 +902,44 @@
     if (!modal) return;
     const $ = (sel) => modal.querySelector(sel);
     const steps = Array.from(modal.querySelectorAll("[data-step]"));
-    const show = (name) => steps.forEach((s) => { s.hidden = s.dataset.step !== name; });
+    const show = (name) => { steps.forEach((s) => { s.hidden = s.dataset.step !== name; }); modal.querySelector(".glass").scrollTop = 0; };
     const err = (id, msg) => { const el = document.getElementById(id); el.textContent = msg || ""; el.hidden = !msg; };
-    let sb = null, lastOpener = null, buyer = null;
+    let sb = null, lastOpener = null, buyer = { name: "", email: "", phone: "" }, session = null;
     const client = () => sb || (sb = window.supabase.createClient(PAY.supabaseUrl, PAY.publishableKey));
 
     document.querySelectorAll("[data-playto]").forEach((a) => { a.href = CHECKOUT || FALLBACK; });
 
-    function open(e) {
+    // The course pages are served by a Worker that reads this cookie; keep it in step with the session.
+    function setCookie(s) {
+      if (s && s.access_token) {
+        const ttl = Math.max(60, Math.floor(s.expires_at - Date.now() / 1000));
+        document.cookie = "sb_access=" + encodeURIComponent(s.access_token) + "; Path=/learn; Max-Age=" + ttl + "; SameSite=Lax" + (location.protocol === "https:" ? "; Secure" : "");
+      } else {
+        document.cookie = "sb_access=; Path=/learn; Max-Age=0; SameSite=Lax";
+      }
+    }
+
+    async function open(e) {
       if (e) e.preventDefault();
       lastOpener = document.activeElement;
-      err("buy-err", ""); show("details");
+      err("buy-err", ""); err("pay-err", "");
       modal.hidden = false; document.body.style.overflow = "hidden";
-      setTimeout(() => $("#buy-name").focus(), 30);
+      show("details");
+      const { data } = await client().auth.getSession();
+      session = data.session || null;
+      setCookie(session);
+      const signedIn = $("[data-signed-in]");
+      if (session && session.user && session.user.email) {
+        buyer.email = session.user.email;
+        $("#buy-email").value = buyer.email; $("#buy-email").readOnly = true;
+        $("[data-who]").textContent = buyer.email; signedIn.hidden = false;
+        $("#buy-next").textContent = "Continue to payment";
+        const { data: owns } = await client().rpc("has_course", { course: PAY.course });
+        if (owns === true) { show("owned"); return; }
+      } else {
+        $("#buy-email").readOnly = false; signedIn.hidden = true; $("#buy-next").textContent = "Send my code";
+      }
+      setTimeout(() => $(session ? "#buy-name" : "#buy-name").focus(), 30);
     }
     function close() {
       modal.hidden = true; document.body.style.overflow = "";
@@ -907,6 +949,62 @@
     modal.querySelector("[data-buy-close]").addEventListener("click", close);
     modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !modal.hidden) close(); });
+    modal.querySelector("[data-signout]").addEventListener("click", async () => { await client().auth.signOut(); setCookie(null); session = null; open(); });
+
+    function readDetails() {
+      buyer.name = $("#buy-name").value.trim();
+      buyer.email = $("#buy-email").value.trim().toLowerCase();
+      buyer.phone = $("#buy-phone").value.trim();
+      if (buyer.name.length < 2) return "Please give the name for the receipt.";
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(buyer.email)) return "That email address does not look right.";
+      if (buyer.phone && !/^\+?[\d\s-]{10,16}$/.test(buyer.phone)) return "Use a 10-digit Indian mobile number, or +country code for others.";
+      return "";
+    }
+
+    // Step 1 -> 2: send the code (or straight to payment when already signed in)
+    $("#buy-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const problem = readDetails();
+      if (problem) return err("buy-err", problem);
+      const btn = $("#buy-next"); btn.disabled = true; err("buy-err", "");
+      try {
+        if (session) { toPay(); return; }
+        const { error } = await client().auth.signInWithOtp({ email: buyer.email, options: { shouldCreateUser: true } });
+        if (error) throw error;
+        $("[data-email]").textContent = buyer.email;
+        show("code"); setTimeout(() => $("#buy-code").focus(), 30);
+      } catch (ex) {
+        err("buy-err", /rate/i.test(ex.message) ? "Too many codes requested for this email. Wait a minute and try again." : "The code could not be sent: " + ex.message);
+      } finally { btn.disabled = false; }
+    });
+    modal.querySelector("[data-resend]").addEventListener("click", async (e) => {
+      e.target.disabled = true; err("code-err", "");
+      try { const { error } = await client().auth.signInWithOtp({ email: buyer.email, options: { shouldCreateUser: true } }); if (error) throw error; err("code-err", "A new code is on its way."); }
+      catch (ex) { err("code-err", ex.message); }
+      setTimeout(() => { e.target.disabled = false; }, 20000);
+    });
+    modal.querySelector("[data-back]").addEventListener("click", () => { show("details"); err("code-err", ""); });
+
+    // Step 2 -> 3: confirm the code, which creates or signs in the account
+    $("#code-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const token = $("#buy-code").value.replace(/\D/g, "");
+      if (token.length !== 6) return err("code-err", "The code is six digits.");
+      const btn = $("#code-go"); btn.disabled = true; err("code-err", "");
+      const { data, error } = await client().auth.verifyOtp({ email: buyer.email, token, type: "email" });
+      btn.disabled = false;
+      if (error) return err("code-err", /expired|invalid/i.test(error.message) ? "That code did not match or has expired. Send a new one and try again." : error.message);
+      session = data.session; setCookie(session);
+      const { data: owns } = await client().rpc("has_course", { course: PAY.course });
+      if (owns === true) return show("owned");
+      toPay();
+    });
+
+    function toPay() {
+      $("[data-who2]").textContent = buyer.email;
+      const btn = $("#buy-pay"); btn.disabled = false; btn.textContent = "Pay ₹1,499";
+      show("pay"); setTimeout(() => btn.focus(), 30);
+    }
 
     function loadCheckout() {
       return new Promise((resolve, reject) => {
@@ -915,77 +1013,52 @@
         document.head.appendChild(s);
       });
     }
-
     async function post(name, body) {
-      const res = await fetch(fn(name), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      const headers = { "Content-Type": "application/json" };
+      if (session && session.access_token) headers.Authorization = "Bearer " + session.access_token;
+      const res = await fetch(fn(name), { method: "POST", headers, body: JSON.stringify(body) });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { const e = new Error(data.message || data.error || ("HTTP " + res.status)); e.code = data.error; throw e; }
       return data;
     }
 
-    $("#buy-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const name = $("#buy-name").value.trim(), email = $("#buy-email").value.trim().toLowerCase(), phone = $("#buy-phone").value.trim();
-      if (name.length < 2) return err("buy-err", "Please give the name for the receipt.");
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return err("buy-err", "That email address does not look right.");
-      const btn = $("#buy-pay"); btn.disabled = true; btn.textContent = "Preparing your order…"; err("buy-err", "");
+    // Step 3: Razorpay
+    $("#buy-pay").addEventListener("click", async () => {
+      const btn = $("#buy-pay"); btn.disabled = true; btn.textContent = "Preparing your order…"; err("pay-err", "");
+      const reset = (msg) => { btn.disabled = false; btn.textContent = "Pay ₹1,499"; err("pay-err", msg); };
       try {
-        const [order] = await Promise.all([post("create-order", { course_slug: PAY.course, name, email, phone }), loadCheckout()]);
-        buyer = { name, email, phone };
+        const [order] = await Promise.all([post("create-order", { course_slug: PAY.course, name: buyer.name, email: buyer.email, phone: buyer.phone }), loadCheckout()]);
         const rzp = new window.Razorpay({
           key: order.key_id, amount: order.amount, currency: order.currency, order_id: order.order_id,
           name: "AI Skills Zone", description: order.description, prefill: order.prefill,
           notes: { course_slug: PAY.course }, theme: { color: "#4F46E5", backdrop_color: "#0B0F19" },
           retry: { enabled: true, max_count: 3 },
-          handler: (resp) => confirm(resp),
-          modal: { ondismiss: () => { btn.disabled = false; btn.textContent = "Pay ₹1,499"; err("buy-err", "Payment window closed. Nothing was charged; try again when ready."); } },
+          handler: (resp) => confirmPayment(resp),
+          modal: { ondismiss: () => reset("Payment window closed. Nothing was charged; try again when ready.") },
         });
-        rzp.on("payment.failed", (r) => { btn.disabled = false; btn.textContent = "Pay ₹1,499"; err("buy-err", (r.error && r.error.description) || "The payment did not go through. Nothing was charged."); });
+        rzp.on("payment.failed", (r) => reset((r.error && r.error.description) || "The payment did not go through. Nothing was charged."));
+        btn.textContent = "Complete the payment in Razorpay's window…";
         rzp.open();
       } catch (ex) {
-        btn.disabled = false; btn.textContent = "Pay ₹1,499";
-        if (ex.code === "already_owned") err("buy-err", "This email already owns the course. Use Log in below; there is nothing to pay.");
-        else if (ex.message === "checkout_blocked") err("buy-err", "The payment window could not load here. Open aiskillszone.com directly and try again.");
-        else err("buy-err", ex.message || "Something went wrong. Please try again.");
+        if (ex.code === "already_owned") show("owned");
+        else if (ex.code === "sign_in_required") { session = null; reset("Your session expired. Please confirm your email again."); show("details"); }
+        else if (ex.message === "checkout_blocked") reset("The payment window could not load here. Open aiskillszone.com directly and try again.");
+        else reset(ex.message || "Something went wrong. Please try again.");
       }
     });
 
-    async function confirm(resp) {
+    async function confirmPayment(resp) {
       const btn = $("#buy-pay"); btn.textContent = "Confirming payment…";
       try {
         const v = await post("verify-payment", resp);
         if (!v.ok) throw new Error(v.message || "Could not confirm the payment.");
-        buyer.email = v.email || buyer.email;
-        await sendCode();
-        $("[data-email]").textContent = buyer.email;
-        show("code"); setTimeout(() => $("#buy-code").focus(), 30);
+        show("done");
+        setTimeout(() => { location.href = PAY.open; }, 1200);
       } catch (ex) {
         btn.disabled = false; btn.textContent = "Pay ₹1,499";
-        err("buy-err", ex.message + " Your payment is safe: if money left your account, email help@aiskillszone.com with the payment id " + (resp.razorpay_payment_id || "") + ".");
+        err("pay-err", ex.message + " Your payment is safe: if money left your account, email help@aiskillszone.com with the payment id " + (resp.razorpay_payment_id || "") + ".");
       }
     }
-
-    async function sendCode() {
-      const { error } = await client().auth.signInWithOtp({ email: buyer.email, options: { shouldCreateUser: true } });
-      if (error) throw new Error("The code could not be sent: " + error.message);
-    }
-    modal.querySelector("[data-resend]").addEventListener("click", async (e) => {
-      e.target.disabled = true; err("code-err", "");
-      try { await sendCode(); err("code-err", "A new code is on its way."); } catch (ex) { err("code-err", ex.message); }
-      setTimeout(() => { e.target.disabled = false; }, 20000);
-    });
-
-    $("#code-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const token = $("#buy-code").value.replace(/\D/g, "");
-      if (token.length !== 6) return err("code-err", "The code is six digits.");
-      const btn = $("#code-go"); btn.disabled = true; err("code-err", "");
-      const { error } = await client().auth.verifyOtp({ email: buyer.email, token, type: "email" });
-      btn.disabled = false;
-      if (error) return err("code-err", /expired|invalid/i.test(error.message) ? "That code did not match or has expired. Send a new one and try again." : error.message);
-      show("done");
-      setTimeout(() => { location.href = PAY.learn; }, 900);
-    });
   })();
 </script>
 </body>
