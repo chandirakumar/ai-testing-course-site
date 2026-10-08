@@ -336,6 +336,23 @@
   .glass .g-secure i { width: 8px; height: 8px; border-radius: 50%; background: #34D399; box-shadow: 0 0 0 4px rgba(52,211,153,.18); display: inline-block; }
   @media (prefers-reduced-motion: reduce) { .glass .g-btn, .glass input { transition: none; } .glass .g-btn:hover { transform: none; } }
   @media (max-width: 480px) { .glass { padding: 22px 18px 18px; border-radius: 14px; } .glass h3 { font-size: 23px; } }
+  /* coming-soon cards */
+  .soon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 34px; }
+  .soon-card { background: var(--panel); border: 1px solid var(--rule); border-top: 3px solid var(--accent); padding: 20px 20px 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; transition: transform 160ms ease, border-color 160ms ease; }
+  .soon-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .soon-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .soon-top .eyebrow { color: var(--accent); }
+  .soon-card .waiting { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 11.5px; color: var(--pass); }
+  .soon-card h3 { font-family: "Archivo", sans-serif; font-weight: 800; font-stretch: 110%; font-size: 20px; line-height: 1.15; margin: 2px 0 0; }
+  .soon-card p { font-size: 14.5px; color: var(--ink-2); margin: 0; }
+  .soon-card .who { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; color: var(--muted); margin-top: auto; padding-top: 6px; }
+  .soon-card form.notify { display: grid; gap: 8px; margin-top: 10px; }
+  .soon-card input[type="email"] { width: 100%; font: inherit; padding: 11px 12px; border: 1px solid var(--rule); border-radius: 4px; background: var(--ground); color: var(--ink); }
+  .soon-card input[type="email"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .soon-card .btn { font: inherit; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 14.5px; padding: 11px 16px; cursor: pointer; }
+  .soon-card .note { font-size: 13.5px; color: var(--fail); }
+  .soon-card .note.ok { color: var(--pass); }
+  @media (prefers-reduced-motion: reduce) { .soon-card { transition: none; } }
   .faq details { border-top: 1px solid var(--rule); padding: 16px 0; }
   .faq details:last-child { border-bottom: 1px solid var(--rule); }
   .faq summary { cursor: pointer; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 17px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
@@ -721,32 +738,66 @@
     <details><summary>What if I get stuck?</summary><p><strong>Every checkpoint has an answer key and every lab a rubric.</strong> Module 0 teaches the fifteen-minute rule and a four-line "what I ran, what happened" template. Beyond that, email works.</p></details>
   </section>
 
-  <section id="interest">
-    <div class="eyebrow">What comes next</div>
-    <h2>Tell me which course you want next.</h2>
-    <div class="interest">
-      <div>
-        <p class="lede">More courses are planned in the same style: from zero, real code, a broken practice product, a portfolio at the end. Tick what you would buy and you hear first, with an early price.</p>
-        <p>No newsletter, no weekly emails. One message when a course you ticked launches, and nothing else.</p>
-      </div>
-      <form action="https://formsubmit.co/chandruss93@gmail.com" method="POST" id="interest-form">
-        <input type="hidden" name="_subject" value="Course interest from the Zero to AI Tester site">
-        <input type="hidden" name="_next" value="https://aiskillszone.com/zero-to-ai-tester/?interest=thanks#interest">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
-        <label for="interest-email" class="eyebrow">Your email</label>
-        <input id="interest-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email">
-        <span class="eyebrow">I would buy a course on</span>
-        <div class="courses">
-          <label><input type="checkbox" name="course" value="Machine Learning for testers"> Machine Learning: models, data, and how to test them</label>
-          <label><input type="checkbox" name="course" value="Agentic AI"> Agentic AI: building and testing tool-using agents</label>
-          <label><input type="checkbox" name="course" value="LLM Application Development"> LLM application development: RAG, prompts, evals, from zero</label>
-          <label><input type="checkbox" name="course" value="AI Security and Red Teaming"> AI security and red teaming, in depth</label>
-          <label><input type="checkbox" name="course" value="Data Engineering"> Data engineering: pipelines, quality, and validation</label>
-        </div>
-        <button class="btn primary" type="submit">Notify me first</button>
-        <p class="fine">Your email is used only to tell you when a course you ticked launches. Reply to any message to be removed.</p>
-      </form>
+  <section id="interest" class="soon">
+    <div class="eyebrow">Coming soon</div>
+    <h2>More courses, built the same way.</h2>
+    <p class="lede">From zero, real code, a deliberately broken practice product, a portfolio at the end. Press Notify me on the ones you would buy and you hear first, with an early price. One message when it launches, nothing else.</p>
+    <div class="soon-grid">
+      <article class="soon-card" data-course="ml-for-testers">
+        <div class="soon-top"><span class="eyebrow">Coming soon</span><span class="waiting" data-waiting hidden></span></div>
+        <h3>Machine learning for testers</h3>
+        <p>Models, data and how to test them: validation, classification metrics, drift and monitoring, in depth.</p>
+        <div class="who">Testers who finished Stage D and want the data side</div>
+        <form class="notify" novalidate>
+          <input type="email" name="email" inputmode="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email" hidden>
+          <button class="btn primary" type="submit">Notify me</button>
+        </form>
+        <p class="note" data-note hidden></p>
+      </article>
+      <article class="soon-card" data-course="agentic-ai">
+        <div class="soon-top"><span class="eyebrow">Coming soon</span><span class="waiting" data-waiting hidden></span></div>
+        <h3>Agentic AI: build and test agents</h3>
+        <p>Tool-using agents from the first loop to production guards: trajectories, sandboxes, cost and safety.</p>
+        <div class="who">Testers and developers shipping agents</div>
+        <form class="notify" novalidate>
+          <input type="email" name="email" inputmode="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email" hidden>
+          <button class="btn primary" type="submit">Notify me</button>
+        </form>
+        <p class="note" data-note hidden></p>
+      </article>
+      <article class="soon-card" data-course="llm-app-dev">
+        <div class="soon-top"><span class="eyebrow">Coming soon</span><span class="waiting" data-waiting hidden></span></div>
+        <h3>LLM application development</h3>
+        <p>From API call to shipped product: RAG, prompts as code, evals built in from day one.</p>
+        <div class="who">Testers moving into building</div>
+        <form class="notify" novalidate>
+          <input type="email" name="email" inputmode="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email" hidden>
+          <button class="btn primary" type="submit">Notify me</button>
+        </form>
+        <p class="note" data-note hidden></p>
+      </article>
+      <article class="soon-card" data-course="ai-security">
+        <div class="soon-top"><span class="eyebrow">Coming soon</span><span class="waiting" data-waiting hidden></span></div>
+        <h3>AI security and red teaming</h3>
+        <p>Prompt injection, jailbreaks, data exfiltration and the defences, with a full engagement on a practice app.</p>
+        <div class="who">Testers and security people</div>
+        <form class="notify" novalidate>
+          <input type="email" name="email" inputmode="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email" hidden>
+          <button class="btn primary" type="submit">Notify me</button>
+        </form>
+        <p class="note" data-note hidden></p>
+      </article>
+      <article class="soon-card" data-course="data-engineering">
+        <div class="soon-top"><span class="eyebrow">Coming soon</span><span class="waiting" data-waiting hidden></span></div>
+        <h3>Data engineering for AI systems</h3>
+        <p>Pipelines, data quality and validation for the systems the other courses test.</p>
+        <div class="who">Testers who want the plumbing</div>
+        <form class="notify" novalidate>
+          <input type="email" name="email" inputmode="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email" hidden>
+          <button class="btn primary" type="submit">Notify me</button>
+        </form>
+        <p class="note" data-note hidden></p>
+      </article>
     </div>
   </section>
 
@@ -877,11 +928,6 @@
   const FALLBACK = "mailto:chandruss93@gmail.com?subject=Zero%20to%20AI%20Tester%20%E2%80%93%20buy%20the%20course";
   window.CHECKOUT = CHECKOUT; window.FALLBACK = FALLBACK;
 
-  // After the interest form submits, the relay redirects back here with ?interest=thanks.
-  if (new URLSearchParams(location.search).get('interest') === 'thanks') {
-    const form = document.getElementById('interest-form');
-    form.innerHTML = '<div class="thanks">Thank you. You will hear from me once, when a course you ticked is ready.</div>';
-  }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
@@ -1060,6 +1106,43 @@
       }
     }
     if (new URLSearchParams(location.search).get("buy") === "1") open();
+  })();
+</script>
+<script>
+  // Coming-soon cards: Notify me stores one row per email and course. The email is remembered in this browser so
+  // the second card is one tap. Counts show once a course has a few people waiting.
+  (function () {
+    const CFG = { supabaseUrl: "https://cxiezjegnnbkghbevqra.supabase.co", publishableKey: "sb_publishable_6owpYUznjQkw2VH3kvNKVA_Ay3VNhlW", source: "landing" };
+    const cards = Array.from(document.querySelectorAll(".soon-card[data-course]"));
+    if (!cards.length || !window.supabase) return;
+    const sb = window.supabase.createClient(CFG.supabaseUrl, CFG.publishableKey);
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    let known = "";
+    try { known = localStorage.getItem("zta:notify-email") || ""; } catch (e) {}
+    sb.auth.getSession().then(({ data: { session } }) => { if (session && session.user && session.user.email) known = session.user.email; });
+    sb.rpc("interest_counts").then(({ data }) => {
+      (data || []).forEach((row) => {
+        const card = cards.find((c) => c.dataset.course === row.course_slug);
+        if (card && row.waiting >= 5) { const w = card.querySelector("[data-waiting]"); w.textContent = row.waiting + " waiting"; w.hidden = false; }
+      });
+    });
+    cards.forEach((card) => {
+      const form = card.querySelector("form.notify"), input = form.querySelector("input"), btn = form.querySelector("button"), note = card.querySelector("[data-note]");
+      const say = (msg, ok) => { note.textContent = msg; note.hidden = !msg; note.classList.toggle("ok", !!ok); };
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        let email = (input.hidden ? known : input.value).trim().toLowerCase();
+        if (!email) { input.hidden = false; input.focus(); btn.textContent = "Add me"; return; }
+        if (!EMAIL_RE.test(email)) { input.hidden = false; input.focus(); return say("That email address does not look right.", false); }
+        btn.disabled = true; say("", false);
+        const { error } = await sb.from("course_interest").insert({ email, course_slug: card.dataset.course, source: CFG.source });
+        btn.disabled = false;
+        if (error && error.code !== "23505") return say("Could not save that. Please try again in a moment.", false);
+        known = email; try { localStorage.setItem("zta:notify-email", email); } catch (x) {}
+        input.hidden = true; btn.hidden = true;
+        say(error ? "You are already on the list for this one." : "You are on the list. One message when it launches, nothing else.", true);
+      });
+    });
   })();
 </script>
 </body>
