@@ -1059,6 +1059,7 @@
         err("pay-err", ex.message + " Your payment is safe: if money left your account, email help@aiskillszone.com with the payment id " + (resp.razorpay_payment_id || "") + ".");
       }
     }
+    if (new URLSearchParams(location.search).get("buy") === "1") open();
   })();
 </script>
 </body>

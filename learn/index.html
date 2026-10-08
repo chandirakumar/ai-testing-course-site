@@ -11,13 +11,17 @@
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
   html, body { margin: 0; min-height: 100%; }
-  body { background: #0B0F19; color: #E6E9F5; font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
-    background-image: radial-gradient(900px 520px at 10% -10%, rgba(79,70,229,.32), transparent 60%), radial-gradient(700px 500px at 100% 110%, rgba(56,189,248,.14), transparent 60%), radial-gradient(500px 400px at 60% 40%, rgba(99,102,241,.10), transparent 60%); background-attachment: fixed; }
-  .wrap { max-width: 1040px; margin: 0 auto; padding-block: 22px 60px; padding-inline: 18px; }
+  body { background: #0B0F19; color: #E6E9F5; font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  /* slow-drifting glows behind everything */
+  .sky { position: fixed; inset: -20%; z-index: -1; pointer-events: none;
+    background: radial-gradient(700px 480px at 12% 8%, rgba(79,70,229,.34), transparent 62%), radial-gradient(620px 460px at 92% 96%, rgba(56,189,248,.14), transparent 60%), radial-gradient(520px 420px at 62% 44%, rgba(99,102,241,.10), transparent 60%); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding-block: 22px 64px; padding-inline: 18px; }
   nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
   .brand { font-family: "Archivo", sans-serif; font-weight: 800; font-stretch: 112%; font-size: 18px; color: #fff; text-decoration: none; }
   nav a.mail { font-size: 14px; color: #9AA3BD; text-decoration: none; }
-  main { display: grid; place-items: center; padding-top: 7vh; }
+  main { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 26px; align-items: start; margin-top: 40px; }
+  .col { display: grid; gap: 22px; min-width: 0; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; margin-top: 26px; } }
   /* buy modal and login card: deep indigo glass on midnight blue (#0B0F19), the same in both page themes */
   .glass-backdrop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 18px; background: rgba(11,15,25,.78); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
   .glass-backdrop[hidden] { display: none; }
@@ -54,59 +58,127 @@
   .glass .g-secure i { width: 8px; height: 8px; border-radius: 50%; background: #34D399; box-shadow: 0 0 0 4px rgba(52,211,153,.18); display: inline-block; }
   @media (prefers-reduced-motion: reduce) { .glass .g-btn, .glass input { transition: none; } .glass .g-btn:hover { transform: none; } }
   @media (max-width: 480px) { .glass { padding: 22px 18px 18px; border-radius: 14px; } .glass h3 { font-size: 23px; } }
-  .glass { width: min(480px, 100%); }
-  .courses { width: min(760px, 100%); }
-  .course-list { display: grid; gap: 12px; margin: 14px 0 0; }
-  .course-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 16px 18px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); }
-  .course-card b { display: block; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 18px; color: #fff; }
-  .course-card small { color: #8B93AD; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; }
-  .course-card .g-btn { width: auto; margin: 0; padding: 11px 18px; font-size: 15px; }
+  .glass { width: 100%; max-height: none; }
+  .glass.wide { padding: 24px 26px 20px; }
+  .eyebrow-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .g-sub.tight { margin-bottom: 10px; }
+  /* course cards */
+  .cards { display: grid; gap: 12px; margin-top: 12px; }
+  .card { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px 16px; align-items: center; padding: 16px 18px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); transition: transform 180ms ease, border-color 180ms ease, background 180ms ease; }
+  .card:hover { transform: translateY(-2px); border-color: rgba(165,180,252,.45); background: rgba(255,255,255,.075); }
+  .card b { display: block; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 18px; color: #fff; line-height: 1.2; }
+  .card small { display: block; color: #8B93AD; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; margin-top: 4px; }
+  .card p { margin: 6px 0 0; color: #B9C0D6; font-size: 14px; grid-column: 1 / -1; }
+  .card .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .card .g-btn { width: auto; margin: 0; padding: 10px 16px; font-size: 14.5px; text-decoration: none; text-align: center; }
+  .card .g-btn.quiet { background: rgba(255,255,255,.08); box-shadow: none; border: 1px solid rgba(255,255,255,.16); }
+  .card .g-btn.quiet:hover { background: rgba(255,255,255,.14); }
+  .card .price { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 20px; color: #fff; }
+  .card .price small { display: inline; margin: 0 0 0 4px; font-family: "IBM Plex Sans", sans-serif; color: #8B93AD; font-size: 12.5px; }
+  .continue { margin-top: 10px; padding: 12px 14px; border-radius: 10px; background: rgba(52,211,153,.10); border: 1px solid rgba(52,211,153,.32); grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 14px; align-items: center; }
+  .continue .eyebrow-sm { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #6EE7B7; }
+  .continue span { display: block; color: #E6E9F5; font-size: 14.5px; }
+  .continue .g-btn { background: linear-gradient(135deg, #10B981, #059669); box-shadow: 0 8px 24px rgba(16,185,129,.28); }
+  .bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.1); overflow: hidden; margin-top: 8px; grid-column: 1 / -1; }
+  .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #34D399, #6EE7B7); transition: width 900ms cubic-bezier(.2,.8,.2,1); }
+  .soon { display: grid; gap: 8px; margin-top: 10px; }
+  .soon div { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px dashed rgba(255,255,255,.14); color: #B9C0D6; font-size: 14.5px; }
+  .soon .pill { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: #A5B4FC; border: 1px solid rgba(165,180,252,.4); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
   .muted { color: #8B93AD; }
-  @media (max-width: 480px) { .course-card { grid-template-columns: 1fr; } .course-card .g-btn { width: 100%; } }
+  .empty { padding: 14px; border-radius: 10px; border: 1px dashed rgba(255,255,255,.16); color: #9AA3BD; font-size: 14.5px; }
+  .skeleton { height: 76px; border-radius: 12px; background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.1), rgba(255,255,255,.05)); background-size: 200% 100%; }
+  /* motion: entrances and step changes, only for people who have not asked for less motion */
+  @media (prefers-reduced-motion: no-preference) {
+    .rise { animation: rise 520ms cubic-bezier(.2,.8,.2,1) both; }
+    .rise[data-i="1"] { animation-delay: 80ms; } .rise[data-i="2"] { animation-delay: 160ms; } .rise[data-i="3"] { animation-delay: 240ms; } .rise[data-i="4"] { animation-delay: 320ms; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    [data-step].in { animation: stepin 320ms cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes stepin { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+    .card.in { animation: rise 420ms cubic-bezier(.2,.8,.2,1) both; }
+    .skeleton { animation: shimmer 1.4s linear infinite; }
+    @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+    .sky { animation: drift 28s ease-in-out infinite alternate; }
+    @keyframes drift { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(-3%, 2%, 0) scale(1.06); } }
+    .g-btn:active { transform: translateY(1px) scale(.99); }
+  }
+  @media (max-width: 480px) { .card { grid-template-columns: 1fr; } .card .actions { justify-content: stretch; } .card .g-btn { flex: 1; } .continue { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
+<div class="sky" aria-hidden="true"></div>
 <div class="wrap">
   <nav><a class="brand" href="../">AI Skills Zone</a><a class="mail" href="mailto:help@aiskillszone.com">help@aiskillszone.com</a></nav>
   <main>
-    <section class="glass" id="login" aria-labelledby="login-title">
-      <div data-step="email">
-        <span class="g-eyebrow">Your courses</span>
-        <h3 id="login-title">Open your course</h3>
-        <p class="g-sub">Enter the email you bought with. We send a 6-digit code; no password to remember. WhatsApp codes are coming soon.</p>
-        <form id="email-form" novalidate>
-          <label>Email<input id="login-email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@example.com" required></label>
-          <p class="g-err" id="email-err" hidden></p>
-          <button class="g-btn" type="submit" id="email-go">Send my code</button>
-        </form>
-        <p class="g-fine">Not bought yet? <a href="../zero-to-ai-tester/">See the course</a>, or read the <a href="../zero-to-ai-tester/primer.html">first 15 minutes free</a>.</p>
-      </div>
-      <div data-step="code" hidden>
-        <span class="g-eyebrow">Check your inbox</span>
-        <h3>Enter the code</h3>
-        <p class="g-sub">Sent to <b data-email></b>. Six digits, valid for ten minutes. Spam folder if it is slow.</p>
-        <form id="code-form" novalidate>
-          <label>Code<input id="login-code" class="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="000000"></label>
-          <p class="g-err" id="code-err" hidden></p>
-          <button class="g-btn" type="submit" id="code-go">Open my courses</button>
-        </form>
-        <p class="g-fine"><button type="button" class="linkish" data-resend>Send a new code</button> · <button type="button" class="linkish" data-back>Use a different email</button></p>
-      </div>
-    </section>
+    <div class="col">
+      <section class="glass rise" data-i="1" id="login" aria-labelledby="login-title">
+        <div data-step="email">
+          <span class="g-eyebrow">Your courses</span>
+          <h3 id="login-title">Open your course</h3>
+          <p class="g-sub">Enter the email you bought with. We send a 6-digit code; no password to remember. WhatsApp codes are coming soon.</p>
+          <form id="email-form" novalidate>
+            <label>Email<input id="login-email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@example.com" required></label>
+            <p class="g-err" id="email-err" hidden></p>
+            <button class="g-btn" type="submit" id="email-go">Send my code</button>
+          </form>
+          <p class="g-fine">New here? The courses are listed on the right, and the <a href="../zero-to-ai-tester/primer.html">first 15 minutes</a> of Zero to AI Tester are free to read.</p>
+        </div>
+        <div data-step="code" hidden>
+          <span class="g-eyebrow">Check your inbox</span>
+          <h3>Enter the code</h3>
+          <p class="g-sub">Sent to <b data-email></b>. Six digits, valid for ten minutes. Spam folder if it is slow.</p>
+          <form id="code-form" novalidate>
+            <label>Code<input id="login-code" class="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="000000"></label>
+            <p class="g-err" id="code-err" hidden></p>
+            <button class="g-btn" type="submit" id="code-go">Open my courses</button>
+          </form>
+          <p class="g-fine"><button type="button" class="linkish" data-resend>Send a new code</button> · <button type="button" class="linkish" data-back>Use a different email</button></p>
+        </div>
+      </section>
 
-    <section class="glass courses" id="courses" hidden aria-labelledby="courses-title">
-      <span class="g-eyebrow">Signed in as <b data-who style="color:#fff"></b></span>
-      <h3 id="courses-title">Your courses</h3>
-      <div class="course-list" id="course-list"></div>
-      <p class="g-fine"><button type="button" class="linkish" data-signout>Sign out</button> · Questions: help@aiskillszone.com</p>
-    </section>
+      <section class="glass rise" data-i="1" id="mine" hidden aria-labelledby="mine-title">
+        <div class="eyebrow-row"><span class="g-eyebrow">Signed in as <b data-who style="color:#fff"></b></span><button type="button" class="linkish" data-signout style="font-size:13px">Sign out</button></div>
+        <h3 id="mine-title">Your courses</h3>
+        <div class="cards" id="mine-list"><div class="skeleton"></div></div>
+        <p class="g-fine">Questions or a changed email address: help@aiskillszone.com</p>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="glass wide rise" data-i="2" id="explore" aria-labelledby="explore-title">
+        <span class="g-eyebrow">Explore</span>
+        <h3 id="explore-title">Courses you can start today</h3>
+        <p class="g-sub tight">Pay once, keep for life, learn at your own pace. Everything is self-paced and updated at no charge when the tools change.</p>
+        <div class="cards" id="explore-list"><div class="skeleton"></div></div>
+      </section>
+
+      <section class="glass wide rise" data-i="3" id="next" aria-labelledby="next-title">
+        <span class="g-eyebrow">In preparation</span>
+        <h3 id="next-title">What comes next</h3>
+        <p class="g-sub tight">Vote on the <a href="../zero-to-ai-tester/#interest">interest form</a>; the course with the most votes is built next.</p>
+        <div class="soon">
+          <div><span>Machine learning for testers</span><span class="pill">Planned</span></div>
+          <div><span>Agentic AI: building and testing agents</span><span class="pill">Planned</span></div>
+          <div><span>LLM application development</span><span class="pill">Planned</span></div>
+          <div><span>AI security: red-teaming and defence</span><span class="pill">Planned</span></div>
+          <div><span>Data engineering for AI systems</span><span class="pill">Planned</span></div>
+        </div>
+      </section>
+    </div>
   </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
   (function () {
-    const CFG = { supabaseUrl: "https://cxiezjegnnbkghbevqra.supabase.co", publishableKey: "sb_publishable_6owpYUznjQkw2VH3kvNKVA_Ay3VNhlW", buy: "../zero-to-ai-tester/#pricing" };
+    const CFG = { supabaseUrl: "https://cxiezjegnnbkghbevqra.supabase.co", publishableKey: "sb_publishable_6owpYUznjQkw2VH3kvNKVA_Ay3VNhlW" };
     const sb = window.supabase.createClient(CFG.supabaseUrl, CFG.publishableKey);
+    const $ = (s) => document.querySelector(s);
+    const login = $("#login"), mine = $("#mine");
+    const err = (id, msg) => { const el = document.getElementById(id); el.textContent = msg || ""; el.hidden = !msg; };
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const fmt = (n) => "₹" + Number(n).toLocaleString("en-IN");
+    function step(name) {
+      login.querySelectorAll("[data-step]").forEach((s) => { const on = s.dataset.step === name; s.hidden = !on; s.classList.toggle("in", on); });
+    }
     // The course pages are served by a Worker that cannot read this page's storage, so the access token
     // travels in a cookie scoped to /learn. It is refreshed whenever Supabase refreshes the session.
     function setCookie(session) {
@@ -121,13 +193,46 @@
     const params = new URLSearchParams(location.search);
     const next = params.get("next") || "";
     const safeNext = /^\/learn\/[a-z0-9-]+\//.test(next) ? next : "";
-    const login = document.getElementById("login"), courses = document.getElementById("courses");
-    const $ = (s) => document.querySelector(s);
-    const err = (id, msg) => { const el = document.getElementById(id); el.textContent = msg || ""; el.hidden = !msg; };
-    const step = (name) => login.querySelectorAll("[data-step]").forEach((s) => { s.hidden = s.dataset.step !== name; });
     let email = (params.get("email") || "").trim().toLowerCase();
     if (email) $("#login-email").value = email;
+    if (params.get("missing")) err("email-err", "That course is not on this account. Sign in with the email you bought with.");
 
+    // ---- courses: the catalogue is public; access rows are the learner's own
+    let catalogue = [], owned = new Set();
+    async function loadCatalogue() {
+      const { data, error } = await sb.from("courses").select("slug, title, price_inr, weeks, hours, audience, tagline").eq("is_active", true).order("created_at");
+      catalogue = error ? [] : data;
+      paintExplore();
+    }
+    function courseCard(c, isOwned) {
+      const meta = [c.weeks && c.weeks + " weeks", c.hours && c.hours + " hours", c.audience].filter(Boolean).join(" · ");
+      if (isOwned) {
+        const prog = progressFor(c.slug);
+        return '<div class="card in"><div><b>' + esc(c.title) + '</b><small>Lifetime access' + (prog.done ? " · " + prog.done + " lesson" + (prog.done === 1 ? "" : "s") + " marked done" : "") + '</small></div>' +
+          '<div class="actions"><a class="g-btn" href="' + esc(c.slug) + '/">Open</a></div>' +
+          (prog.last ? '<div class="continue"><div><span class="eyebrow-sm">Continue where you left off</span><span>' + esc(prog.last.label) + ' · ' + esc(prog.last.title) + '</span></div><a class="g-btn" href="' + esc(c.slug) + '/modules/' + esc(prog.last.file) + '.html#' + esc(prog.last.lesson) + '">Resume</a></div>' : "") +
+          '</div>';
+      }
+      return '<div class="card in"><div><b>' + esc(c.title) + '</b><small>' + esc(meta) + '</small><p>' + esc(c.tagline) + '</p></div>' +
+        '<div class="actions"><span class="price">' + fmt(c.price_inr) + '<small>once</small></span></div>' +
+        '<div class="actions" style="grid-column:1 / -1;justify-content:flex-start"><a class="g-btn quiet" href="../' + esc(c.slug) + '/">See the course</a><a class="g-btn" href="../' + esc(c.slug) + '/?buy=1">Buy and start</a></div></div>';
+    }
+    function paintExplore() {
+      const list = $("#explore-list");
+      const rest = catalogue.filter((c) => !owned.has(c.slug));
+      list.innerHTML = rest.length ? rest.map((c) => courseCard(c, false)).join("") : '<div class="empty">You own every course that exists so far. The next ones are listed below.</div>';
+      $("#explore-title").textContent = owned.size ? "More courses" : "Courses you can start today";
+    }
+    function progressFor(slug) {
+      // Written by the course pages themselves into this browser; same origin, so readable here.
+      try {
+        const p = JSON.parse(localStorage.getItem("zta:progress") || "{}");
+        const last = p.last && p.last.file && /^module-[0-9-]+$/.test(p.last.file) ? p.last : null;
+        return { done: Object.keys(p.done || {}).length, last };
+      } catch (e) { return { done: 0, last: null }; }
+    }
+
+    // ---- sign in
     async function send() {
       const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
       if (error) throw error;
@@ -136,10 +241,10 @@
       e.preventDefault();
       email = $("#login-email").value.trim().toLowerCase();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return err("email-err", "That email address does not look right.");
-      const b = $("#email-go"); b.disabled = true; err("email-err", "");
+      const b = $("#email-go"); b.disabled = true; b.textContent = "Sending…"; err("email-err", "");
       try { await send(); $("[data-email]").textContent = email; step("code"); setTimeout(() => $("#login-code").focus(), 30); }
       catch (ex) { err("email-err", /rate/i.test(ex.message) ? "Too many codes requested. Wait a minute and try again." : "The code could not be sent: " + ex.message); }
-      b.disabled = false;
+      b.disabled = false; b.textContent = "Send my code";
     });
     login.querySelector("[data-resend]").addEventListener("click", async (e) => {
       e.target.disabled = true; err("code-err", "");
@@ -151,33 +256,40 @@
       e.preventDefault();
       const token = $("#login-code").value.replace(/\D/g, "");
       if (token.length !== 6) return err("code-err", "The code is six digits.");
-      const b = $("#code-go"); b.disabled = true; err("code-err", "");
+      const b = $("#code-go"); b.disabled = true; b.textContent = "Checking…"; err("code-err", "");
       const { error } = await sb.auth.verifyOtp({ email, token, type: "email" });
-      b.disabled = false;
+      b.disabled = false; b.textContent = "Open my courses";
       if (error) return err("code-err", /expired|invalid/i.test(error.message) ? "That code did not match or has expired. Send a new one." : error.message);
       if (safeNext) { location.replace(safeNext); return; }
-      await showCourses();
+      await showMine();
     });
-    courses.querySelector("[data-signout]").addEventListener("click", async () => { await sb.auth.signOut(); setCookie(null); courses.hidden = true; login.hidden = false; step("email"); });
+    mine.querySelector("[data-signout]").addEventListener("click", async () => {
+      await sb.auth.signOut(); setCookie(null); owned = new Set();
+      mine.hidden = true; login.hidden = false; login.classList.add("rise"); step("email"); paintExplore();
+    });
 
-    async function showCourses() {
+    async function showMine() {
       const { data: { user } } = await sb.auth.getUser();
       if (!user) return;
       $("[data-who]").textContent = user.email || user.phone || "you";
-      const { data, error } = await sb.from("course_access").select("course_slug, granted_at, courses(title)").order("granted_at", { ascending: false });
-      const list = document.getElementById("course-list");
-      if (error) { list.innerHTML = '<p class="g-err">Could not load your courses: ' + error.message + "</p>"; }
-      else if (!data.length) {
-        list.innerHTML = '<p class="muted">No course on this account yet. If you paid a moment ago, give it a minute and reload. Bought with a different email? Sign out and use that one. Otherwise, <a href="' + CFG.buy + '" style="color:#C7D2FE">get Zero to AI Tester</a>.</p>';
-      } else {
-        list.innerHTML = data.map((r) => '<div class="course-card"><div><b>' + ((r.courses && r.courses.title) || r.course_slug) + '</b><small>Lifetime access · since ' + new Date(r.granted_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) + '</small></div><a class="g-btn" href="' + r.course_slug + '/">Open</a></div>').join("");
-      }
-      login.hidden = true; courses.hidden = false;
+      login.hidden = true; mine.hidden = false;
+      const list = $("#mine-list");
+      const { data, error } = await sb.from("course_access").select("course_slug, granted_at").order("granted_at", { ascending: false });
+      if (error) { list.innerHTML = '<p class="g-err">Could not load your courses: ' + esc(error.message) + "</p>"; return; }
+      owned = new Set(data.map((r) => r.course_slug));
+      if (!catalogue.length) await loadCatalogue();
+      const mineCourses = catalogue.filter((c) => owned.has(c.slug));
+      list.innerHTML = mineCourses.length ? mineCourses.map((c) => courseCard(c, true)).join("")
+        : '<div class="empty">No course on this account yet. If you paid a moment ago, give it a minute and reload. Bought with a different email? Sign out and use that one. Otherwise pick a course on the right.</div>';
+      paintExplore();
+      list.querySelectorAll(".bar i").forEach((i) => { requestAnimationFrame(() => { i.style.width = i.dataset.w + "%"; }); });
     }
+
+    loadCatalogue();
     sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) { setCookie(session); if (safeNext) { location.replace(safeNext); return; } showCourses(); }
+      if (session) { setCookie(session); if (safeNext) { location.replace(safeNext); return; } showMine(); }
+      else step("email");
     });
-    if (params.get("missing")) err("email-err", "That course is not on this account. Sign in with the email you bought with.");
   })();
 </script>
 </body>
