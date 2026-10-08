@@ -227,7 +227,7 @@
       // Written by the course pages themselves into this browser; same origin, so readable here.
       try {
         const p = JSON.parse(localStorage.getItem("zta:progress") || "{}");
-        const last = p.last && p.last.file && /^module-[0-9-]+$/.test(p.last.file) ? p.last : null;
+        const last = p.last && p.last.file && /^module-[0-9-]+(\/[a-z0-9-]+)?$/.test(p.last.file) ? p.last : null;
         return { done: Object.keys(p.done || {}).length, last };
       } catch (e) { return { done: 0, last: null }; }
     }
