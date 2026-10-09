@@ -227,7 +227,7 @@
       }
       const cover = COVERS[c.slug];
       const body = cover
-        ? '<picture class="cover"><source srcset="../covers/' + cover + '.webp" type="image/webp"><img src="../covers/' + cover + '.jpg" width="900" height="1205" loading="lazy" alt="' + esc(c.title) + ' course map"></picture>'
+        ? '<picture class="cover"><source srcset="../covers/' + cover + '.webp" type="image/webp"><img src="../covers/' + cover + '.jpg" width="896" height="1139" loading="lazy" alt="' + esc(c.title) + ' course map"></picture>'
         : '<p>' + esc(c.tagline) + '</p>';
       return '<div class="card in"><div><b>' + esc(c.title) + '</b><small>' + esc(meta) + '</small></div>' + body +
         '<div class="actions"><span class="price">' + fmt(c.price_inr) + '<small>once</small></span></div>' +
