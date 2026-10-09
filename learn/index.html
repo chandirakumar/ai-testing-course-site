@@ -41,6 +41,12 @@
   .glass input::placeholder { color: #6B7490; }
   .glass input:focus-visible { border-color: #818CF8; box-shadow: 0 0 0 4px rgba(129,140,248,.22); }
   .glass input.code { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 26px; letter-spacing: .32em; text-align: center; padding: 12px 8px 12px 18px; }
+  .glass [hidden] { display: none !important; }
+  .glass .g-seg { display: flex; gap: 4px; padding: 4px; margin: 0 0 14px; border-radius: 10px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); }
+  .glass .g-seg button { flex: 1; font: inherit; font-size: 14px; font-weight: 600; padding: 9px 10px; border: 0; border-radius: 7px; background: transparent; color: #B9C0D6; cursor: pointer; transition: background 140ms, color 140ms; }
+  .glass .g-seg button[aria-pressed="true"] { background: rgba(129,140,248,.28); color: #fff; box-shadow: inset 0 0 0 1px rgba(165,180,252,.5); }
+  .glass .g-seg button:focus-visible { outline: 2px solid #C7D2FE; outline-offset: 1px; }
+  .glass .g-seg-label { flex: 0 0 auto; align-self: center; padding: 0 10px 0 8px; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: #9AA3BD; font-family: "IBM Plex Mono", Consolas, monospace; }
   .glass .g-btn { display: block; width: 100%; margin-top: 6px; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 16px; padding: 14px; border: 0; border-radius: 10px; color: #fff; cursor: pointer;
     background: linear-gradient(135deg, #6366F1, #4F46E5); box-shadow: 0 10px 30px rgba(79,70,229,.35), inset 0 1px 0 rgba(255,255,255,.18); transition: transform 120ms, filter 120ms; }
   .glass .g-btn:hover { transform: translateY(-1px); filter: brightness(1.06); }
@@ -114,24 +120,26 @@
         <div data-step="email">
           <span class="g-eyebrow">Your courses</span>
           <h3 id="login-title">Open your course</h3>
-          <p class="g-sub">Enter the email you bought with. We send a 6-digit code; no password to remember. WhatsApp codes are coming soon.</p>
+          <p class="g-sub">Enter the email or WhatsApp number you bought with. We send a 6-digit code; no password to remember.</p>
           <form id="email-form" novalidate>
-            <label>Email<input id="login-email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@example.com" required></label>
+            <div class="g-seg" role="group" aria-label="Where to send the code"><button type="button" data-via="email" aria-pressed="true">Email</button><button type="button" data-via="phone" aria-pressed="false">WhatsApp</button></div>
+            <label data-for="email">Email<input id="login-email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@example.com" required></label>
+            <label data-for="phone" hidden>WhatsApp number<input id="login-phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="10-digit mobile, or +country code"></label>
             <p class="g-err" id="email-err" hidden></p>
             <button class="g-btn" type="submit" id="email-go">Send my code</button>
           </form>
           <p class="g-fine">New here? The courses are listed on the right, and the <a href="../zero-to-ai-tester/primer.html">first 15 minutes</a> of Zero to AI Tester are free to read.</p>
         </div>
         <div data-step="code" hidden>
-          <span class="g-eyebrow">Check your inbox</span>
+          <span class="g-eyebrow" data-check>Check your inbox</span>
           <h3>Enter the code</h3>
-          <p class="g-sub">Sent to <b data-email></b>. Six digits, valid for ten minutes. Spam folder if it is slow.</p>
+          <p class="g-sub">Sent to <b data-email></b>. Six digits, valid for ten minutes. <span data-slow>Spam folder if it is slow.</span></p>
           <form id="code-form" novalidate>
             <label>Code<input id="login-code" class="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="000000"></label>
             <p class="g-err" id="code-err" hidden></p>
             <button class="g-btn" type="submit" id="code-go">Open my courses</button>
           </form>
-          <p class="g-fine"><button type="button" class="linkish" data-resend>Send a new code</button> · <button type="button" class="linkish" data-back>Use a different email</button></p>
+          <p class="g-fine"><button type="button" class="linkish" data-resend>Send a new code</button> · <button type="button" class="linkish" data-back>Use a different email or number</button></p>
         </div>
       </section>
 
@@ -195,7 +203,7 @@
     const safeNext = /^\/learn\/[a-z0-9-]+\//.test(next) ? next : "";
     let email = (params.get("email") || "").trim().toLowerCase();
     if (email) $("#login-email").value = email;
-    if (params.get("missing")) err("email-err", "That course is not on this account. Sign in with the email you bought with.");
+    if (params.get("missing")) err("email-err", "That course is not on this account. Sign in with the email or WhatsApp number you bought with.");
 
     // ---- courses: the catalogue is public; access rows are the learner's own
     let catalogue = [], owned = new Set();
@@ -233,16 +241,45 @@
     }
 
     // ---- sign in
+    let via = "email", phone = "";
+    function normalisePhone(raw) {
+      const digits = raw.replace(/[^\d+]/g, "");
+      if (/^\+\d{8,15}$/.test(digits)) return digits;
+      const d = digits.replace(/^\+/, "").replace(/^0+/, "");
+      if (/^91\d{10}$/.test(d)) return "+" + d;
+      if (/^[6-9]\d{9}$/.test(d)) return "+91" + d;
+      return null;
+    }
+    function setVia(v) {
+      via = v;
+      login.querySelectorAll("[data-via]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.via === v)));
+      login.querySelectorAll("[data-for]").forEach((l) => { l.hidden = l.dataset.for !== v; });
+      err("email-err", "");
+      setTimeout(() => $(v === "phone" ? "#login-phone" : "#login-email").focus(), 30);
+    }
+    login.querySelectorAll("[data-via]").forEach((b) => b.addEventListener("click", () => setVia(b.dataset.via)));
     async function send() {
-      const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+      const { error } = via === "phone"
+        ? await sb.auth.signInWithOtp({ phone, options: { shouldCreateUser: true } })
+        : await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
       if (error) throw error;
     }
     $("#email-form").addEventListener("submit", async (e) => {
       e.preventDefault();
-      email = $("#login-email").value.trim().toLowerCase();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return err("email-err", "That email address does not look right.");
+      if (via === "phone") {
+        phone = normalisePhone($("#login-phone").value.trim()) || "";
+        if (!phone) return err("email-err", "Use a 10-digit Indian mobile number, or +country code for others.");
+      } else {
+        email = $("#login-email").value.trim().toLowerCase();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return err("email-err", "That email address does not look right.");
+      }
       const b = $("#email-go"); b.disabled = true; b.textContent = "Sending…"; err("email-err", "");
-      try { await send(); $("[data-email]").textContent = email; step("code"); setTimeout(() => $("#login-code").focus(), 30); }
+      try {
+        await send();
+        $("[data-email]").textContent = via === "phone" ? phone + " on WhatsApp" : email;
+        $("[data-check]").textContent = via === "phone" ? "Check WhatsApp" : "Check your inbox";
+        $("[data-slow]").hidden = via === "phone";
+        step("code"); setTimeout(() => $("#login-code").focus(), 30); }
       catch (ex) { err("email-err", /rate/i.test(ex.message) ? "Too many codes requested. Wait a minute and try again." : "The code could not be sent: " + ex.message); }
       b.disabled = false; b.textContent = "Send my code";
     });
@@ -257,7 +294,9 @@
       const token = $("#login-code").value.replace(/\D/g, "");
       if (token.length !== 6) return err("code-err", "The code is six digits.");
       const b = $("#code-go"); b.disabled = true; b.textContent = "Checking…"; err("code-err", "");
-      const { error } = await sb.auth.verifyOtp({ email, token, type: "email" });
+      const { error } = via === "phone"
+        ? await sb.auth.verifyOtp({ phone, token, type: "sms" })
+        : await sb.auth.verifyOtp({ email, token, type: "email" });
       b.disabled = false; b.textContent = "Open my courses";
       if (error) return err("code-err", /expired|invalid/i.test(error.message) ? "That code did not match or has expired. Send a new one." : error.message);
       if (safeNext) { location.replace(safeNext); return; }

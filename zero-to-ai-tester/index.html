@@ -325,6 +325,13 @@
   .glass .g-btn:disabled { opacity: .6; cursor: progress; transform: none; }
   .glass .g-btn:focus-visible { outline: 3px solid #C7D2FE; outline-offset: 2px; }
   .glass .g-err { margin: 0 0 12px; padding: 10px 12px; border-radius: 8px; font-size: 14px; color: #FECACA; background: rgba(239,68,68,.14); border: 1px solid rgba(239,68,68,.3); }
+  .glass [hidden] { display: none !important; }
+  .glass .g-seg { display: flex; gap: 4px; padding: 4px; margin: 0 0 12px; border-radius: 10px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); }
+  .glass .g-seg button { flex: 1; font: inherit; font-size: 14px; font-weight: 600; padding: 9px 10px; border: 0; border-radius: 7px; background: transparent; color: #B9C0D6; cursor: pointer; transition: background 140ms, color 140ms; }
+  .glass .g-seg button[aria-pressed="true"] { background: rgba(129,140,248,.28); color: #fff; box-shadow: inset 0 0 0 1px rgba(165,180,252,.5); }
+  .glass .g-seg button:focus-visible { outline: 2px solid #C7D2FE; outline-offset: 1px; }
+  .glass .g-seg-label { flex: 0 0 auto; align-self: center; padding: 0 10px 0 8px; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: #9AA3BD; font-family: "IBM Plex Mono", Consolas, monospace; }
+  @media (max-width: 420px) { .glass .g-seg { flex-wrap: wrap; } .glass .g-seg-label { flex-basis: 100%; padding: 4px 8px 6px; } }
   .glass .g-fine { margin: 14px 0 0; font-size: 13px; color: #8B93AD; }
   .glass .g-fine a, .glass .g-sub a { color: #C7D2FE; }
   .glass .linkish { font: inherit; background: none; border: 0; padding: 0; color: #C7D2FE; text-decoration: underline; cursor: pointer; }
@@ -818,12 +825,13 @@
       <div data-step="details">
         <span class="g-eyebrow">Zero to AI Tester · lifetime access · step 1 of 3</span>
         <h3 id="buy-title">₹1,499 once. Yours for life.</h3>
-        <p class="g-sub">First we confirm your email with a 6-digit code, then Razorpay takes the payment, then the course opens. No password, ever.</p>
+        <p class="g-sub">First a 6-digit code confirms you, by email or WhatsApp, then Razorpay takes the payment, then the course opens. No password, ever.</p>
         <form id="buy-form" novalidate>
           <label>Name<input id="buy-name" name="name" autocomplete="name" maxlength="80" placeholder="As it should appear on the receipt" required></label>
           <label>Email<input id="buy-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="Your login codes go here" required></label>
           <label>WhatsApp number<input id="buy-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="10-digit mobile, optional"></label>
-          <p class="g-fine" style="margin:-4px 0 12px">The email gets your login codes and receipt. The WhatsApp number, if you give it, gets the same codes and your purchase confirmation, nothing else. By continuing you agree to the <a href="terms.html">terms</a> and the <a href="../privacy.html">privacy policy</a>.</p>
+          <div class="g-seg" role="group" aria-label="Where to send the code"><span class="g-seg-label">Code by</span><button type="button" data-via="email" aria-pressed="true">Email</button><button type="button" data-via="phone" aria-pressed="false">WhatsApp</button></div>
+          <p class="g-fine" style="margin:-4px 0 12px">Your code comes by email or WhatsApp, whichever you pick; the receipt goes to the email. The WhatsApp number, if you give it, also gets your purchase confirmation, nothing else. By continuing you agree to the <a href="terms.html">terms</a> and the <a href="../privacy.html">privacy policy</a>.</p>
           <p class="g-err" id="buy-err" hidden></p>
           <button class="g-btn" type="submit" id="buy-next">Send my code</button>
           <div class="g-row"><span class="g-secure"><i></i>Payment by Razorpay</span><span>Receipt by email</span></div>
@@ -832,19 +840,19 @@
         <p class="g-fine">All sales are final; the <a href="primer.html">first 15 minutes</a> are free to read first. Already bought? <a href="../learn/">Log in</a>. Prefer the downloadable pack? <a data-playto href="#pricing">Buy it on Playto</a>. <a href="../privacy.html">How your data is used</a>.</p>
       </div>
       <div data-step="code" hidden>
-        <span class="g-eyebrow">Step 2 of 3 · confirm your email</span>
-        <h3>Enter the code we emailed you</h3>
-        <p class="g-sub">Sent to <b data-email></b>. Six digits, valid for ten minutes. If it is slow, check the spam folder.</p>
+        <span class="g-eyebrow" data-step2-eyebrow>Step 2 of 3 · confirm your email</span>
+        <h3 data-step2-title>Enter the code we emailed you</h3>
+        <p class="g-sub">Sent to <b data-email></b>. Six digits, valid for ten minutes. <span data-slow>If it is slow, check the spam folder.</span></p>
         <form id="code-form" novalidate>
           <label>Code<input id="buy-code" class="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="000000"></label>
           <p class="g-err" id="code-err" hidden></p>
           <button class="g-btn" type="submit" id="code-go">Confirm and continue</button>
         </form>
-        <p class="g-fine"><button type="button" class="linkish" data-resend>Send a new code</button> · <button type="button" class="linkish" data-back>Change the email</button></p>
+        <p class="g-fine"><button type="button" class="linkish" data-resend>Send a new code</button> · <button type="button" class="linkish" data-back>Change the details</button></p>
       </div>
       <div data-step="pay" hidden>
         <span class="g-eyebrow">Step 3 of 3 · payment</span>
-        <h3>Email confirmed. Now the payment.</h3>
+        <h3>Confirmed. Now the payment.</h3>
         <p class="g-sub">Course for <b data-who2></b>. UPI, card or net banking in Razorpay's window; nothing is charged until it completes.</p>
         <p class="g-err" id="pay-err" hidden></p>
         <button class="g-btn" type="button" id="buy-pay">Pay ₹1,499</button>
@@ -962,6 +970,27 @@
     if (!modal) return;
     const $ = (sel) => modal.querySelector(sel);
     const steps = Array.from(modal.querySelectorAll("[data-step]"));
+    let via = "email";
+    function normalisePhone(raw) {
+      const digits = raw.replace(/[^\d+]/g, "");
+      if (/^\+\d{8,15}$/.test(digits)) return digits;
+      const d = digits.replace(/^\+/, "").replace(/^0+/, "");
+      if (/^91\d{10}$/.test(d)) return "+" + d;
+      if (/^[6-9]\d{9}$/.test(d)) return "+91" + d;
+      return null;
+    }
+    modal.querySelectorAll("[data-via]").forEach((b) => b.addEventListener("click", () => {
+      via = b.dataset.via;
+      modal.querySelectorAll("[data-via]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      $("#buy-phone").placeholder = via === "phone" ? "10-digit mobile, gets the code" : "10-digit mobile, optional";
+      err("buy-err", "");
+      if (via === "phone" && !$("#buy-phone").value) $("#buy-phone").focus();
+    }));
+    function sendCode() {
+      return via === "phone"
+        ? client().auth.signInWithOtp({ phone: buyer.phoneE164, options: { shouldCreateUser: true } })
+        : client().auth.signInWithOtp({ email: buyer.email, options: { shouldCreateUser: true } });
+    }
     const show = (name) => { steps.forEach((s) => { s.hidden = s.dataset.step !== name; }); modal.querySelector(".glass").scrollTop = 0; };
     const err = (id, msg) => { const el = document.getElementById(id); el.textContent = msg || ""; el.hidden = !msg; };
     let sb = null, lastOpener = null, buyer = { name: "", email: "", phone: "" }, session = null;
@@ -989,15 +1018,20 @@
       session = data.session || null;
       setCookie(session);
       const signedIn = $("[data-signed-in]");
-      if (session && session.user && session.user.email) {
-        buyer.email = session.user.email;
-        $("#buy-email").value = buyer.email; $("#buy-email").readOnly = true;
-        $("[data-who]").textContent = buyer.email; signedIn.hidden = false;
+      const u = session && session.user && (session.user.email || session.user.phone) ? session.user : null;
+      modal.querySelector(".g-seg").hidden = !!u;   // already verified, no code to send
+      if (u) {
+        // An email account locks the email; a WhatsApp-only account locks the number and leaves the email open for the receipt.
+        if (u.email) { buyer.email = u.email; $("#buy-email").value = buyer.email; }
+        $("#buy-email").readOnly = !!u.email;
+        if (!u.email && u.phone) $("#buy-phone").value = "+" + u.phone.replace(/[^0-9]/g, "");
+        $("#buy-phone").readOnly = !u.email && !!u.phone;
+        $("[data-who]").textContent = u.email || ("+" + u.phone); signedIn.hidden = false;
         $("#buy-next").textContent = "Continue to payment";
         const { data: owns } = await client().rpc("has_course", { course: PAY.course });
         if (owns === true) { show("owned"); return; }
       } else {
-        $("#buy-email").readOnly = false; signedIn.hidden = true; $("#buy-next").textContent = "Send my code";
+        $("#buy-email").readOnly = false; $("#buy-phone").readOnly = false; signedIn.hidden = true; $("#buy-next").textContent = "Send my code";
       }
       setTimeout(() => $(session ? "#buy-name" : "#buy-name").focus(), 30);
     }
@@ -1018,6 +1052,8 @@
       if (buyer.name.length < 2) return "Please give the name for the receipt.";
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(buyer.email)) return "That email address does not look right.";
       if (buyer.phone && !/^\+?[\d\s-]{10,16}$/.test(buyer.phone)) return "Use a 10-digit Indian mobile number, or +country code for others.";
+      buyer.phoneE164 = buyer.phone ? normalisePhone(buyer.phone) : null;
+      if (via === "phone" && !buyer.phoneE164) return "Give the WhatsApp number that should receive the code.";
       return "";
     }
 
@@ -1029,17 +1065,20 @@
       const btn = $("#buy-next"); btn.disabled = true; err("buy-err", "");
       try {
         if (session) { toPay(); return; }
-        const { error } = await client().auth.signInWithOtp({ email: buyer.email, options: { shouldCreateUser: true } });
+        const { error } = await sendCode();
         if (error) throw error;
-        $("[data-email]").textContent = buyer.email;
+        $("[data-email]").textContent = via === "phone" ? buyer.phoneE164 + " on WhatsApp" : buyer.email;
+        $("[data-step2-eyebrow]").textContent = via === "phone" ? "Step 2 of 3 · confirm your WhatsApp" : "Step 2 of 3 · confirm your email";
+        $("[data-step2-title]").textContent = via === "phone" ? "Enter the code from WhatsApp" : "Enter the code we emailed you";
+        $("[data-slow]").hidden = via === "phone";
         show("code"); setTimeout(() => $("#buy-code").focus(), 30);
       } catch (ex) {
-        err("buy-err", /rate/i.test(ex.message) ? "Too many codes requested for this email. Wait a minute and try again." : "The code could not be sent: " + ex.message);
+        err("buy-err", /rate/i.test(ex.message) ? "Too many codes requested. Wait a minute and try again." : "The code could not be sent: " + ex.message);
       } finally { btn.disabled = false; }
     });
     modal.querySelector("[data-resend]").addEventListener("click", async (e) => {
       e.target.disabled = true; err("code-err", "");
-      try { const { error } = await client().auth.signInWithOtp({ email: buyer.email, options: { shouldCreateUser: true } }); if (error) throw error; err("code-err", "A new code is on its way."); }
+      try { const { error } = await sendCode(); if (error) throw error; err("code-err", "A new code is on its way."); }
       catch (ex) { err("code-err", ex.message); }
       setTimeout(() => { e.target.disabled = false; }, 20000);
     });
@@ -1051,7 +1090,9 @@
       const token = $("#buy-code").value.replace(/\D/g, "");
       if (token.length !== 6) return err("code-err", "The code is six digits.");
       const btn = $("#code-go"); btn.disabled = true; err("code-err", "");
-      const { data, error } = await client().auth.verifyOtp({ email: buyer.email, token, type: "email" });
+      const { data, error } = via === "phone"
+        ? await client().auth.verifyOtp({ phone: buyer.phoneE164, token, type: "sms" })
+        : await client().auth.verifyOtp({ email: buyer.email, token, type: "email" });
       btn.disabled = false;
       if (error) return err("code-err", /expired|invalid/i.test(error.message) ? "That code did not match or has expired. Send a new one and try again." : error.message);
       session = data.session; setCookie(session);
