@@ -1,7 +1,8 @@
 # Cloudflare deployment: this folder is served as static assets by a Worker with no code of its own.
 #   Deploy: npx wrangler deploy        (run from this folder; wrangler is logged in to the Cloudflare account)
 # The custom domains below are created by the deploy: DNS records and certificates are issued automatically.
-# www to apex (Redirect Rule), Always Use HTTPS and DNS are managed through the scoped API token in .cloudflare-dns-token.
+# www to apex (Redirect Rule), Always Use HTTPS and DNS are managed through the scoped API token in F:/Projects/ai-testing-course/.cloudflare-dns-token
+# (the private folder: secrets never live in this folder, because every file here is uploaded and served).
 name = "aiskillszone"
 main = "src/worker.js"
 compatibility_date = "2026-06-01"
