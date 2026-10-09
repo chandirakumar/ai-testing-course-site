@@ -225,7 +225,7 @@
           if (from === to || matchMedia("(prefers-reduced-motion: reduce)").matches) { el.textContent = rupees(to); el.classList.add("pop"); return; }
           const t0 = performance.now();
           (function tick(now) {
-            const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+            const k = Math.max(0, Math.min(1, (now - t0) / ms)), e = 1 - Math.pow(1 - k, 3);
             el.textContent = rupees(Math.round(from + (to - from) * e));
             if (k < 1) requestAnimationFrame(tick); else el.classList.add("pop");
           })(t0);

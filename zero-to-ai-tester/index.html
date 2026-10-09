@@ -462,100 +462,241 @@
     .hero { padding: 24px 0 64px; }
   }
 </style>
+<style>
+  /* ===== Landing redesign: navy bands, orange calls to action. Old components re-themed through their own variables. */
+  :root { --lp-navy: #0A1020; --lp-navy-2: #0F1830; --lp-card: #131E36; --lp-line: rgba(255,255,255,.10); --lp-ink: #E8EEF8; --lp-ink-2: #A9B6CC;
+          --lp-orange: #F97316; --lp-orange-2: #EA580C; --lp-blue: #60A5FA; --lp-green: #34D399; --lp-red: #F87171; }
+  body { background: var(--lp-navy); }
+  .lp-dark { --ground: #0A1020; --panel: #131E36; --ink: #E8EEF8; --ink-2: #A9B6CC; --muted: #8C9AB3; --rule: rgba(255,255,255,.10); --rule-2: rgba(255,255,255,.06);
+             --accent: #60A5FA; --accent-ink: #0A1020; --signal: #F97316; --pass: #34D399; --fail: #F87171; --tint: #18264A; color: var(--ink); }
+  .lp-light { --ground: #F4F6FB; --panel: #FFFFFF; --ink: #0F172A; --ink-2: #334155; --muted: #5B6B82; --rule: #DCE2EC; --rule-2: #E9EDF4;
+              --accent: #1D4ED8; --accent-ink: #FFFFFF; --signal: #EA580C; --pass: #15803D; --fail: #B91C1C; --tint: #E8EEFB; color: var(--ink); }
+  .lp-band { position: relative; background: var(--ground); padding: 64px 0; border: 0; overflow: hidden; }
+  .lp-in { max-width: 1140px; margin: 0 auto; padding: 0 16px; }
+  .lp-band > .lp-in > section { padding: 0; border: 0; }
+  .lp-band h2 { font-family: "Archivo", sans-serif; font-weight: 850; font-stretch: 108%; font-size: clamp(28px, 7vw, 44px); line-height: 1.05; margin: 8px 0 12px; color: var(--ink); }
+  .lp-band .lede { font-size: 17px; color: var(--ink-2); max-width: 62ch; }
+  .lp-eyebrow { display: inline-block; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--lp-orange); }
+  .lp-center { text-align: center; } .lp-center .lede { margin-left: auto; margin-right: auto; }
+  .ic { width: 24px; height: 24px; flex: 0 0 auto; }
+  .lp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 13px 22px; border-radius: 12px; font-family: "Archivo", sans-serif; font-weight: 800; font-size: 16px; text-decoration: none; cursor: pointer; border: 0; transition: transform 160ms ease, box-shadow 200ms ease, background 200ms ease; }
+  .lp-btn.cta { color: #fff; background: linear-gradient(180deg, #FB923C, #EA580C); box-shadow: 0 10px 30px rgba(234,88,12,.40), inset 0 1px 0 rgba(255,255,255,.35); animation: lpglow 2.6s ease-in-out infinite; }
+  .lp-btn.cta:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(234,88,12,.55), inset 0 1px 0 rgba(255,255,255,.35); }
+  .lp-btn.cta .arr { transition: transform 200ms ease; } .lp-btn.cta:hover .arr { transform: translateX(4px); }
+  .lp-btn.ghost { color: var(--ink); background: transparent; box-shadow: inset 0 0 0 1.5px var(--rule); }
+  .lp-dark .lp-btn.ghost { box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.28); }
+  .lp-btn.ghost:hover { box-shadow: inset 0 0 0 1.5px var(--ink); }
+  .lp-btn:focus-visible, .flip:focus-visible { outline: 3px solid #93C5FD; outline-offset: 3px; }
+  @keyframes lpglow { 50% { box-shadow: 0 10px 34px rgba(234,88,12,.62), 0 0 0 6px rgba(249,115,22,.14), inset 0 1px 0 rgba(255,255,255,.35); } }
+  .lp-btn.cta s.mrp { opacity: .75; }
 
-<div class="wrap">
-  <nav>
-    <a class="brand" href="#top">Zero to AI Tester</a>
+  /* nav */
+  .lp-nav { padding: 0; display: block; position: sticky; top: 0; z-index: 40; background: rgba(10,16,32,.86); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.08); }
+  .lp-nav .lp-in { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 60px; }
+  .lp-nav .brand { font-family: "Archivo", sans-serif; font-weight: 850; font-size: 17px; color: #fff; text-decoration: none; white-space: nowrap; }
+  .lp-nav .brand b { color: var(--lp-orange); }
+  .lp-nav ul { display: none; list-style: none; gap: 22px; margin: 0; padding: 0; }
+  .lp-nav ul a { color: #C6D0E2; text-decoration: none; font-size: 14.5px; } .lp-nav ul a:hover { color: #fff; }
+  .lp-nav .lp-btn { min-height: 40px; padding: 8px 14px; font-size: 14px; animation: none; }
+
+  /* hero */
+  .lp-hero { padding: 40px 0 56px; background:
+      radial-gradient(700px 420px at 85% 10%, rgba(249,115,22,.18), transparent 60%),
+      radial-gradient(800px 500px at 0% 0%, rgba(59,130,246,.20), transparent 60%), var(--lp-navy); }
+  .lp-hero .hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 0; border: 0; align-items: center; }
+  .lp-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .lp-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; font-size: 12.5px; font-weight: 600; color: #DCE6F7; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
+  .lp-badge i { width: 7px; height: 7px; border-radius: 50%; background: var(--lp-green); box-shadow: 0 0 0 3px rgba(52,211,153,.18); }
+  .lp-hero h1 { font-family: "Archivo", sans-serif; font-weight: 850; font-stretch: 106%; font-size: clamp(36px, 10vw, 64px); line-height: 1.02; letter-spacing: -0.02em; color: #fff; margin: 0 0 16px; }
+  .lp-hero h1 .grad { display: block; background: linear-gradient(90deg, #60A5FA, #A5B4FC 55%, #60A5FA); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lp-hero .sub { font-size: 17.5px; color: var(--lp-ink-2); max-width: 56ch; margin: 0 0 24px; }
+  .lp-hero .cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .lp-hero .cta-row .lp-btn { flex: 1 1 100%; }
+  .lp-trust { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; font-size: 13.5px; color: #B8C4D9; }
+  .lp-trust span { display: inline-flex; align-items: center; gap: 6px; } .lp-trust svg { width: 15px; height: 15px; color: var(--lp-green); }
+  .lp-stage { position: relative; }
+  .lp-stage::before { content: ""; position: absolute; inset: -30px -10px; background: radial-gradient(closest-side, rgba(249,115,22,.30), transparent 70%); filter: blur(10px); z-index: 0; }
+  .lp-stage .demo { position: relative; z-index: 1; margin: 0; }
+  .lp-stage .term { border-radius: 16px; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 30px 80px rgba(0,0,0,.45); font-size: 12px; }
+  .lp-stage .plain { color: #B8C4D9; font-size: 14px; margin-top: 12px; }
+  @media (max-width: 639px) { .lp-stage .plain { display: none; } }
+  .lp-chip { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: #fff; text-decoration: none; }
+  .lp-mono { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; font-family: "Archivo", sans-serif; font-weight: 850; font-size: 20px; color: #fff; background: linear-gradient(135deg, #F97316, #EA580C); box-shadow: 0 0 0 3px rgba(249,115,22,.25); flex: 0 0 auto; }
+  .lp-chip small { display: block; color: #9FB0CC; font-size: 12.5px; } .lp-chip b { font-family: "Archivo", sans-serif; }
+  .lp-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 36px; }
+  .lp-fact { padding: 14px; border-radius: 14px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.10); }
+  .lp-fact b { display: block; font-family: "Archivo", sans-serif; font-weight: 850; font-size: 30px; line-height: 1; color: #fff; font-variant-numeric: tabular-nums; }
+  .lp-fact span { font-size: 13px; color: #A9B6CC; }
+
+  /* benefits bento */
+  .lp-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 28px; }
+  .lp-card { position: relative; padding: 22px 20px; border-radius: 18px; background: var(--panel); border: 1px solid var(--rule); box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 10px 30px rgba(15,23,42,.06); transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease; }
+  .lp-card:hover { transform: translateY(-3px); border-color: #F9731655; box-shadow: 0 16px 40px rgba(15,23,42,.10); }
+  .lp-card .ico { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 12px; color: #EA580C; background: #FFF1E6; margin-bottom: 14px; }
+  .lp-card.key { background: linear-gradient(160deg, #0F1830, #16244A); border-color: transparent; color: #E8EEF8; }
+  .lp-card.key h3 { color: #fff; } .lp-card.key p { color: #B8C4D9; } .lp-card.key .ico { color: #fff; background: linear-gradient(135deg, #F97316, #EA580C); }
+  .lp-card h3 { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 20px; margin: 0 0 6px; color: var(--ink); }
+  .lp-card p { margin: 0; font-size: 15px; color: var(--ink-2); }
+  .lp-card .tag { display: inline-block; margin-top: 12px; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+
+  /* why: flip cards */
+  .flips { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 28px; perspective: 1200px; }
+  .flip { position: relative; display: grid; width: 100%; min-height: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+  .flip .face { grid-area: 1 / 1; position: relative; display: flex; flex-direction: column; padding: 20px; border-radius: 18px; background: var(--lp-card); border: 1px solid rgba(255,255,255,.12); backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: transform 600ms cubic-bezier(.2,.8,.2,1); box-shadow: 0 20px 50px rgba(0,0,0,.35); }
+  .flip .back { transform: rotateY(180deg); background: linear-gradient(160deg, #1B2A52, #131E36); }
+  .flip.on .front { transform: rotateY(-180deg); } .flip.on .back { transform: rotateY(0); }
+  .flip h3 { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 19px; color: #fff; margin: 0 0 4px; display: flex; align-items: center; gap: 8px; }
+  .flip h3::before { content: "›"; color: var(--lp-orange); font-size: 22px; line-height: 1; }
+  .flip .k { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #8FA3C8; }
+  .flip .viz { flex: 1; display: grid; place-items: center; margin: 14px 0; }
+  .flip .viz svg { width: 100%; max-width: 300px; height: auto; }
+  .flip .cap { font-size: 14.5px; color: #C9D4E8; }
+  .flip .hint { margin-top: 10px; font-size: 12.5px; color: var(--lp-orange); font-weight: 600; }
+  .flip .back p { font-size: 15.5px; color: #DCE6F7; margin: 12px 0 0; }
+  .flip .back .taught { margin-top: auto; padding-top: 12px; font-size: 13px; color: #93C5FD; }
+
+  /* proof mockups */
+  .mocks { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 28px; }
+  .mock { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--rule); background: #fff; box-shadow: 0 18px 44px rgba(15,23,42,.12); }
+  .mock .mh { display: flex; align-items: center; gap: 8px; padding: 10px 14px; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; color: #475569; background: #F1F5F9; border-bottom: 1px solid #E2E8F0; }
+  .mock .mh i { width: 9px; height: 9px; border-radius: 50%; background: #CBD5E1; }
+  .mock .mb { padding: 14px 16px 16px; font-size: 14px; color: #0F172A; }
+  .mock.darkm { background: #0D1426; border-color: rgba(255,255,255,.08); } .mock.darkm .mh { background: #111A30; color: #9FB0CC; border-color: rgba(255,255,255,.08); } .mock.darkm .mb { color: #E2E8F0; }
+  .chk { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid rgba(255,255,255,.07); font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12.5px; }
+  .chk:first-child { border-top: 0; }
+  .chk .dot { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; color: #fff; background: #16A34A; flex: 0 0 auto; } .chk .dot svg { width: 12px; height: 12px; }
+  .chk .dot.bad { background: #DC2626; }
+  .chk .r { margin-left: auto; color: #94A3B8; }
+  .stamp { position: absolute; right: 14px; bottom: 14px; padding: 6px 12px; border: 3px solid #22C55E; border-radius: 8px; color: #22C55E; font-family: "Archivo", sans-serif; font-weight: 900; font-size: 20px; letter-spacing: .06em; transform: rotate(-8deg); background: rgba(34,197,94,.08); }
+  .doc h4 { font-family: "Archivo", sans-serif; font-size: 17px; margin: 0 0 4px; } .doc .sm { font-size: 12.5px; color: #64748B; margin: 0 0 10px; }
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; } .pill.no { color: #B91C1C; background: #FEE2E2; } .pill.go { color: #15803D; background: #DCFCE7; }
+  .bars span { display: block; height: 8px; border-radius: 4px; background: #E2E8F0; margin: 8px 0; } .bars span:nth-child(2) { width: 82%; } .bars span:nth-child(3) { width: 64%; } .bars span:nth-child(4) { width: 74%; }
+  .vid { position: relative; aspect-ratio: 16 / 9; display: grid; place-items: center; background: radial-gradient(circle at 30% 30%, #2B3E6B, #0D1426 70%); }
+  .vid .play { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,.92); box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+  .vid .play::after { content: ""; margin-left: 5px; border-left: 20px solid #0F172A; border-top: 12px solid transparent; border-bottom: 12px solid transparent; }
+  .vid .ts { position: absolute; right: 10px; bottom: 10px; padding: 2px 6px; border-radius: 4px; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 11.5px; color: #fff; background: rgba(0,0,0,.6); }
+  .vid .slide { position: absolute; left: 12px; top: 12px; right: 12px; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; color: #B8C4D9; }
+  table.tiny { width: 100%; border-collapse: collapse; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; }
+  table.tiny th, table.tiny td { text-align: left; padding: 6px 4px; border-top: 1px solid #E2E8F0; } table.tiny th { color: #64748B; font-weight: 500; border-top: 0; }
+  table.tiny .p { color: #15803D; font-weight: 700; } table.tiny .f { color: #B91C1C; font-weight: 700; }
+  .mocknote { font-size: 13px; color: var(--muted); margin-top: 10px; }
+  .projlist { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; margin-top: 26px; padding: 0; list-style: none; }
+  .projlist li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; padding: 14px 16px; border-radius: 14px; background: var(--panel); border: 1px solid var(--rule); }
+  .projlist .m { grid-row: span 2; align-self: start; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; font-weight: 600; color: #EA580C; padding: 4px 8px; border-radius: 8px; background: #FFF1E6; white-space: nowrap; }
+  .projlist b { font-family: "Archivo", sans-serif; font-size: 16px; color: var(--ink); } .projlist span.d { font-size: 14px; color: var(--ink-2); }
+
+  /* roadmap */
+  .rm-wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; margin-top: 30px; align-items: start; }
+  .stages.rm { display: block; border: 0; background: none; margin: 0; position: relative; padding-left: 34px; }
+  .stages.rm::before { content: ""; position: absolute; left: 13px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(#3B82F6, #F97316 60%, #34D399); opacity: .55; }
+  .stages.rm .stage { position: relative; padding: 18px 18px 16px; margin: 0 0 16px; border: 1px solid rgba(255,255,255,.10); border-radius: 16px; background: var(--lp-card); }
+  .stages.rm .stage:first-child { border-left: 1px solid rgba(255,255,255,.10); }
+  .stages.rm .stage::after { content: ""; position: absolute; left: -30px; top: 22px; width: 16px; height: 16px; border-radius: 50%; background: #0A1020; border: 3px solid #3B82F6; box-shadow: 0 0 0 5px rgba(59,130,246,.15); transition: background 300ms, border-color 300ms, box-shadow 300ms; }
+  .stages.rm .stage.lit::after { background: #3B82F6; box-shadow: 0 0 0 6px rgba(59,130,246,.25), 0 0 18px rgba(59,130,246,.7); }
+  .stages.rm .stage.core { background: linear-gradient(160deg, #2A1A12, #131E36 60%); border-color: rgba(249,115,22,.45); }
+  .stages.rm .stage.core::after { border-color: #F97316; } .stages.rm .stage.core.lit::after { background: #F97316; box-shadow: 0 0 0 6px rgba(249,115,22,.25), 0 0 18px rgba(249,115,22,.75); }
+  .stages.rm .stage h3 { color: #fff; font-size: 19px; }
+  .stages.rm .stage li { border-top-color: rgba(255,255,255,.07); color: #C9D4E8; }
+  .stages.rm .stage .hours { display: inline-block; margin-top: 12px; padding: 4px 10px; border-radius: 999px; font-size: 12px; color: #FDBA74; background: rgba(249,115,22,.12); }
+  .stages.rm .stage.lit .hours { color: #FDBA74; }
+  .rm-poster { margin: 0; } .rm-poster img { display: block; width: 100%; height: auto; border-radius: 16px; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 30px 70px rgba(0,0,0,.45); }
+  .rm-poster figcaption { font-size: 13px; color: #A9B6CC; margin-top: 10px; } .rm-poster a { color: #93C5FD; }
+
+  /* instructor */
+  .lp-instr { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: start; }
+  .lp-instr .lp-mono { width: 88px; height: 88px; font-size: 40px; box-shadow: 0 0 0 4px rgba(249,115,22,.25), 0 20px 50px rgba(234,88,12,.35); }
+  .lp-instr p { color: #C9D4E8; font-size: 16.5px; }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 26px; padding: 0; list-style: none; }
+  .tools li { padding: 8px 12px; border-radius: 10px; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 13px; color: #DCE6F7; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.10); }
+
+  /* pricing */
+  .lp-price { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; margin-top: 28px; }
+  .lp-price .tier { border-radius: 20px; padding: 24px 20px; border: 2px solid #F97316; box-shadow: 0 24px 60px rgba(234,88,12,.15); background: var(--panel); }
+  .lp-price .tier .price { font-size: 44px; }
+  .lp-price .tier ul { list-style: none; padding: 0; margin: 8px 0 18px; }
+  .lp-price .tier li { display: flex; gap: 10px; padding: 8px 0; border-top: 1px solid var(--rule-2); font-size: 15px; color: var(--ink-2); }
+  .lp-price .tier li:first-child { border-top: 0; }
+  .lp-price .tier li svg { width: 20px; height: 20px; flex: 0 0 auto; color: #16A34A; margin-top: 2px; }
+  .lp-price .tier li b { color: var(--ink); }
+  .lp-price .tier .lp-btn { width: 100%; }
+  .lp-price .aside { padding: 4px 4px 0; font-size: 15px; color: var(--ink-2); }
+  .lp-price .aside b { display: block; font-family: "Archivo", sans-serif; font-size: 17px; color: var(--ink); margin-bottom: 8px; }
+  .lp-price .aside ol { padding-left: 22px; margin: 0 0 16px; } .lp-price .aside li { margin: 6px 0; }
+
+  /* reused sections inside bands */
+  .lp-band .final { margin: 0; border-radius: 20px; padding: 48px 20px; background: linear-gradient(160deg, #16244A, #0F1830); border: 1px solid rgba(255,255,255,.10); }
+  .lp-band .final .btn.primary { background: linear-gradient(180deg, #FB923C, #EA580C); color: #fff; border: 0; box-shadow: 0 10px 30px rgba(234,88,12,.4); }
+  .lp-tail { max-width: 1140px; margin: 0 auto; padding: 0 16px 90px; }
+  .lp-tail footer { color: #8C9AB3; border-top-color: rgba(255,255,255,.10); }
+  .lp-tail footer a { color: #C6D0E2; }
+
+  /* reveal on scroll */
+  .rv { opacity: 0; transform: translateY(18px); transition: opacity 600ms ease, transform 600ms cubic-bezier(.2,.8,.2,1); }
+  .rv.in { opacity: 1; transform: none; }
+
+  @media (min-width: 640px) {
+    .lp-hero .cta-row .lp-btn { flex: 0 0 auto; }
+    .lp-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .lp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .mocks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .projlist { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 960px) {
+    .lp-band { padding: 96px 0; }
+    .lp-in { padding: 0 28px; }
+    .lp-nav ul { display: flex; }
+    .lp-hero { padding: 64px 0 84px; }
+    .lp-hero .hero { grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 56px; }
+    .lp-stage .term { font-size: 13px; }
+    .lp-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .lp-grid .lp-card.key { grid-column: span 1; }
+    .flips { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .mocks { grid-template-columns: 1.1fr .9fr; }
+    .projlist { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .rm-wrap { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 48px; }
+    .rm-poster { position: sticky; top: 84px; }
+    .lp-instr { grid-template-columns: 120px minmax(0, 1fr); gap: 32px; }
+    .lp-instr .lp-mono { width: 120px; height: 120px; font-size: 54px; }
+    .lp-price { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 40px; align-items: start; }
+    .lp-band .final { padding: 72px 56px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lp-btn.cta { animation: none; } .flip .face { transition: none; } .rv { opacity: 1; transform: none; transition: none; }
+    .lp-card, .lp-btn { transition: none; }
+  }
+</style>
+<nav class="lp-nav lp-dark" aria-label="Page">
+  <div class="lp-in">
+    <a class="brand" href="#top">Zero to AI Tester<b>.</b></a>
     <ul>
-      <li><a href="#build">What you build</a></li>
+      <li><a href="#get">What you get</a></li>
+      <li><a href="#build">Projects</a></li>
+      <li><a href="#curriculum">Roadmap</a></li>
       <li><a href="#market">Salaries</a></li>
-      <li><a href="#curriculum">Curriculum</a></li>
-      <li><a href="#who">Who it's for</a></li>
-      <li><a href="#pricing">Pricing</a></li>
       <li><a href="#faq">FAQ</a></li>
     </ul>
-    <a class="btn primary" href="#pricing" data-buy>Buy · ₹1,499</a>
-  </nav>
-
+    <a class="lp-btn cta" href="#pricing" data-buy>Buy · ₹1,499</a>
+  </div>
+</nav>
+<div class="lp-band lp-dark lp-hero">
+ <div class="lp-in">
   <header class="hero" id="top">
     <div>
-      <div class="eyebrow">For manual and functional testers · no coding required to start</div>
-      <h1>Same question. Three answers. <em>Which one passed?</em></h1>
-      <p class="lede">That question breaks every test you know how to write. This course teaches you to answer it the way AI teams do: a pass rate, a range, a threshold, and the cases that failed. Twenty-three weeks, from your first terminal command to a release assessment you present on video.</p>
+      <div class="lp-badges"><span class="lp-badge"><i></i>For manual and functional testers</span><span class="lp-badge"><i></i>No coding needed to start</span><span class="lp-badge"><i></i>Lifetime access</span></div>
+      <h1><span class="grad">Zero to AI Tester:</span>Test the AI products every company is shipping.</h1>
+      <p class="sub">Twenty-three weeks from your first terminal command to a release assessment you present on video. Python from zero, test automation, then evaluating, testing and red-teaming AI products on a practice app with 12 hidden defects.</p>
       <div class="cta-row">
-        <a class="btn signal" href="#pricing" data-buy>Buy the course · ₹1,499</a>
-        <a class="btn ghost" href="primer.html">Read the first 15 minutes free</a>
+        <a class="lp-btn cta" href="#pricing" data-buy>Start the course · ₹1,499 <span class="arr" aria-hidden="true">→</span></a>
+        <a class="lp-btn ghost" href="primer.html">Read the first 15 minutes free</a>
       </div>
-      <div class="facts">
-        <div class="fact"><div class="n">23</div><div class="l">weeks, about 7 h a week</div></div>
-        <div class="fact"><div class="n">167</div><div class="l">hours of lessons and labs</div></div>
-        <div class="fact"><div class="n">7</div><div class="l">portfolio projects on GitHub</div></div>
-        <div class="fact"><div class="n">12</div><div class="l">planted defects to find</div></div>
-      </div>
-    </div>
-
-    <figure class="poster">
-      <picture>
-        <source srcset="../covers/zero-to-ai-tester.webp" type="image/webp">
-        <img src="../covers/zero-to-ai-tester.jpg" width="896" height="1139" alt="Zero to AI Tester course map: four stages over 23 weeks, 167 hours, from foundations with no AI through AI fundamentals, testing AI systems, capstone and career" fetchpriority="high">
-      </picture>
-    </figure>
-  </header>
-
-  <section id="instructor" class="instructor-top">
-    <div class="eyebrow">Instructor</div>
-    <h2>Taught by Chandru</h2>
-    <div class="instr">
-      <div class="photo monogram" aria-hidden="true">C</div>
-      <div>
-        <p class="lede">Chandru builds and tests software products, and wrote every lesson, lab, and line of practice code in Zero to AI Tester. It is the path Chandru wanted and could not find: one that starts at the terminal and ends at a release assessment.</p>
-        <p>Built for testers who are told AI will replace them, by someone who thinks the opposite: the people who already know how to design a test are the people AI teams need most.</p>
+      <div class="lp-trust">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>One payment, lifetime access</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Sign in by email or WhatsApp code</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>UPI or card through Razorpay</span>
       </div>
     </div>
-  </section>
-
-  <section id="watch">
-    <div class="eyebrow">Watch first</div>
-    <h2>Two short videos before you decide.</h2>
-    <p class="lede">What the course is, how it works, and exactly what opens when you buy. Under ten minutes together. Until they are up, each tile lists what its video covers, and the <a href="syllabus.html">syllabus</a> says the rest.</p>
-    <div class="videos" id="videos"></div>
-  </section>
-
-  <section id="problem">
-    <div class="eyebrow">Why now</div>
-    <h2>Your test cases still work. Your job title is about to change.</h2>
-    <p class="lede">Every team is putting an AI assistant in front of customers. None of them can test it the old way, because the same question gets a different answer each time. They need a tester who can measure that. Not a data scientist.</p>
-    <div class="shift">
-      <div class="shift-col">
-        <span class="eyebrow">Testing today</span>
-        <div class="verdict"><span class="tick">✓</span><span>Run the case once. Compare. <b>PASS</b>.</span></div>
-        <p>One input, one expected result, one answer.</p>
-      </div>
-      <div class="shift-arrow" aria-hidden="true">→</div>
-      <div class="shift-col">
-        <span class="eyebrow">Testing an AI product</span>
-        <figure class="meter">
-          <svg viewBox="0 0 520 96" role="img" aria-label="A pass rate of 85 percent measured over 48 runs, with a plausible range from 77 to 91 percent, sits below the 90 percent threshold the team agreed, so the release fails." xmlns="http://www.w3.org/2000/svg">
-            <line x1="20" y1="48" x2="500" y2="48" style="stroke:var(--rule);stroke-width:10;stroke-linecap:round"/>
-            <line x1="389.6" y1="48" x2="456.8" y2="48" style="stroke:var(--accent);stroke-opacity:.28;stroke-width:10;stroke-linecap:round"><title>Plausible true rate: 77% to 91%</title></line>
-            <circle cx="428" cy="48" r="7" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"><title>Observed: 41 of 48 passed = 85%</title></circle>
-            <line x1="452" y1="26" x2="452" y2="70" style="stroke:var(--signal);stroke-width:2;stroke-dasharray:4 3"><title>Threshold the product owner signed: 90%</title></line>
-            <text x="20" y="86" font-size="11" style="fill:var(--muted)">0%</text>
-            <text x="260" y="86" font-size="11" text-anchor="middle" style="fill:var(--muted)">50%</text>
-            <text x="500" y="86" font-size="11" text-anchor="end" style="fill:var(--muted)">100%</text>
-            <text x="440" y="22" font-size="12.5" text-anchor="end" style="fill:var(--ink);font-weight:600">85% · range 77–91</text>
-            <text x="459" y="22" font-size="11.5" text-anchor="start" style="fill:var(--signal);font-weight:600">min 90</text>
-          </svg>
-          <figcaption>Run it 48 times. Report the rate, the range, and the threshold. <b class="fail">Below threshold: not ready.</b></figcaption>
-        </figure>
-      </div>
-    </div>
-    <div class="three compact">
-      <div class="col"><h3>What you keep</h3><p>Test design, exploration, bug reports, judgment about severity.</p></div>
-      <div class="col signal"><h3>What you add</h3><p>Enough Python to run the tools, enough statistics to trust a number, and the new failure types.</p></div>
-      <div class="col"><h3>What you get</h3><p>A portfolio that proves it, and a title with "AI" in it.</p></div>
-    </div>
-    <div class="demo" id="demo">
+    <div class="lp-stage">
+      <div class="demo" id="demo">
     <div class="term" id="term" aria-label="Example evaluation output">
       <div class="bar"><span>harbourbot · eval gate · 48 cases</span><button type="button" id="rerun">Run again</button></div>
       <div class="line q">&gt; Can I cancel the day before and get a refund?</div>
@@ -575,72 +716,126 @@
     </div>
     <p class="plain">In plain words: the bot answered the in-scope questions right 17 times out of 20. The bar was 18. It is not ready to ship, and this output says exactly why.</p>
     </div>
-  </section>
-
-  <section id="questions" class="qs">
-    <div class="eyebrow">Free sample · no sign-up</div>
-    <h2>What is a token? A model? RAG?</h2>
-    <p class="lede">You keep hearing these words and nobody stops to explain them. The course starts by answering 22 of them in plain language, in your first 15 minutes. Guess first, then open one.</p>
-    <div class="qs-grid">
-      <div>
-        <details><summary>What is a model?</summary><p>A model is a program that learned its behaviour from examples instead of being written as rules. Nobody typed &quot;if the guest asks about dogs, say 25&quot;. It read a huge amount of text and learned what a sensible reply looks like. That is why you cannot find the line of code that caused a wrong answer.</p><div class="where">Taught properly in Lesson 5.1</div></details>
-        <details><summary>What is a token?</summary><p>The unit a model reads and writes: a word or a piece of a word. &quot;Cancellation&quot; might be two or three tokens. It matters to a tester because cost, speed, and size limits are all counted in tokens, not in words.</p><div class="where">Taught properly in Lesson 5.2</div></details>
-        <details><summary>What is RAG, and why is it needed?</summary><p>Retrieval-augmented generation. A model knows nothing about your company&#x27;s documents and its general knowledge stops at a cutoff date. RAG fixes both: when a question arrives, the system first searches your documents for the relevant passages, then hands them to the model and says &quot;answer from these&quot;. Without it the bot guesses. With it, the bot can still go wrong in two new places: the search can fetch the wrong passage, or the model can ignore the right one. You will test both.</p><div class="where">Taught properly in Lessons 5.7 and 8.1</div></details>
-        <details><summary>Why does the same question get different answers?</summary><p>The model does not look up an answer. It builds one, a token at a time, and at each step it picks from several likely options with a little randomness. A setting called temperature controls how much. So one run tells you very little, and that single fact is why AI testing is a different job.</p><div class="where">Taught properly in Lessons 5.3 and 7.1</div></details>
-        <details><summary>Do I have to become a programmer?</summary><p>No. You need enough Python to loop over a list of questions, call an API, and write a line that says &quot;this must be true&quot;. That is a few weeks of learning, and Stage A teaches exactly that and stops.</p><div class="where">Taught properly in Module 2</div></details>
+      <a class="lp-chip" href="#instructor"><span class="lp-mono" aria-hidden="true">C</span><span><small>Every lesson written and tested by</small><b>Chandru, instructor</b></span></a>
+    </div>
+  </header>
+  <div class="lp-facts" aria-label="The course in numbers">
+    <div class="lp-fact"><b data-count="23">23</b><span>weeks, about 7 hours a week</span></div>
+    <div class="lp-fact"><b data-count="167">167</b><span>hours of lessons and labs</span></div>
+    <div class="lp-fact"><b data-count="7">7</b><span>portfolio projects on GitHub</span></div>
+    <div class="lp-fact"><b data-count="50">50</b><span>interview answers in the career module</span></div>
+  </div>
+ </div>
+</div>
+<div class="lp-band lp-light" id="get">
+ <div class="lp-in">
+  <div class="lp-center">
+    <span class="lp-eyebrow">What you get</span>
+    <h2>Everything included in one payment.</h2>
+    <p class="lede">Lifetime access, seven portfolio projects and a full career-transition module, in a course you read on any phone or laptop.</p>
+  </div>
+  <div class="lp-grid">
+      <article class="lp-card rv key"><div class="ico"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.7-4-4-6-4a4 4 0 0 0 0 8c2 0 4-1.3 6-4Zm0 0c2 2.7 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.3-6 4Z"/></svg></div><h3>Lifetime access</h3><p>Pay once and keep the course for as long as it exists, with every lesson update included at no charge. Sign in with a code, never a password.</p><span class="tag">online · any device · updates free</span></article>
+      <article class="lp-card rv"><div class="ico"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="8" r="2.5"/><path d="M6 8.5v7"/><path d="M18 10.5c0 4-4 4-9.5 6"/></svg></div><h3>Seven portfolio projects</h3><p>Every module ends with something in your GitHub repository that a hiring manager can open, run and read: a CI suite, an eval gate, a red-team report.</p><span class="tag">Modules 4 · 5 · 7 · 8 · 9 · 11</span></article>
+      <article class="lp-card rv"><div class="ico"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg></div><h3>Career transition kit</h3><p>Fifty interview questions with model answers, a resume rewrite for an AI-testing role, and a portfolio README that walks an interviewer through your work.</p><span class="tag">Module 12</span></article>
+      <article class="lp-card rv"><div class="ico"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="10" height="13" rx="5"/><path d="M12 7V4M9 4l1.5 2M15 4l-1.5 2M3 13h4M17 13h4M4 19l3-2M20 19l-3-2M4 8l3 2M20 8l-3 2"/></svg></div><h3>A broken AI product to test</h3><p>A hotel support bot and a booking agent with 12 planted defects. You get the code, never the list. Your evaluation suite has to find them.</p><span class="tag">the practice app</span></article>
+      <article class="lp-card rv"><div class="ico"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg></div><h3>Answer keys and lab rubrics</h3><p>Every checkpoint has an answer key and every lab has a rubric with points, so you always know when a piece of work is done.</p><span class="tag">every lesson</span></article>
+      <article class="lp-card rv"><div class="ico"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .9-3 2s1.3 1.7 3 2 3 .9 3 2-1.3 2-3 2c-1.4 0-2.5-.5-3-1.5M12 6.5v1.5M12 16v1.5"/></svg></div><h3>Under $10 of AI credit, total</h3><p>Every script prints what it spent. The rest of the toolkit is free and open source: Python, pytest, Playwright, promptfoo and more.</p><span class="tag">the whole bill</span></article>
+  </div>
+ </div>
+</div>
+<div class="lp-band lp-dark" id="problem">
+ <div class="lp-in">
+  <div class="lp-center">
+    <span class="lp-eyebrow">Why testers have to learn this</span>
+    <h2>AI products break the tests you know how to write.</h2>
+    <p class="lede">Every team is putting an AI assistant in front of customers, and each one fails in three ways a classic test case cannot catch. Tap a card.</p>
+  </div>
+  <div class="flips">
+      <button class="flip rv" type="button" aria-pressed="false">
+        <span class="face front"><span class="k">non-determinism</span><h3>Same question, different answers</h3><span class="viz"><svg viewBox="0 0 300 150" aria-hidden="true"><g font-family="IBM Plex Mono, monospace" font-size="11">
+  <rect x="6" y="8" width="230" height="34" rx="9" fill="#1E2C52"/><text x="18" y="29" fill="#DCE6F7">run 1  free cancel, 48 h before</text><circle cx="270" cy="25" r="11" fill="#16A34A"/><path d="M264 25l4 4 8-8" stroke="#fff" stroke-width="2.5" fill="none"/>
+  <rect x="30" y="56" width="230" height="34" rx="9" fill="#1E2C52"/><text x="42" y="77" fill="#DCE6F7">run 2  free cancel, 24 h before</text><circle cx="282" cy="73" r="11" fill="#DC2626"/><path d="M277 68l10 10M287 68l-10 10" stroke="#fff" stroke-width="2.5"/>
+  <rect x="6" y="104" width="230" height="34" rx="9" fill="#1E2C52"/><text x="18" y="125" fill="#DCE6F7">run 3  ask reception</text><circle cx="270" cy="121" r="11" fill="#DC2626"/><path d="M265 116l10 10M275 116l-10 10" stroke="#fff" stroke-width="2.5"/></g></svg></span><span class="cap">Ask the same thing three times and get three answers. One run proves nothing.</span><span class="hint">Tap to see what you do about it</span></span>
+        <span class="face back"><span class="k">non-determinism</span><h3>Same question, different answers</h3><p>You run each question dozens of times and report a pass rate, a range and a threshold, the way AI teams decide whether to ship. You build the harness yourself in Python.</p><span class="taught">Taught in Modules 5 and 7</span></span>
+      </button>
+      <button class="flip rv" type="button" aria-pressed="false">
+        <span class="face front"><span class="k">drift and regressions</span><h3>Yesterday's pass, today's fail</h3><span class="viz"><svg viewBox="0 0 300 150" aria-hidden="true"><g font-family="IBM Plex Mono, monospace" font-size="10.5">
+  <line x1="20" y1="44" x2="290" y2="44" stroke="#F97316" stroke-dasharray="5 4"/><text x="236" y="38" fill="#FDBA74">gate 90%</text>
+  <g fill="#3B82F6"><rect x="28" y="30" width="26" height="100" rx="4"/><rect x="66" y="26" width="26" height="104" rx="4"/><rect x="104" y="32" width="26" height="98" rx="4"/><rect x="142" y="28" width="26" height="102" rx="4"/></g>
+  <g fill="#F87171"><rect x="196" y="62" width="26" height="68" rx="4"/><rect x="234" y="70" width="26" height="60" rx="4"/></g>
+  <line x1="182" y1="18" x2="182" y2="136" stroke="#8FA3C8" stroke-dasharray="3 3"/><text x="150" y="146" fill="#8FA3C8">prompt edited</text></g></svg></span><span class="cap">A prompt edit or a model upgrade quietly drops the pass rate below the bar.</span><span class="hint">Tap to see what you do about it</span></span>
+        <span class="face back"><span class="k">drift and regressions</span><h3>Yesterday's pass, today's fail</h3><p>You build a golden set and a gate in CI that re-runs it on every change and blocks the merge when quality drops. Hiring managers ask about exactly this.</p><span class="taught">Taught in Module 7</span></span>
+      </button>
+      <button class="flip rv" type="button" aria-pressed="false">
+        <span class="face front"><span class="k">tokens, cost and speed</span><h3>Every answer has a price</h3><span class="viz"><svg viewBox="0 0 300 150" aria-hidden="true"><g font-family="IBM Plex Mono, monospace" font-size="11">
+  <text x="14" y="26" fill="#8FA3C8">tokens per answer</text>
+  <rect x="14" y="36" width="272" height="16" rx="8" fill="#1E2C52"/><rect x="14" y="36" width="96" height="16" rx="8" fill="#34D399"/><text x="120" y="48" fill="#DCE6F7">180 · ₹0.02</text>
+  <rect x="14" y="66" width="272" height="16" rx="8" fill="#1E2C52"/><rect x="14" y="66" width="250" height="16" rx="8" fill="#F87171"/><text x="20" y="78" fill="#0A1020" font-weight="700">1,900 · ₹0.21 · 9 s</text>
+  <text x="14" y="112" fill="#FDBA74">same question, 10x the cost</text><text x="14" y="132" fill="#8FA3C8">limit: 400 tokens, 3 s</text></g></svg></span><span class="cap">Models charge by the token. A rambling answer is slow and expensive.</span><span class="hint">Tap to see what you do about it</span></span>
+        <span class="face back"><span class="k">tokens, cost and speed</span><h3>Every answer has a price</h3><p>You measure cost, length and latency per answer, set limits a product owner can sign, and fail the build when a change makes the bot slow or costly.</p><span class="taught">Taught in Modules 5 and 7</span></span>
+      </button>
+  </div>
+ </div>
+</div>
+<div class="lp-band lp-light" id="build">
+ <div class="lp-in">
+  <div class="lp-center">
+    <span class="lp-eyebrow">Real deliverables</span>
+    <h2>Proof a hiring manager can open.</h2>
+    <p class="lede">Every module ends with work in your own GitHub repository. Interviews for AI-testing roles are built around pieces like these.</p>
+  </div>
+  <div class="mocks">
+    <div class="mock darkm rv" aria-label="Example: a pull request with three passing checks">
+      <div class="mh"><i></i><i></i><i></i><span>pull request #14 · tighten the refund answer</span></div>
+      <div class="mb">
+        <div class="chk"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>eval-gate · 48 golden cases<span class="r">92% ≥ 90%</span></div>
+        <div class="chk"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>playwright · 10 browser tests<span class="r">10/10</span></div>
+        <div class="chk"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>red-team sweep · 30 attacks<span class="r">0 leaks</span></div>
+        <div class="chk"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>cost and latency limits<span class="r">2.1 s · ₹0.04</span></div>
+        <p style="margin:10px 0 0;font-size:13px;color:#9FB0CC">All checks have passed. Safe to merge.</p>
       </div>
-      <aside class="qs-side">
-        <b>17 more answers, and your first AI test.</b>
-        <p>The opening page of the course is free to read: every question, a 10-minute experiment you can run with any chatbot, and one picture that maps the whole vocabulary.</p>
-        <a class="btn primary" href="primer.html">Read the first 15 minutes free</a>
-        <p class="fine">No email, no account. It is the same page buyers get.</p>
-      </aside>
+      <span class="stamp">PASS</span>
     </div>
-  </section>
-
-  <section id="market" class="market">
-    <div class="eyebrow">The market · September 2026</div>
-    <h2>The roles exist, they are hiring in India, and they pay more than the one you have.</h2>
-    <p class="lede">AI-testing titles are still a small slice of QA jobs, but the fastest-growing and best-paid slice. Most of the demand hides inside SDET and QA roles that now ask for LLM, RAG, or evaluation skills. Those are Stages A to C.</p>
-    <div class="facts">
-      <div class="fact"><div class="n">10,000+</div><div class="l">"AI testing" listings on LinkedIn India, and as many again in the US</div></div>
-      <div class="fact"><div class="n">34%</div><div class="l">of QA job posts now mention AI, up from 9% in 2024</div></div>
-      <div class="fact"><div class="n">+49%</div><div class="l">median pay for QA roles that ask for LLM or agent skills versus those that do not (US)</div></div>
-      <div class="fact"><div class="n">1.5× to 3×</div><div class="l">what an AI-testing role pays in India compared with the manual-QA band</div></div>
+    <div class="mock doc rv" aria-label="Example: an executive summary from the capstone">
+      <div class="mh"><i></i><i></i><i></i><span>EXECUTIVE_SUMMARY.md</span></div>
+      <div class="mb">
+        <h4>Release assessment · Harbour View bot</h4>
+        <p class="sm">Capstone, Module 11 · two pages for a product owner</p>
+        <p style="margin:0 0 8px">Recommendation: <span class="pill no">NO-GO</span></p>
+        <p style="margin:0 0 6px;font-size:13.5px">3 blocking defects · in-scope 85% against a 90% bar · 1 safety failure</p>
+        <div class="bars"><span></span><span></span><span></span><span></span></div>
+      </div>
     </div>
-    <figure class="salary"><svg viewBox="0 0 900 334" role="img" aria-label="Pay bands per year in India for six roles: manual QA 3 to 7 lakh, SDET 10 to 28 and up to 55 at product companies, AI test engineer 12 to 38 and 42 to 65 for specialists, LLM evaluation engineer 15 to 40, AI red team analyst 22 to 50 and up to 80 at lead level, prompt QA 4.6 to 6 and 25 to 60 with code." xmlns="http://www.w3.org/2000/svg"><line x1="270.0" y1="14" x2="270.0" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="270.0" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹0 L</text><line x1="422.5" y1="14" x2="422.5" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="422.5" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹20 L</text><line x1="575.0" y1="14" x2="575.0" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="575.0" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹40 L</text><line x1="727.5" y1="14" x2="727.5" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="727.5" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹60 L</text><line x1="880.0" y1="14" x2="880.0" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="880.0" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹80 L</text><text x="256" y="39" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">Manual / functional QA</text><text x="256" y="55" font-size="11" text-anchor="end" style="fill:var(--muted)">where you are now</text><rect x="376.8" y="27" width="45.8" height="14" rx="4" style="fill:var(--muted);fill-opacity:.14;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:3 3"><title>Manual / functional QA: up to ₹20 L at lead level</title></rect><rect x="292.9" y="27" width="30.5" height="14" rx="4" style="fill:var(--muted)"><title>Manual / functional QA: typical ₹3–7 L per year</title></rect><text x="430.5" y="38" font-size="11.5" style="fill:var(--ink-2)">₹3–7 L · up to ₹20 L at lead level</text><text x="256" y="83" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">SDET / automation engineer</text><rect x="498.8" y="71" width="190.6" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>SDET / automation engineer: ₹30–55 L at product companies</title></rect><rect x="346.2" y="71" width="137.2" height="14" rx="4" style="fill:var(--accent)"><title>SDET / automation engineer: typical ₹10–28 L per year</title></rect><text x="256" y="127" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">AI Test / AI Quality Engineer</text><rect x="590.2" y="115" width="175.4" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>AI Test / AI Quality Engineer: ₹42–65 L reported for specialists</title></rect><rect x="361.5" y="115" width="198.2" height="14" rx="4" style="fill:var(--accent)"><title>AI Test / AI Quality Engineer: typical ₹12–38 L per year</title></rect><text x="256" y="171" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">LLM Evaluation Engineer</text><rect x="384.4" y="159" width="190.6" height="14" rx="4" style="fill:var(--accent)"><title>LLM Evaluation Engineer: typical ₹15–40 L per year</title></rect><text x="256" y="215" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">AI Red Team Analyst</text><rect x="651.2" y="203" width="228.8" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>AI Red Team Analyst: ₹50–80 L at lead level</title></rect><rect x="437.8" y="203" width="213.5" height="14" rx="4" style="fill:var(--accent)"><title>AI Red Team Analyst: typical ₹22–50 L per year</title></rect><text x="256" y="259" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">Prompt QA / prompt engineer</text><rect x="460.6" y="247" width="266.9" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>Prompt QA / prompt engineer: ₹25–60 L only when paired with code</title></rect><rect x="305.1" y="247" width="10.7" height="14" rx="4" style="fill:var(--accent)"><title>Prompt QA / prompt engineer: typical ₹4.6–6 L per year</title></rect><text x="346.2" y="100" font-size="11.5" style="fill:var(--ink-2)">₹10–28 L · ₹30–55 L at product companies</text><text x="361.5" y="144" font-size="11.5" style="fill:var(--ink-2)">₹12–38 L · ₹42–65 L reported for specialists</text><text x="384.4" y="188" font-size="11.5" style="fill:var(--ink-2)">₹15–40 L</text><text x="437.8" y="232" font-size="11.5" style="fill:var(--ink-2)">₹22–50 L · ₹50–80 L at lead level</text><text x="305.1" y="276" font-size="11.5" style="fill:var(--ink-2)">₹4.6–6 L · ₹25–60 L only when paired with code</text><rect x="270" y="310" width="22" height="12" rx="3" style="fill:var(--accent)"/><text x="300" y="320" font-size="11.5" style="fill:var(--ink-2)">typical band</text><rect x="400" y="310" width="22" height="12" rx="3" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"/><text x="430" y="320" font-size="11.5" style="fill:var(--ink-2)">senior, product company, or specialist</text><rect x="690" y="310" width="22" height="12" rx="3" style="fill:var(--muted)"/><text x="720" y="320" font-size="11.5" style="fill:var(--ink-2)">where you are now</text></svg><figcaption>India, per year, September 2026. Hover a bar for the detail. The full table with US figures is below.</figcaption></figure>
-    <details><summary>Full table: India and US pay, and what gets you there</summary>
-    <div class="tbl">
-      <table>
-        <thead><tr><th>Role</th><th>India, per year</th><th>United States</th><th>What gets you there</th></tr></thead>
-        <tbody>
-          <tr class="you"><td data-label="Role">Manual / functional QA</td><td class="num" data-label="India, per year">₹3–7 L<span class="sub">₹14–20 L at lead level</span></td><td class="num" data-label="United States">$55–110k</td><td data-label="What gets you there">Your starting point. Test design, exploration, and defect reporting all carry over.</td></tr>
-          <tr><td data-label="Role">SDET / automation engineer</td><td class="num" data-label="India, per year">₹10–28 L<span class="sub">₹30–55 L at product companies</span></td><td class="num" data-label="United States">$95–195k</td><td data-label="What gets you there">Stage A: Python, pytest, Playwright, CI.</td></tr>
-          <tr><td data-label="Role">AI Test Engineer / AI Quality Engineer</td><td class="num" data-label="India, per year">20–35% above SDET<span class="sub">₹42–65 L reported for specialists</span></td><td class="num" data-label="United States">$180–240k</td><td data-label="What gets you there">Stages A to C: eval suites, golden sets, rubrics, judges, a gate in CI.</td></tr>
-          <tr><td data-label="Role">LLM Evaluation Engineer</td><td class="num" data-label="India, per year">₹15–40 L+</td><td class="num" data-label="United States">$160k average</td><td data-label="What gets you there">Modules 7 and 8: promptfoo, DeepEval, RAGAS, Langfuse, retrieval and agent testing.</td></tr>
-          <tr><td data-label="Role">AI Red Team Analyst</td><td class="num" data-label="India, per year">₹22–50 L<span class="sub">₹50–80 L at lead level</span></td><td class="num" data-label="United States">$80–220k</td><td data-label="What gets you there">Module 9: prompt injection, leakage, guardrails, OWASP LLM Top 10, PyRIT and Garak.</td></tr>
-          <tr><td data-label="Role">Prompt QA / prompt engineer</td><td class="num" data-label="India, per year">₹4.6–6 L average<span class="sub">₹25–60 L when paired with code</span></td><td class="num" data-label="United States">$100k+</td><td data-label="What gets you there">Module 6, plus Stage A. Prompting without code is the one path that plateaus.</td></tr>
-        </tbody>
-      </table>
+    <div class="mock darkm rv" aria-label="Example: the recorded release walkthrough">
+      <div class="mh"><i></i><i></i><i></i><span>demo.mp4 · your recorded walkthrough</span></div>
+      <div class="vid"><span class="slide">results.csv · gate output · 12 defects found</span><span class="play" aria-hidden="true"></span><span class="ts">10:00</span></div>
     </div>
-    </details>
-    <p class="fine">Compiled 28 September 2026 from LinkedIn, Indeed, and Glassdoor listings and three 2026 QA market reports (<a href="https://softwaretestpilot.com/qa-job-market-report" rel="noopener">SoftwareTestPilot</a>, <a href="https://interviewstack.io/blog/how-ai-is-changing-qa-engineer-2026" rel="noopener">InterviewStack</a>, <a href="https://scrolltest.com/test-automation-india-2026-salary-hiring-trends/" rel="noopener">ScrollTest</a>) and the <a href="https://www.knowledgehut.com/blog/security/ai-red-teamer-salary" rel="noopener">KnowledgeHut</a> red-team salary guide. These are ranges, not promises: product companies in Bengaluru and Hyderabad pay at the top of each band, services firms at the bottom, and the AI-specialist figures rest on a few hundred salary reports. No course can guarantee a salary.</p>
-  </section>
-
-  <section id="build">
-    <div class="eyebrow">The portfolio</div>
-    <h2>You leave with proof, not a certificate.</h2>
-    <p class="lede">Every module ends with something in your GitHub repository that a hiring manager can open, run, and read. These are the ones interviews are built around.</p>
-    <div class="grid">
-      <div class="card"><span class="eyebrow">Module 4</span><h3>A browser suite that runs green in CI</h3><p>Ten Playwright tests against a live demo shop, twenty green runs in a row, three real defects documented.</p><div class="proof">proof: workflow badge · test-results/ · README defects table</div></div>
-      <div class="card"><span class="eyebrow">Module 5</span><h3>A variance report</h3><p>One chatbot question, twenty runs, a table of what varied, and thresholds a product owner could sign.</p><div class="proof">proof: results.csv · report.md · your thresholds</div></div>
-      <div class="card"><span class="eyebrow">Module 7</span><h3>An evaluation suite with a gate</h3><p>A 40-question golden set, a judge you calibrated by hand, and a gate that blocks a bad change from merging.</p><div class="proof">proof: gate output · promptfoo grid · calibration table</div></div>
-      <div class="card"><span class="eyebrow">Module 8</span><h3>A RAG and agent test plan, executed</h3><p>Retrieval measured on its own, answers checked claim by claim, and a test that catches a destructive action before it happens.</p><div class="proof">proof: sweep table · test_agent_trajectories.py · findings</div></div>
-      <div class="card"><span class="eyebrow">Module 9</span><h3>A red-team report</h3><p>Thirty attack cases across the OWASP LLM Top 10, an automated sweep, and findings with severities and retests.</p><div class="proof">proof: REDTEAM_REPORT.md · evidence/ · retest table</div></div>
-      <div class="card"><span class="eyebrow">Module 11</span><h3>A release assessment, on video</h3><p>The capstone: full suite in CI, red-team, a two-page go or no-go, and a ten-minute recorded walkthrough.</p><div class="proof">proof: demo.mp4 · EXECUTIVE_SUMMARY.md · 12 defects</div></div>
+    <div class="mock rv" aria-label="Example: a variance report">
+      <div class="mh"><i></i><i></i><i></i><span>results.csv · variance report, Module 5</span></div>
+      <div class="mb">
+        <table class="tiny"><thead><tr><th>run</th><th>answer</th><th>verdict</th></tr></thead><tbody>
+          <tr><td>01</td><td>free up to 48 h</td><td class="p">pass</td></tr>
+          <tr><td>02</td><td>free up to 24 h</td><td class="f">fail</td></tr>
+          <tr><td>03</td><td>free up to 48 h</td><td class="p">pass</td></tr>
+          <tr><td>…</td><td>17 of 20 correct</td><td>85%</td></tr>
+        </tbody></table>
+      </div>
     </div>
-  </section>
-
+  </div>
+  <p class="mocknote">Illustrations of the work you produce. Yours carry your own numbers.</p>
+  <ul class="projlist">
+    <li class="rv"><span class="m">Module 4</span><b>A browser suite that runs green in CI</b><span class="d">Ten Playwright tests on a live demo shop, twenty green runs in a row, three real defects documented.</span></li>
+    <li class="rv"><span class="m">Module 5</span><b>A variance report</b><span class="d">One chatbot question, twenty runs, what varied, and thresholds a product owner could sign.</span></li>
+    <li class="rv"><span class="m">Module 7</span><b>An evaluation suite with a gate</b><span class="d">A 40-question golden set, a judge you calibrated by hand, and a gate that blocks a bad change.</span></li>
+    <li class="rv"><span class="m">Module 8</span><b>A RAG and agent test plan</b><span class="d">Retrieval measured on its own, answers checked claim by claim, a destructive action caught first.</span></li>
+    <li class="rv"><span class="m">Module 9</span><b>A red-team report</b><span class="d">Thirty attacks across the OWASP LLM Top 10, an automated sweep, findings with severities and retests.</span></li>
+    <li class="rv"><span class="m">Module 11</span><b>A release assessment, on video</b><span class="d">Full suite in CI, red-team, a two-page go or no-go, and a ten-minute recorded walkthrough.</span></li>
+  </ul>
+ </div>
+</div>
+<div class="lp-band lp-dark">
+ <div class="lp-in">
   <section id="app">
     <div class="split">
       <div>
@@ -672,71 +867,87 @@
       </div>
     </div>
   </section>
-
-  <section id="curriculum">
-    <div class="eyebrow">Curriculum</div>
-    <h2>Four stages. The hard part is in the middle, and we say so.</h2>
-    <p class="lede">Stage A has no AI in it on purpose: seven weeks of foundations so every tool later is something you can run and read. Already write Python? Skip Modules 2 and 3 and finish in nineteen weeks.</p>
-    <figure class="weeks"><svg viewBox="0 0 900 78" role="img" aria-label="Twenty-three weeks in four stages: A foundations seven weeks, B AI fundamentals four weeks, C testing AI systems eight weeks, D capstone and career four weeks." xmlns="http://www.w3.org/2000/svg"><rect x="1.0" y="0" width="271.9" height="34" rx="4" style="fill:#1F6FB5"><title>Stage A · Foundations · 7 weeks · 55 hours</title></rect><text x="12.0" y="22" font-size="13" style="fill:#fff;font-weight:700">A</text><text x="137.0" y="56" font-size="12" text-anchor="middle" style="fill:var(--ink);font-weight:600">Foundations</text><text x="137.0" y="72" font-size="11" text-anchor="middle" style="fill:var(--muted)">7 weeks · 55 h</text><rect x="274.9" y="0" width="154.5" height="34" rx="4" style="fill:#1E9E6A"><title>Stage B · AI fundamentals · 4 weeks · 28 hours</title></rect><text x="285.9" y="22" font-size="13" style="fill:#fff;font-weight:700">B</text><text x="352.2" y="56" font-size="12" text-anchor="middle" style="fill:var(--ink);font-weight:600">AI fundamentals</text><text x="352.2" y="72" font-size="11" text-anchor="middle" style="fill:var(--muted)">4 weeks · 28 h</text><rect x="431.4" y="0" width="311.0" height="34" rx="4" style="fill:#E8641B"><title>Stage C · Testing AI systems · 8 weeks · 54 hours</title></rect><text x="442.4" y="22" font-size="13" style="fill:#fff;font-weight:700">C</text><text x="587.0" y="56" font-size="12" text-anchor="middle" style="fill:var(--ink);font-weight:600">Testing AI systems</text><text x="587.0" y="72" font-size="11" text-anchor="middle" style="fill:var(--muted)">8 weeks · 54 h</text><rect x="744.5" y="0" width="154.5" height="34" rx="4" style="fill:#8A4FBF"><title>Stage D · Capstone & career · 4 weeks · 30 hours</title></rect><text x="755.5" y="22" font-size="13" style="fill:#fff;font-weight:700">D</text><text x="821.7" y="56" font-size="12" text-anchor="middle" style="fill:var(--ink);font-weight:600">Capstone & career</text><text x="821.7" y="72" font-size="11" text-anchor="middle" style="fill:var(--muted)">4 weeks · 30 h</text></svg></figure>
-    <div class="stages">
-      <div class="stage">
-        <span class="eyebrow">Stage A · Weeks 1 to 7</span>
-        <h3>Foundations</h3>
-        <ul>
-          <li><span>0 · Orientation &amp; setup</span><span>3 h</span></li>
-          <li><span>1 · Command line &amp; Git</span><span>6 h</span></li>
-          <li><span>2 · Python from zero</span><span>24 h</span></li>
-          <li><span>3 · APIs, HTTP &amp; data</span><span>8 h</span></li>
-          <li><span>4 · Test automation</span><span>14 h</span></li>
-        </ul>
-        <div class="hours">55 h · no AI yet, on purpose</div>
-      </div>
-      <div class="stage">
-        <span class="eyebrow">Stage B · Weeks 8 to 11</span>
-        <h3>AI fundamentals</h3>
-        <ul>
-          <li><span>5 · How LLMs work</span><span>14 h</span></li>
-          <li><span>6 · AI as your assistant</span><span>14 h</span></li>
-        </ul>
-        <div class="hours">28 h · first API call, first variance report</div>
-      </div>
-      <div class="stage core">
-        <span class="eyebrow">Stage C · Weeks 12 to 19</span>
-        <h3>Testing AI systems</h3>
-        <ul>
-          <li><span>7 · Evaluating LLM apps</span><span>26 h</span></li>
-          <li><span>8 · RAG &amp; agents</span><span>14 h</span></li>
-          <li><span>9 · Safety &amp; security</span><span>14 h</span></li>
-        </ul>
-        <div class="hours">54 h · the part employers pay for</div>
-      </div>
-      <div class="stage">
-        <span class="eyebrow">Stage D · Weeks 20 to 23</span>
-        <h3>Capstone &amp; career</h3>
-        <ul>
-          <li><span>10 · Classical ML basics</span><span>8 h</span></li>
-          <li><span>11 · Capstone</span><span>16 h</span></li>
-          <li><span>12 · Career transition</span><span>6 h</span></li>
-        </ul>
-        <div class="hours">30 h · release assessment, 50 interview answers</div>
-      </div>
+ </div>
+</div>
+<div class="lp-band lp-dark" id="curriculum" style="background:linear-gradient(180deg,#0A1020,#0D1630)">
+ <div class="lp-in">
+  <div class="lp-center">
+    <span class="lp-eyebrow">The 23-week roadmap</span>
+    <h2>Four stages, in the order the job needs them.</h2>
+    <p class="lede">Stage A has no AI in it on purpose: seven weeks of foundations so every tool later is one you can run and read. Already write Python? Skip Modules 2 and 3.</p>
+  </div>
+  <div class="rm-wrap">
+    <div class="stages rm">
+      <div class="stage"><span class="eyebrow">Stage A · weeks 1 to 7</span><h3>Foundations</h3><ul>
+        <li><span>0 · Orientation and setup</span><span>3 h</span></li><li><span>1 · Command line and Git</span><span>6 h</span></li>
+        <li><span>2 · Python from zero</span><span>24 h</span></li><li><span>3 · APIs, HTTP and data</span><span>8 h</span></li>
+        <li><span>4 · Test automation</span><span>14 h</span></li></ul><div class="hours">55 h · no AI yet, on purpose</div></div>
+      <div class="stage"><span class="eyebrow">Stage B · weeks 8 to 11</span><h3>AI fundamentals</h3><ul>
+        <li><span>5 · How LLMs work</span><span>14 h</span></li><li><span>6 · AI as your assistant</span><span>14 h</span></li></ul>
+        <div class="hours">28 h · first API call, first variance report</div></div>
+      <div class="stage core"><span class="eyebrow">Stage C · weeks 12 to 19</span><h3>Testing AI systems</h3><ul>
+        <li><span>7 · Evaluating LLM apps</span><span>26 h</span></li><li><span>8 · RAG and agents</span><span>14 h</span></li>
+        <li><span>9 · Safety and security</span><span>14 h</span></li></ul><div class="hours">54 h · the part employers pay for</div></div>
+      <div class="stage"><span class="eyebrow">Stage D · weeks 20 to 23</span><h3>Capstone and career</h3><ul>
+        <li><span>10 · Classical ML basics</span><span>8 h</span></li><li><span>11 · Capstone</span><span>16 h</span></li>
+        <li><span>12 · Career transition</span><span>6 h</span></li></ul><div class="hours">30 h · release assessment, 50 interview answers</div></div>
     </div>
-    <p style="margin-top:18px;font-size:14.5px;color:var(--ink-2)">Every module has a full page of lesson content: objectives, teaching notes, student material, checkpoints with answer keys, and labs with a definition of done. <a href="syllabus.html">Read the complete syllabus.</a></p>
+    <figure class="rm-poster rv">
+      <picture><source srcset="../covers/zero-to-ai-tester.webp" type="image/webp"><img src="../covers/zero-to-ai-tester.jpg" width="896" height="1139" loading="lazy" alt="Zero to AI Tester course map: four stages over 23 weeks, 167 hours"></picture>
+      <figcaption>The whole course on one page. <a href="syllabus.html">Read the full syllabus</a>.</figcaption>
+    </figure>
+  </div>
+ </div>
+</div>
+<div class="lp-band lp-light">
+ <div class="lp-in">
+  <section id="market" class="market">
+    <div class="eyebrow">The market · September 2026</div>
+    <h2>The roles exist, they are hiring in India, and they pay more than the one you have.</h2>
+    <p class="lede">AI-testing titles are still a small slice of QA jobs, but the fastest-growing and best-paid slice. Most of the demand hides inside SDET and QA roles that now ask for LLM, RAG, or evaluation skills. Those are Stages A to C.</p>
+    <div class="facts">
+      <div class="fact"><div class="n">10,000+</div><div class="l">"AI testing" listings on LinkedIn India, and as many again in the US</div></div>
+      <div class="fact"><div class="n">34%</div><div class="l">of QA job posts now mention AI, up from 9% in 2024</div></div>
+      <div class="fact"><div class="n">+49%</div><div class="l">median pay for QA roles that ask for LLM or agent skills versus those that do not (US)</div></div>
+      <div class="fact"><div class="n">1.5× to 3×</div><div class="l">what an AI-testing role pays in India compared with the manual-QA band</div></div>
+    </div>
+    <figure class="salary"><svg viewBox="0 0 900 334" role="img" aria-label="Pay bands per year in India for six roles: manual QA 3 to 7 lakh, SDET 10 to 28 and up to 55 at product companies, AI test engineer 12 to 38 and 42 to 65 for specialists, LLM evaluation engineer 15 to 40, AI red team analyst 22 to 50 and up to 80 at lead level, prompt QA 4.6 to 6 and 25 to 60 with code." xmlns="http://www.w3.org/2000/svg"><line x1="270.0" y1="14" x2="270.0" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="270.0" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹0 L</text><line x1="422.5" y1="14" x2="422.5" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="422.5" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹20 L</text><line x1="575.0" y1="14" x2="575.0" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="575.0" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹40 L</text><line x1="727.5" y1="14" x2="727.5" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="727.5" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹60 L</text><line x1="880.0" y1="14" x2="880.0" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="880.0" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹80 L</text><text x="256" y="39" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">Manual / functional QA</text><text x="256" y="55" font-size="11" text-anchor="end" style="fill:var(--muted)">where you are now</text><rect x="376.8" y="27" width="45.8" height="14" rx="4" style="fill:var(--muted);fill-opacity:.14;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:3 3"><title>Manual / functional QA: up to ₹20 L at lead level</title></rect><rect x="292.9" y="27" width="30.5" height="14" rx="4" style="fill:var(--muted)"><title>Manual / functional QA: typical ₹3–7 L per year</title></rect><text x="430.5" y="38" font-size="11.5" style="fill:var(--ink-2)">₹3–7 L · up to ₹20 L at lead level</text><text x="256" y="83" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">SDET / automation engineer</text><rect x="498.8" y="71" width="190.6" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>SDET / automation engineer: ₹30–55 L at product companies</title></rect><rect x="346.2" y="71" width="137.2" height="14" rx="4" style="fill:var(--accent)"><title>SDET / automation engineer: typical ₹10–28 L per year</title></rect><text x="256" y="127" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">AI Test / AI Quality Engineer</text><rect x="590.2" y="115" width="175.4" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>AI Test / AI Quality Engineer: ₹42–65 L reported for specialists</title></rect><rect x="361.5" y="115" width="198.2" height="14" rx="4" style="fill:var(--accent)"><title>AI Test / AI Quality Engineer: typical ₹12–38 L per year</title></rect><text x="256" y="171" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">LLM Evaluation Engineer</text><rect x="384.4" y="159" width="190.6" height="14" rx="4" style="fill:var(--accent)"><title>LLM Evaluation Engineer: typical ₹15–40 L per year</title></rect><text x="256" y="215" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">AI Red Team Analyst</text><rect x="651.2" y="203" width="228.8" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>AI Red Team Analyst: ₹50–80 L at lead level</title></rect><rect x="437.8" y="203" width="213.5" height="14" rx="4" style="fill:var(--accent)"><title>AI Red Team Analyst: typical ₹22–50 L per year</title></rect><text x="256" y="259" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">Prompt QA / prompt engineer</text><rect x="460.6" y="247" width="266.9" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>Prompt QA / prompt engineer: ₹25–60 L only when paired with code</title></rect><rect x="305.1" y="247" width="10.7" height="14" rx="4" style="fill:var(--accent)"><title>Prompt QA / prompt engineer: typical ₹4.6–6 L per year</title></rect><text x="346.2" y="100" font-size="11.5" style="fill:var(--ink-2)">₹10–28 L · ₹30–55 L at product companies</text><text x="361.5" y="144" font-size="11.5" style="fill:var(--ink-2)">₹12–38 L · ₹42–65 L reported for specialists</text><text x="384.4" y="188" font-size="11.5" style="fill:var(--ink-2)">₹15–40 L</text><text x="437.8" y="232" font-size="11.5" style="fill:var(--ink-2)">₹22–50 L · ₹50–80 L at lead level</text><text x="305.1" y="276" font-size="11.5" style="fill:var(--ink-2)">₹4.6–6 L · ₹25–60 L only when paired with code</text><rect x="270" y="310" width="22" height="12" rx="3" style="fill:var(--accent)"/><text x="300" y="320" font-size="11.5" style="fill:var(--ink-2)">typical band</text><rect x="400" y="310" width="22" height="12" rx="3" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"/><text x="430" y="320" font-size="11.5" style="fill:var(--ink-2)">senior, product company, or specialist</text><rect x="690" y="310" width="22" height="12" rx="3" style="fill:var(--muted)"/><text x="720" y="320" font-size="11.5" style="fill:var(--ink-2)">where you are now</text></svg><figcaption>India, per year, September 2026. Hover a bar for the detail. The full table with US figures is below.</figcaption></figure>
+    <details><summary>Full table: India and US pay, and what gets you there</summary>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Role</th><th>India, per year</th><th>United States</th><th>What gets you there</th></tr></thead>
+        <tbody>
+          <tr class="you"><td data-label="Role">Manual / functional QA</td><td class="num" data-label="India, per year">₹3–7 L<span class="sub">₹14–20 L at lead level</span></td><td class="num" data-label="United States">$55–110k</td><td data-label="What gets you there">Your starting point. Test design, exploration, and defect reporting all carry over.</td></tr>
+          <tr><td data-label="Role">SDET / automation engineer</td><td class="num" data-label="India, per year">₹10–28 L<span class="sub">₹30–55 L at product companies</span></td><td class="num" data-label="United States">$95–195k</td><td data-label="What gets you there">Stage A: Python, pytest, Playwright, CI.</td></tr>
+          <tr><td data-label="Role">AI Test Engineer / AI Quality Engineer</td><td class="num" data-label="India, per year">20–35% above SDET<span class="sub">₹42–65 L reported for specialists</span></td><td class="num" data-label="United States">$180–240k</td><td data-label="What gets you there">Stages A to C: eval suites, golden sets, rubrics, judges, a gate in CI.</td></tr>
+          <tr><td data-label="Role">LLM Evaluation Engineer</td><td class="num" data-label="India, per year">₹15–40 L+</td><td class="num" data-label="United States">$160k average</td><td data-label="What gets you there">Modules 7 and 8: promptfoo, DeepEval, RAGAS, Langfuse, retrieval and agent testing.</td></tr>
+          <tr><td data-label="Role">AI Red Team Analyst</td><td class="num" data-label="India, per year">₹22–50 L<span class="sub">₹50–80 L at lead level</span></td><td class="num" data-label="United States">$80–220k</td><td data-label="What gets you there">Module 9: prompt injection, leakage, guardrails, OWASP LLM Top 10, PyRIT and Garak.</td></tr>
+          <tr><td data-label="Role">Prompt QA / prompt engineer</td><td class="num" data-label="India, per year">₹4.6–6 L average<span class="sub">₹25–60 L when paired with code</span></td><td class="num" data-label="United States">$100k+</td><td data-label="What gets you there">Module 6, plus Stage A. Prompting without code is the one path that plateaus.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    </details>
+    <p class="fine">Compiled 28 September 2026 from LinkedIn, Indeed, and Glassdoor listings and three 2026 QA market reports (<a href="https://softwaretestpilot.com/qa-job-market-report" rel="noopener">SoftwareTestPilot</a>, <a href="https://interviewstack.io/blog/how-ai-is-changing-qa-engineer-2026" rel="noopener">InterviewStack</a>, <a href="https://scrolltest.com/test-automation-india-2026-salary-hiring-trends/" rel="noopener">ScrollTest</a>) and the <a href="https://www.knowledgehut.com/blog/security/ai-red-teamer-salary" rel="noopener">KnowledgeHut</a> red-team salary guide. These are ranges, not promises: product companies in Bengaluru and Hyderabad pay at the top of each band, services firms at the bottom, and the AI-specialist figures rest on a few hundred salary reports. No course can guarantee a salary.</p>
   </section>
-
-  <section id="method">
-    <div class="eyebrow">How it is taught</div>
-    <h2>Type the code. Run it. Find the bug. Write it up.</h2>
-    <p class="lede">Every lesson has the same five parts, so you always know what "done" looks like.</p>
-    <ol class="steps">
-      <li><span class="n">1</span><b>Objectives</b><p>Two to four things you can be tested on.</p></li>
-      <li><span class="n">2</span><b>Real code</b><p>Runnable in every lesson, checked before it ships.</p></li>
-      <li><span class="n">3</span><b>Checkpoint</b><p>Three questions and an answer key.</p></li>
-      <li><span class="n">4</span><b>Lab with a rubric</b><p>A definition of done and points.</p></li>
-      <li><span class="n">5</span><b>Cost shown</b><p>Every AI call prints its price. Under $10 for the whole course.</p></li>
-    </ol>
-  </section>
-
+ </div>
+</div>
+<div class="lp-band lp-dark" id="instructor" style="background:radial-gradient(700px 400px at 100% 0%,rgba(249,115,22,.14),transparent 60%),#0A1020">
+ <div class="lp-in">
+  <div class="lp-instr">
+    <span class="lp-mono rv" aria-hidden="true">C</span>
+    <div>
+      <span class="lp-eyebrow">Your instructor</span>
+      <h2>Taught by Chandru.</h2>
+      <p>Chandru builds and tests software products, and wrote every lesson, lab, and line of practice code in Zero to AI Tester. It is the path Chandru wanted and could not find: one that starts at the terminal and ends at a release assessment.</p>
+      <p>Built for testers who are told AI will replace them, by someone who thinks the opposite: the people who already know how to design a test are the people AI teams need most.</p>
+      <ul class="tools" aria-label="Tools you will use"><li>Python</li><li>pytest</li><li>Playwright</li><li>GitHub Actions</li><li>promptfoo</li><li>DeepEval</li><li>RAGAS</li><li>Langfuse</li><li>PyRIT</li><li>Garak</li></ul>
+      <a class="lp-btn cta" href="#pricing" data-buy>Start the course · ₹1,499 <span class="arr" aria-hidden="true">→</span></a>
+    </div>
+  </div>
+ </div>
+</div>
+<div class="lp-band lp-light">
+ <div class="lp-in">
   <section id="who">
     <div class="eyebrow">Fit</div>
     <h2>Built for one kind of person.</h2>
@@ -760,55 +971,52 @@
       </div>
     </div>
   </section>
-
-
+ </div>
+</div>
+<div class="lp-band lp-light" style="background:#EEF2F9">
+ <div class="lp-in">
   <section id="pricing">
-    <div class="eyebrow">Pricing</div>
-    <h2>One price. Everything included. Yours to keep.</h2>
-    <p class="lede">Pay once by UPI or card. The course opens in your browser the moment the payment completes. No subscription, no expiry.</p>
-    <div class="tiers one">
+    <div class="lp-center">
+      <span class="lp-eyebrow">One payment</span>
+      <h2>Lifetime access. Everything included.</h2>
+      <p class="lede">Pay once by UPI or card. The course opens in your browser the moment the payment completes.</p>
+    </div>
+    <div class="lp-price">
       <div class="tier featured">
         <span class="eyebrow">Zero to AI Tester · complete course</span>
         <div class="price">₹1,499 <small>one-time</small></div>
         <ul>
-          <li>13 modules, 167 hours, as pages in your browser</li>
-          <li>The practice app with 12 planted defects, datasets, templates</li>
-          <li>Answer keys and lab rubrics for every lesson</li>
-          <li>50 interview questions with answers, resume rewrite, portfolio README</li>
-          <li>Yours forever; updated at no charge when tools change</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Lifetime access</b> on any phone or laptop, every update free</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>13 modules, 167 hours</b> of lessons, labs and checkpoints</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>7 portfolio projects</b> in your own GitHub repository</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Career transition kit:</b> 50 interview answers, resume rewrite, portfolio README</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>The practice app</b> with 12 planted defects, datasets and templates</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Answer keys and rubrics</b> for every lesson and lab</span></li>
         </ul>
-        <a class="btn signal" href="#pricing" data-buy>Buy the course · ₹1,499</a>
-        <p class="fine" style="margin-top:10px;font-size:13px;color:var(--muted)">Lifetime online access with a login. Prefer a downloadable pack instead? <a data-playto href="#pricing">Buy it on Playto</a>.</p>
+        <a class="lp-btn cta" href="#pricing" data-buy>Buy the course · ₹1,499 <span class="arr" aria-hidden="true">→</span></a>
+        <p class="fine" style="margin-top:12px;font-size:13px;color:var(--muted)">Plus about $10 of AI credit you buy from the model provider. Prefer a downloadable pack instead? <a data-playto href="#pricing">Buy it on Playto</a>.</p>
       </div>
       <div class="aside">
         <b>Before you buy</b>
-        <ol class="checks">
+        <ol>
           <li><a href="primer.html">Read the first 15 minutes free</a></li>
-          <li><a href="#watch">Watch the two videos</a></li>
           <li><a href="syllabus.html">Read the complete syllabus</a></li>
-          <li><a href="#who">Check "who it's for"</a></li>
+          <li><a href="#who">Check who it is for</a></li>
+          <li><a href="mailto:help@aiskillszone.com">Email a question</a></li>
         </ol>
-        <p class="final-line"><strong>All sales are final.</strong> It is a digital product delivered in full the moment you pay, so there are no refunds. Unsure? <a href="mailto:help@aiskillszone.com">Email a question first.</a></p>
-        <figure class="bill">
-          <svg viewBox="0 0 420 112" role="img" aria-label="The whole bill: the course is 1,499 rupees, AI credit for the practice modules is about ten dollars bought from the model provider, and every other tool is free." xmlns="http://www.w3.org/2000/svg">
-            <rect x="2" y="30" width="262" height="30" rx="4" style="fill:var(--signal)"/>
-            <rect x="268" y="30" width="150" height="30" rx="4" style="fill:var(--accent);fill-opacity:.45"/>
-            <text x="14" y="50" font-size="12.5" style="fill:#fff;font-weight:700">₹1,499 the course</text>
-            <text x="278" y="50" font-size="12.5" style="fill:var(--ink);font-weight:700">~$10 AI credit</text>
-            <text x="2" y="18" font-size="11" style="fill:var(--muted)">the whole bill, start to finish</text>
-            <text x="2" y="84" font-size="11" style="fill:var(--muted)">AI credit is bought from the model provider, from Module 5 on.</text>
-            <text x="2" y="100" font-size="11" style="fill:var(--muted)">Every other tool in the course is free.</text>
-          </svg>
-        </figure>
+        <p><strong>All sales are final.</strong> The course is delivered in full the moment you pay, which is why the sample and syllabus are free first. See the <a href="../terms.html">terms</a>.</p>
       </div>
     </div>
   </section>
-
+ </div>
+</div>
+<div class="lp-band lp-light">
+ <div class="lp-in">
   <section id="faq" class="faq">
     <div class="eyebrow">Questions</div>
     <h2>Things people ask before enrolling.</h2>
     <details open><summary>How is the course delivered?</summary><p><strong>Online, on this site, the moment your payment completes.</strong> Sign in with a code sent to your email or WhatsApp, no password, on any phone or laptop. Your place is remembered, and when a lesson is updated you see the new version at no charge. Prefer files you keep offline? The downloadable pack is sold separately on Playto.</p></details>
-    <details><summary>Can I get a refund?</summary><p><strong>No. All sales are final.</strong> It is a digital product delivered in full the moment you pay, which is why the syllabus, the videos, and <a href="primer.html">the first 15 minutes of the course</a> are free before you pay. Email a question first if anything is unclear.</p></details>
+    <details><summary>Can I get a refund?</summary><p><strong>No. All sales are final.</strong> It is a digital product delivered in full the moment you pay, which is why the syllabus and <a href="primer.html">the first 15 minutes of the course</a> are free before you pay. Email a question first if anything is unclear.</p></details>
     <details><summary>What does it cost beyond the course?</summary><p><strong>About ten dollars of AI credit, bought from the model provider.</strong> Every script prints what it spent. Every other tool in the course is free and open source.</p></details>
     <details><summary>How much time does it really take?</summary><p><strong>About seven hours a week for 23 weeks.</strong> Two weekday evenings for lessons and one weekend block for the lab. Already write Python? Skip Modules 2 and 3 and finish in about 19.</p></details>
     <details><summary>I have never written code. Can I really do this?</summary><p><strong>Yes. That is who it is written for.</strong> Module 2 teaches Python from the first line with every example about testing. You will be writing test code by week four and driving a browser by week six.</p></details>
@@ -818,7 +1026,6 @@
     <details><summary>Do I attack real systems in the security module?</summary><p><strong>No. Only the practice app on your own machine and a sandbox API built for testing.</strong> The module opens with the authorisation rule and the terms require it.</p></details>
     <details><summary>What if I get stuck?</summary><p><strong>Every checkpoint has an answer key and every lab a rubric.</strong> Module 0 teaches the fifteen-minute rule and a four-line "what I ran, what happened" template. Beyond that, email works.</p></details>
   </section>
-
   <section id="interest" class="soon">
     <div class="eyebrow">Coming soon</div>
     <h2>More courses, built the same way.</h2>
@@ -881,7 +1088,10 @@
       </article>
     </div>
   </section>
-
+ </div>
+</div>
+<div class="lp-band lp-dark">
+ <div class="lp-in">
   <section class="final" id="enrol">
     <div class="eyebrow" style="color:var(--term-muted)">Opens the moment you pay · learn at your own pace · keep it forever</div>
     <h2>Twenty-three weeks from "it seems fine" to "85%, interval 77 to 91, above threshold, here are the three that failed."</h2>
@@ -891,8 +1101,9 @@
       <a class="btn ghost" href="syllabus.html">Read the syllabus first</a>
     </div>
   </section>
-
-
+ </div>
+</div>
+<div class="wrap lp-tail lp-dark">
   <div class="glass-backdrop" id="buy" hidden role="dialog" aria-modal="true" aria-labelledby="buy-title">
     <div class="glass">
       <button type="button" class="g-x" data-buy-close aria-label="Close">&times;</button>
@@ -1009,7 +1220,7 @@
         "Marking lessons done and picking up where you left off",
       ] },
   ];
-  document.getElementById('videos').innerHTML = VIDEOS.map((v, i) => v.youtube
+  if (document.getElementById('videos')) document.getElementById('videos').innerHTML = VIDEOS.map((v, i) => v.youtube
     ? `<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${v.youtube}" title="${v.title}" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`
     : `<div class="video"><div class="soon"><span class="k">video ${i + 1} · about ${v.minutes} min · recording</span><b>${v.title}</b><ol>${v.chapters.map(c => `<li>${c}</li>`).join('')}</ol></div></div>`
   ).join('');
@@ -1057,7 +1268,7 @@
       if (from === to || matchMedia("(prefers-reduced-motion: reduce)").matches) { el.textContent = rupees(to); el.classList.add("pop"); return; }
       const t0 = performance.now();
       (function tick(now) {
-        const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+        const k = Math.max(0, Math.min(1, (now - t0) / ms)), e = 1 - Math.pow(1 - k, 3);
         el.textContent = rupees(Math.round(from + (to - from) * e));
         if (k < 1) requestAnimationFrame(tick); else el.classList.add("pop");
       })(t0);
@@ -1355,7 +1566,7 @@
           const h = st.querySelector(".hours"), m = h && h.textContent.match(/^(\d+)/);
           if (h && m && !reduce) {
             const to = +m[1], rest = h.textContent.slice(m[0].length), t0 = performance.now();
-            (function tick(now) { const k = Math.min(1, (now - t0) / 700); h.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))) + rest; if (k < 1) requestAnimationFrame(tick); })(t0);
+            (function tick(now) { const k = Math.max(0, Math.min(1, (now - t0) / 700)); h.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))) + rest; if (k < 1) requestAnimationFrame(tick); })(t0);
           }
         }, reduce ? 0 : i * 320));
       }, { threshold: 0.2 });
@@ -1378,6 +1589,25 @@
       }, { threshold: 0.05 });
       watch.forEach((el) => io2.observe(el));
     }
+  })();
+</script>
+<script>
+  // Landing behaviour: flip cards (tap or Enter/Space), count-up numbers, reveal on scroll.
+  (function () {
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.querySelectorAll(".flip").forEach((b) => b.addEventListener("click", () => {
+      const on = !b.classList.contains("on"); b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on));
+    }));
+    if (!("IntersectionObserver" in window)) { document.querySelectorAll(".rv").forEach((el) => el.classList.add("in")); return; }
+    const rv = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); rv.unobserve(e.target); } }), { threshold: 0.12 });
+    document.querySelectorAll(".rv").forEach((el, i) => { el.style.transitionDelay = (i % 3) * 80 + "ms"; rv.observe(el); });
+    const cnt = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return; cnt.unobserve(e.target);
+      const el = e.target, to = +el.dataset.count; if (reduce || document.hidden) { el.textContent = to; return; }
+      const t0 = performance.now();
+      (function tick(now) { const k = Math.max(0, Math.min(1, (now - t0) / 900)); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(tick); })(t0);
+    }), { threshold: 0.5 });
+    document.querySelectorAll("[data-count]").forEach((el) => cnt.observe(el));
   })();
 </script>
 </body>

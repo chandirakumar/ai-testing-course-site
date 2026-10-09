@@ -1,3 +1,4 @@
 .wrangler/
 node_modules/
 .cloudflare-dns-token
+.shots/

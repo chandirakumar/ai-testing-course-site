@@ -8,3 +8,4 @@ wrangler.toml
 .nojekyll
 node_modules
 src
+.shots
