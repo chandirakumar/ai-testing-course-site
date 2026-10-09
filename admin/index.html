@@ -42,6 +42,27 @@
   .fine a, .linkish { color: #C7D2FE; }
   .linkish { font: inherit; background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
   [hidden] { display: none !important; }
+  label.check { display: flex; align-items: center; gap: 10px; font-family: "IBM Plex Sans", sans-serif; font-size: 14.5px; letter-spacing: 0; text-transform: none; color: var(--ink-2); }
+  label.check input { display: inline-block; width: 20px; height: 20px; margin: 0; accent-color: #6366F1; }
+  .row input { flex: 1; min-width: 0; margin-top: 0; }
+  .btn.sm { padding: 8px 12px; font-size: 14px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
+  .chip { font: inherit; font-size: 13px; font-weight: 600; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); color: var(--ink-2); cursor: pointer; }
+  .chip[aria-pressed="true"] { background: rgba(129,140,248,.28); color: #fff; border-color: rgba(165,180,252,.5); }
+  .tag { display: inline-block; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 6px; background: rgba(255,255,255,.08); color: var(--ink-2); margin: 2px 4px 0 0; }
+  .tag.customer { color: var(--good); } .tag.abandoned { color: var(--warn); } .tag.failed { color: var(--bad); } .tag.interested { color: #C7D2FE; } .tag.consent { color: var(--good); }
+  .fu .item { grid-template-columns: minmax(0, 1fr); }
+  .fu .msg { font-size: 13px; color: var(--ink-2); white-space: pre-wrap; margin: 6px 0 8px; padding: 8px 10px; border-radius: 8px; background: rgba(0,0,0,.25); }
+  .fu .row { margin-top: 2px; }
+  .fu a.btn { text-decoration: none; }
+  .count { font-size: 13px; color: var(--muted); margin-left: 8px; }
+
+  .acc { display: grid; gap: 8px; margin-top: 12px; }
+  .acc .item { align-items: center; }
+  .acc .state { font-size: 12.5px; color: var(--muted); grid-column: 1 / -1; }
+  .acc .on .state { color: var(--good); }
+  .acc .pending .state { color: var(--warn); }
+
   /* dashboard */
   .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 6px; }
   .tile { padding: 12px 12px 10px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid var(--line); min-width: 0; }
@@ -133,6 +154,40 @@
       <div id="courses"><div class="skeleton"></div></div>
     </section>
 
+    <section class="glass span" id="learners">
+      <span class="eyebrow">Learners</span>
+      <h2>Course access</h2>
+      <p>Find a learner by email or WhatsApp number, then switch each course on or off for them. Someone who has never signed in gets the course the first time they do. Switching off takes effect within a minute.</p>
+      <form id="find-form" class="row" novalidate><input id="find" placeholder="email or WhatsApp number" autocomplete="off"><button class="btn" type="submit">Find</button></form>
+      <label style="margin-top:12px">Note for the log (optional)<input id="note" maxlength="120" placeholder="e.g. paid by bank transfer on 9 Oct"></label>
+      <div id="learner"></div>
+    </section>
+
+    <section class="glass span" id="followups">
+      <span class="eyebrow">Follow-ups</span>
+      <h2>Who to contact now <span class="count" id="fu-count"></span></h2>
+      <p>Built from rules: a failed payment (help within the hour), a purchase started but not paid (one reminder after a day), a course someone asked to be told about going live, a check-in a week after buying, and a new course for customers who ticked the offers box. Each opens a prefilled email; mark it done once sent.</p>
+      <div class="row"><button class="btn sm" type="button" id="fu-refresh">Refresh the queue</button><span class="ok" id="fu-msg"></span></div>
+      <div class="list fu" id="fu-list"><div class="skeleton"></div></div>
+    </section>
+
+    <section class="glass span" id="audience">
+      <span class="eyebrow">Audience</span>
+      <h2>Everyone we have seen <span class="count" id="au-count"></span></h2>
+      <p>Buyers, people who started buying, failed payments, Notify-me sign-ups and verified accounts, one line each. Offers and new-course news may go only to those marked <b style="color:var(--good)">consent</b>; everyone else gets service messages only.</p>
+      <div class="chips" id="au-chips">
+        <button class="chip" type="button" data-f="all" aria-pressed="true">All</button>
+        <button class="chip" type="button" data-f="customer" aria-pressed="false">Customers</button>
+        <button class="chip" type="button" data-f="interested" aria-pressed="false">Interested in upcoming</button>
+        <button class="chip" type="button" data-f="abandoned" aria-pressed="false">Started, not paid</button>
+        <button class="chip" type="button" data-f="failed" aria-pressed="false">Payment failed</button>
+        <button class="chip" type="button" data-f="verified" aria-pressed="false">Signed in only</button>
+        <button class="chip" type="button" data-f="consent" aria-pressed="false">Consented to offers</button>
+      </div>
+      <div class="row" style="margin:8px 0 4px"><input id="au-q" placeholder="filter by name, email, number, campaign" autocomplete="off"><button class="btn sm quiet" type="button" id="au-csv">Export CSV</button></div>
+      <div class="list" id="au-list"><div class="skeleton"></div></div>
+    </section>
+
     <section class="glass">
       <span class="eyebrow">Latest</span>
       <h2>Recent purchases</h2>
@@ -213,10 +268,11 @@
       if (admin !== true) { $("[data-who]").textContent = user.email || ("+" + user.phone); return step("denied"); }
       $("#auth").hidden = true; $("#dash").hidden = false; $("#signout").hidden = false;
       await Promise.all([loadStats(), loadCourses(), loadPurchases()]);
+      await Promise.all([loadFollowups(), loadAudience()]);
     }
 
     // ---- dashboard
-    let stats = null;
+    let stats = null, courseList = [];
     async function loadStats() {
       const { data, error } = await sb.rpc("admin_stats");
       const tiles = $("#tiles");
@@ -248,6 +304,7 @@
       const box = $("#courses");
       const { data, error } = await sb.from("courses").select("slug, title, price_inr, discount_pct, discount_label, discount_until, is_active").order("created_at");
       if (error) { box.innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
+      courseList = data;
       box.innerHTML = data.map((c) => {
         const on = live(c);
         return '<form class="course" data-slug="' + esc(c.slug) + '">' +
@@ -258,6 +315,7 @@
           '<label>Discount %<input name="discount_pct" type="number" min="0" max="90" step="1" value="' + esc(c.discount_pct) + '"></label>' +
           '<label class="full">Label<input name="discount_label" maxlength="60" value="' + esc(c.discount_label) + '" placeholder="Launch offer"></label>' +
           '<label class="full">Ends (your local time)<input name="discount_until" type="datetime-local" value="' + localInput(c.discount_until) + '"></label>' +
+          '<label class="check full"><input type="checkbox" name="is_active"' + (c.is_active ? " checked" : "") + '> On sale: listed on the site and purchasable</label>' +
           "</div>" +
           '<p class="preview">After saving, buyers pay <b data-preview></b></p>' +
           '<div class="row"><button class="btn" type="submit">Save</button><button class="btn quiet" type="button" data-clear>Remove discount</button><span class="ok" data-msg></span></div>' +
@@ -278,14 +336,15 @@
           const price = Number(f.price_inr.value), pct = Number(f.discount_pct.value || 0);
           if (!(price >= 1 && price <= 1000000)) { msg.textContent = "Price must be between 1 and 10,00,000."; return; }
           if (!(pct >= 0 && pct <= 90)) { msg.textContent = "Discount must be 0 to 90 percent."; return; }
-          const patch = { price_inr: price, discount_pct: pct, discount_label: f.discount_label.value.trim() || null, discount_until: f.discount_until.value ? new Date(f.discount_until.value).toISOString() : null };
+          const patch = { price_inr: price, discount_pct: pct, discount_label: f.discount_label.value.trim() || null, discount_until: f.discount_until.value ? new Date(f.discount_until.value).toISOString() : null, is_active: f.is_active.checked };
           const b = f.querySelector("button[type=submit]"); b.disabled = true;
-          const { data, error } = await sb.from("courses").update(patch).eq("slug", f.dataset.slug).select("slug, price_inr, discount_pct, discount_until");
+          const { data, error } = await sb.from("courses").update(patch).eq("slug", f.dataset.slug).select("slug, price_inr, discount_pct, discount_until, is_active");
           b.disabled = false;
           if (error) { msg.textContent = "Not saved: " + error.message; msg.style.color = "#F87171"; return; }
           if (!data || !data.length) { msg.textContent = "Not saved: this account may not be an admin any more."; msg.style.color = "#F87171"; return; }
           msg.style.color = ""; msg.textContent = "Saved. Live on the site now.";
           const c = data[0]; f.querySelector("[data-now]").textContent = rupees(live(c) ? salePrice(c.price_inr, c.discount_pct) : c.price_inr);
+          f.querySelector("h3").innerHTML = esc(courseList.find((x) => x.slug === c.slug).title) + (c.is_active ? "" : ' <span class="fine">(not on sale)</span>');
         });
       });
     }
@@ -303,6 +362,141 @@
           '<span class="meta">' + esc(p.email) + (p.phone ? " · " + esc(p.phone) : "") + " · " + esc(p.course_slug) + " · " + when + camp + "</span></div>";
       }).join("");
     }
+
+    // ---- learners: course access on / off
+    const learnerBox = $("#learner");
+    function paintLearner(d) {
+      const u = d.user;
+      const when = (iso) => new Date(iso).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
+      let html = u
+        ? '<p style="margin:14px 0 4px"><b style="color:#fff">' + esc(u.email || ("+" + u.phone)) + "</b>" + (u.email && u.phone ? " · +" + esc(u.phone) : "") + '<br><span class="fine">Account since ' + when(u.created_at) + (u.last_sign_in_at ? " · last sign-in " + when(u.last_sign_in_at) : "") + "</span></p>"
+        : '<p style="margin:14px 0 4px"><b style="color:#fff">' + esc(d.identity) + '</b><br><span class="fine">No account yet. Anything switched on here opens the first time they sign in with this ' + (d.identity.startsWith("+") ? "number" : "email") + ".</span></p>";
+      if (d.purchases.length) html += '<p class="fine">Purchases: ' + d.purchases.map((p) => esc(p.course_slug) + " · " + esc(p.status) + " · " + rupees(p.amount_inr) + " · " + when(p.at)).join("<br>") + "</p>";
+      html += '<div class="acc">' + courseList.map((c) => {
+        const a = d.access.find((x) => x.course_slug === c.slug), pend = d.pending.find((x) => x.course_slug === c.slug);
+        const cls = a ? "on" : pend ? "pending" : "off";
+        const state = a ? "On since " + when(a.granted_at) + (a.granted_by ? " · switched on by " + esc(a.granted_by) : " · from a purchase") + (a.note ? " · " + esc(a.note) : "")
+          : pend ? "Will open at first sign-in · set " + when(pend.created_at) + (pend.note ? " · " + esc(pend.note) : "") : "Off";
+        const btn = (a || pend) ? '<button class="btn sm quiet" type="button" data-set="off" data-course="' + esc(c.slug) + '">Turn off</button>' : '<button class="btn sm" type="button" data-set="on" data-course="' + esc(c.slug) + '">Turn on</button>';
+        return '<div class="item ' + cls + '"><span class="who">' + esc(c.title) + "</span>" + btn + '<span class="state">' + state + "</span></div>";
+      }).join("") + "</div>";
+      learnerBox.innerHTML = html;
+      learnerBox.querySelectorAll("[data-set]").forEach((b) => b.addEventListener("click", async () => {
+        b.disabled = true;
+        const { data, error } = await sb.rpc("admin_set_access", { p_identity: d.identity, p_course: b.dataset.course, p_enabled: b.dataset.set === "on", p_note: $("#note").value.trim() || null });
+        if (error) { b.disabled = false; alert("Not changed: " + error.message); return; }
+        paintLearner(data);
+      }));
+    }
+    $("#find-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const q = $("#find").value.trim(); if (!q) return;
+      learnerBox.innerHTML = '<div class="skeleton" style="margin-top:12px"></div>';
+      const { data, error } = await sb.rpc("admin_find_learner", { p_identity: q });
+      if (error) { learnerBox.innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
+      paintLearner(data);
+    });
+
+    // ---- audience
+    let audience = [], auFilter = "all";
+    const SITE = "https://aiskillszone.com/";
+    function stageOf(r) {
+      const s = [];
+      if (r.paid > 0 || (r.owns && r.owns.length)) s.push("customer");
+      if (r.abandoned && r.abandoned.length) s.push("abandoned");
+      if (r.failed && r.failed.length) s.push("failed");
+      if (r.interested && r.interested.length) s.push("interested");
+      if (!s.length) s.push("verified");
+      return s;
+    }
+    function paintAudience() {
+      const q = $("#au-q").value.trim().toLowerCase();
+      const rows = audience.filter((r) => {
+        const st = stageOf(r);
+        const okF = auFilter === "all" || (auFilter === "consent" ? r.consent : st.includes(auFilter));
+        const hay = [r.name, r.email, r.phone, r.utm && r.utm.utm_campaign, r.utm && r.utm.utm_source].filter(Boolean).join(" ").toLowerCase();
+        return okF && (!q || hay.includes(q));
+      });
+      $("#au-count").textContent = rows.length + " of " + audience.length;
+      const when = (iso) => iso ? new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "2-digit" }) : "";
+      $("#au-list").innerHTML = rows.length ? rows.map((r) => {
+        const tags = stageOf(r).map((s) => '<span class="tag ' + s + '">' + ({ customer: "customer", abandoned: "started, not paid", failed: "payment failed", interested: "interested", verified: "signed in only" }[s]) + "</span>").join("") + (r.consent ? '<span class="tag consent">consent</span>' : "");
+        const courses = [].concat((r.owns || []).map((c) => "owns " + c), (r.interested || []).map((c) => "wants " + c), (r.abandoned || []).map((c) => "left " + c), (r.failed || []).map((c) => "failed " + c)).join(" · ");
+        const camp = r.utm ? [r.utm.utm_source, r.utm.utm_campaign].filter(Boolean).join(" / ") : "";
+        return '<div class="item"><span class="who">' + esc(r.name || r.email || r.phone) + "</span>" +
+          '<span class="amt" style="font-weight:500;font-size:12.5px;color:var(--muted)">' + when(r.first_seen) + " → " + when(r.last_seen) + "</span>" +
+          '<span class="meta">' + esc(r.email || "") + (r.phone ? " · " + esc(r.phone) : "") + (courses ? " · " + esc(courses) : "") + (camp ? " · via " + esc(camp) : "") + (r.open_followups ? " · " + r.open_followups + " follow-up open" : "") + "<br>" + tags + "</span></div>";
+      }).join("") : '<p class="fine">Nobody matches.</p>';
+    }
+    async function loadAudience() {
+      const { data, error } = await sb.rpc("admin_audience");
+      if (error) { $("#au-list").innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
+      audience = data || []; paintAudience();
+    }
+    $("#au-chips").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-f]"); if (!b) return;
+      auFilter = b.dataset.f; $("#au-chips").querySelectorAll("[data-f]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); paintAudience();
+    });
+    $("#au-q").addEventListener("input", paintAudience);
+    $("#au-csv").addEventListener("click", () => {
+      const cell = (v) => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+      const head = ["name", "email", "phone", "stage", "consent", "owns", "interested", "abandoned", "failed", "utm_source", "utm_campaign", "first_seen", "last_seen", "open_followups"];
+      const lines = [head.join(",")].concat(audience.map((r) => [r.name, r.email, r.phone, stageOf(r).join("|"), r.consent ? "yes" : "no", (r.owns || []).join("|"), (r.interested || []).join("|"), (r.abandoned || []).join("|"), (r.failed || []).join("|"), r.utm && r.utm.utm_source, r.utm && r.utm.utm_campaign, r.first_seen, r.last_seen, r.open_followups].map(cell).join(",")));
+      const blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "aiskillszone-audience-" + new Date().toISOString().slice(0, 10) + ".csv"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    });
+
+    // ---- follow-ups
+    const KIND = {
+      payment_failed:     { label: "Payment failed, offer help", subject: "Your payment for {course} did not go through",
+        body: "Hi {name},\n\nYour payment for {course} failed on the bank's side, so nothing was charged. If you would like to try again, UPI usually goes through first time: {buy}\n\nIf money did leave your account, reply with the payment id and I will sort it out.\n\nChandru\nAI Skills Zone" },
+      abandoned_checkout: { label: "Started buying, did not pay", subject: "Finish setting up {course}?",
+        body: "Hi {name},\n\nYou started buying {course} but the payment was not completed, so nothing was charged. The first 15 minutes are free to read if you want another look: {primer}\n\nAny question about the course, just reply to this email.\n\nChandru\nAI Skills Zone" },
+      launch_notice:      { label: "Asked to be told at launch", subject: "{course} is live",
+        body: "Hi,\n\nYou asked to be told when {course} launches. It is live today: {link}\n\nChandru\nAI Skills Zone" },
+      welcome_check_in:   { label: "One week in, check in", subject: "How is {course} going?",
+        body: "Hi {name},\n\nYou are a week into {course}. How is it going? If a lesson is unclear or something is broken, reply here and I will fix it.\n\nChandru\nAI Skills Zone" },
+      next_course:        { label: "New course for a customer (consented)", subject: "A new course at AI Skills Zone",
+        body: "Hi {name},\n\nYou said you would like to hear about new courses. {course} is now open: {link}\n\nReply to this email if you would rather not get these.\n\nChandru\nAI Skills Zone" },
+    };
+    function fill(s, f) {
+      const c = courseList.find((x) => x.slug === f.course_slug), title = c ? c.title : f.course_slug;
+      return s.replace(/{name}/g, (f.name || "there").split(" ")[0]).replace(/{course}/g, title).replace(/{link}/g, SITE + f.course_slug + "/").replace(/{buy}/g, SITE + f.course_slug + "/?buy=1").replace(/{primer}/g, SITE + f.course_slug + "/primer");
+    }
+    async function loadFollowups() {
+      const box = $("#fu-list");
+      const { data, error } = await sb.from("followups").select("id, identity, name, course_slug, kind, due_at, note").is("done_at", null).is("skipped_at", null).lte("due_at", new Date(Date.now() + 36e5).toISOString()).order("due_at").limit(100);
+      if (error) { box.innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
+      $("#fu-count").textContent = data.length ? data.length + " due" : "";
+      if (!data.length) { box.innerHTML = '<p class="fine">Nothing due. Press Refresh the queue to apply the rules to the latest data.</p>'; return; }
+      box.innerHTML = data.map((f) => {
+        const k = KIND[f.kind] || { label: f.kind, subject: "", body: "" };
+        const subject = fill(k.subject, f), body = fill(k.body, f);
+        const isEmail = f.identity.includes("@");
+        const mail = isEmail ? "mailto:" + encodeURIComponent(f.identity) + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body) : "";
+        return '<div class="item" data-id="' + esc(f.id) + '"><span class="who">' + esc(f.name || f.identity) + ' <span class="tag">' + esc(k.label) + '</span></span>' +
+          '<span class="meta">' + esc(f.identity) + " · " + esc(f.course_slug) + " · due " + new Date(f.due_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) + "</span>" +
+          '<div class="msg">' + esc(subject) + "\n\n" + esc(body) + "</div>" +
+          '<div class="row">' + (isEmail ? '<a class="btn sm" href="' + mail + '">Open email</a>' : '<span class="fine">No email on file; contact by WhatsApp only for service help.</span>') +
+          '<button class="btn sm quiet" type="button" data-close="done">Done</button><button class="btn sm quiet" type="button" data-close="skipped">Skip</button></div></div>';
+      }).join("");
+      box.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", async () => {
+        const item = b.closest("[data-id]"); b.disabled = true;
+        const patch = b.dataset.close === "done" ? { done_at: new Date().toISOString() } : { skipped_at: new Date().toISOString() };
+        const { error } = await sb.from("followups").update(patch).eq("id", item.dataset.id);
+        if (error) { b.disabled = false; alert("Not saved: " + error.message); return; }
+        item.remove(); const left = box.querySelectorAll("[data-id]").length; $("#fu-count").textContent = left ? left + " due" : "";
+        if (!left) box.innerHTML = '<p class="fine">All done.</p>';
+      }));
+    }
+    $("#fu-refresh").addEventListener("click", async () => {
+      const b = $("#fu-refresh"); b.disabled = true; $("#fu-msg").textContent = "";
+      const { data, error } = await sb.rpc("admin_followups_refresh");
+      b.disabled = false;
+      if (error) { $("#fu-msg").textContent = error.message; return; }
+      $("#fu-msg").textContent = data ? data + " new follow-up" + (data === 1 ? "" : "s") + " added." : "Nothing new.";
+      await Promise.all([loadFollowups(), loadAudience()]);
+    });
 
     sb.auth.getSession().then(({ data: { session } }) => { if (session) enter(); else step("id"); });
   })();

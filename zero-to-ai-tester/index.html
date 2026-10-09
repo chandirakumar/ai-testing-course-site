@@ -347,6 +347,8 @@
   .glass .g-seg button:focus-visible { outline: 2px solid #C7D2FE; outline-offset: 1px; }
   .glass .g-seg-label { flex: 0 0 auto; align-self: center; padding: 0 10px 0 8px; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: #9AA3BD; font-family: "IBM Plex Mono", Consolas, monospace; }
   @media (max-width: 420px) { .glass .g-seg { flex-wrap: wrap; } .glass .g-seg-label { flex-basis: 100%; padding: 4px 8px 6px; } }
+  .glass .g-check { display: flex; align-items: flex-start; gap: 10px; margin: 0 0 12px; font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; font-size: 13.5px; letter-spacing: 0; text-transform: none; color: #B9C0D6; cursor: pointer; }
+  .glass .g-check input { width: 18px; height: 18px; margin: 2px 0 0; flex: 0 0 auto; accent-color: #6366F1; }
   .glass .g-fine { margin: 14px 0 0; font-size: 13px; color: #8B93AD; }
   .glass .g-fine a, .glass .g-sub a { color: #C7D2FE; }
   .glass .linkish { font: inherit; background: none; border: 0; padding: 0; color: #C7D2FE; text-decoration: underline; cursor: pointer; }
@@ -854,7 +856,8 @@
           <label>Email<input id="buy-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="Your login codes go here" required></label>
           <label>WhatsApp number<input id="buy-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="10-digit mobile, optional"></label>
           <div class="g-seg" role="group" aria-label="Where to send the code"><span class="g-seg-label">Code by</span><button type="button" data-via="email" aria-pressed="true">Email</button><button type="button" data-via="phone" aria-pressed="false">WhatsApp</button></div>
-          <p class="g-fine" style="margin:-4px 0 12px">Your code comes by email or WhatsApp, whichever you pick; the receipt goes to the email. The WhatsApp number, if you give it, also gets your purchase confirmation, nothing else. By continuing you agree to the <a href="../terms.html">terms</a> and the <a href="../privacy.html">privacy policy</a>.</p>
+          <p class="g-fine" style="margin:-4px 0 12px">Your code comes by email or WhatsApp, whichever you pick; the receipt goes to the email. The WhatsApp number, if you give it, also gets your purchase confirmation, nothing else. If you start a purchase and do not finish it, or a payment fails, we may email you once to help. By continuing you agree to the <a href="../terms.html">terms</a> and the <a href="../privacy.html">privacy policy</a>.</p>
+          <label class="g-check"><input type="checkbox" id="buy-offers"> Email me about new courses and offers. Optional; reply to any email to stop.</label>
           <p class="g-err" id="buy-err" hidden></p>
           <button class="g-btn" type="submit" id="buy-next">Send my code</button>
           <div class="g-row"><span class="g-secure"><i></i>Payment by Razorpay</span><span>Receipt by email</span></div>
@@ -1174,7 +1177,7 @@
       const btn = $("#buy-pay"); btn.disabled = true; btn.textContent = "Preparing your order…"; err("pay-err", "");
       const reset = (msg) => { btn.disabled = false; btn.textContent = payLabel(); err("pay-err", msg); };
       try {
-        const [order] = await Promise.all([post("create-order", { course_slug: PAY.course, name: buyer.name, email: buyer.email, phone: buyer.phone, utm: window.ztaUtm() }), loadCheckout()]);
+        const [order] = await Promise.all([post("create-order", { course_slug: PAY.course, name: buyer.name, email: buyer.email, phone: buyer.phone, utm: window.ztaUtm(), marketing: !!(document.getElementById("buy-offers") || {}).checked }), loadCheckout()]);
         const rzp = new window.Razorpay({
           key: order.key_id, amount: order.amount, currency: order.currency, order_id: order.order_id,
           name: "AI Skills Zone", description: order.description, prefill: order.prefill,
