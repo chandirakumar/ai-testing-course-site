@@ -34,3 +34,34 @@ crons = ["17 3 * * *"]
 [vars]
 SUPABASE_URL = "https://cxiezjegnnbkghbevqra.supabase.co"
 SUPABASE_PUBLISHABLE_KEY = "sb_publishable_6owpYUznjQkw2VH3kvNKVA_Ay3VNhlW"
+
+# ---------------------------------------------------------------- dev site: dev.aiskillszone.com
+#   Deploy: npx wrangler deploy --env dev
+# Same files and code as the live site, a separate Worker, a separate Supabase project and a separate course
+# store, behind a password (Worker secret DEV_PASSWORD; the value is in .dev-site-password, never committed).
+# The Worker rewrites the live Supabase address and key in every page to the dev ones, so the HTML stays shared.
+[env.dev]
+name = "aiskillszone-dev"
+routes = [ { pattern = "dev.aiskillszone.com", custom_domain = true } ]
+
+[env.dev.assets]
+directory = "."
+binding = "ASSETS"
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"
+run_worker_first = true          # every request passes the password check and the address rewrite
+
+[[env.dev.kv_namespaces]]
+binding = "COURSE_FILES"
+id = "8a8170685ee44485bb4351deae976625"
+
+[env.dev.triggers]
+crons = ["23 3 * * *"]           # keeps the dev Supabase project awake too
+
+[env.dev.vars]
+SITE_ENV = "dev"
+SUPABASE_URL = "https://ofuydnjqsltvlalgvnod.supabase.co"
+SUPABASE_PUBLISHABLE_KEY = "sb_publishable_kDS_Snvm8YPq63lkXpOk1w_4Dt_M01P"
+LIVE_SUPABASE_URL = "https://cxiezjegnnbkghbevqra.supabase.co"
+LIVE_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_6owpYUznjQkw2VH3kvNKVA_Ay3VNhlW"
+

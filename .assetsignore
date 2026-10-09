@@ -9,3 +9,9 @@ wrangler.toml
 node_modules
 src
 .shots
+.cloudflare-dns-token
+.dev-site-password
+.*token*
+.*password*
+.*secret*
+.env*
