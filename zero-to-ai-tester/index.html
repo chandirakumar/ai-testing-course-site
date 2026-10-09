@@ -944,6 +944,19 @@
       open: "../learn/zero-to-ai-tester/",
       checkoutJs: "https://checkout.razorpay.com/v1/checkout.js",
     };
+    // Campaign tags (utm_*) from the link that brought the visitor are kept in this browser for 30 days and
+    // sent with the purchase and with Notify me, so a sale can be traced to the ad without any tracker.
+    (function () {
+      try {
+        var q = new URLSearchParams(location.search), tags = {}, any = false;
+        ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach(function (k) { var v = q.get(k); if (v) { tags[k] = v.slice(0, 100); any = true; } });
+        if (any) localStorage.setItem("zta:utm", JSON.stringify({ tags: tags, at: Date.now() }));
+      } catch (e) {}
+    })();
+    window.ztaUtm = function () {
+      try { var s = JSON.parse(localStorage.getItem("zta:utm") || "null"); if (s && Date.now() - s.at < 30 * 86400000) return s.tags; } catch (e) {}
+      return null;
+    };
     const fn = (name) => PAY.supabaseUrl + "/functions/v1/" + name;
     const modal = document.getElementById("buy");
     if (!modal) return;
@@ -1074,7 +1087,7 @@
       const btn = $("#buy-pay"); btn.disabled = true; btn.textContent = "Preparing your order…"; err("pay-err", "");
       const reset = (msg) => { btn.disabled = false; btn.textContent = "Pay ₹1,499"; err("pay-err", msg); };
       try {
-        const [order] = await Promise.all([post("create-order", { course_slug: PAY.course, name: buyer.name, email: buyer.email, phone: buyer.phone }), loadCheckout()]);
+        const [order] = await Promise.all([post("create-order", { course_slug: PAY.course, name: buyer.name, email: buyer.email, phone: buyer.phone, utm: window.ztaUtm() }), loadCheckout()]);
         const rzp = new window.Razorpay({
           key: order.key_id, amount: order.amount, currency: order.currency, order_id: order.order_id,
           name: "AI Skills Zone", description: order.description, prefill: order.prefill,
@@ -1136,7 +1149,7 @@
         if (!email) { input.hidden = false; input.focus(); btn.textContent = "Add me"; return; }
         if (!EMAIL_RE.test(email)) { input.hidden = false; input.focus(); return say("That email address does not look right.", false); }
         btn.disabled = true; say("", false);
-        const { error } = await sb.from("course_interest").insert({ email, course_slug: card.dataset.course, source: CFG.source });
+        const { error } = await sb.from("course_interest").insert({ email, course_slug: card.dataset.course, source: CFG.source, utm: (window.ztaUtm && window.ztaUtm()) || null });
         btn.disabled = false;
         if (error && error.code !== "23505") return say("Could not save that. Please try again in a moment.", false);
         known = email; try { localStorage.setItem("zta:notify-email", email); } catch (x) {}

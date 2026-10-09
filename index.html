@@ -215,7 +215,8 @@
         if (!email) { input.hidden = false; input.focus(); btn.textContent = "Add me"; return; }
         if (!EMAIL_RE.test(email)) { input.hidden = false; input.focus(); return say("That email address does not look right.", false); }
         btn.disabled = true; say("", false);
-        const { error } = await sb.from("course_interest").insert({ email, course_slug: card.dataset.course, source: CFG.source });
+        let utm = null; try { const q = new URLSearchParams(location.search), tags = {}; ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"].forEach((k) => { if (q.get(k)) tags[k] = q.get(k).slice(0, 100); }); if (Object.keys(tags).length) localStorage.setItem("zta:utm", JSON.stringify({ tags, at: Date.now() })); const s = JSON.parse(localStorage.getItem("zta:utm") || "null"); if (s && Date.now() - s.at < 30 * 86400000) utm = s.tags; } catch (e) {}
+        const { error } = await sb.from("course_interest").insert({ email, course_slug: card.dataset.course, source: CFG.source, utm });
         btn.disabled = false;
         if (error && error.code !== "23505") return say("Could not save that. Please try again in a moment.", false);
         known = email; try { localStorage.setItem("zta:notify-email", email); } catch (x) {}
