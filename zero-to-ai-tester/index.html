@@ -1116,21 +1116,20 @@
         <p class="g-sub">First a 6-digit code confirms you, by email or WhatsApp, then Razorpay takes the payment, then the course opens. No password, ever.</p>
         <form id="buy-form" novalidate>
           <label>Name<input id="buy-name" name="name" autocomplete="name" maxlength="80" placeholder="As it should appear on the receipt" required></label>
-          <label>Email<input id="buy-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="Your login codes go here" required></label>
-          <label>WhatsApp number<input id="buy-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="10-digit mobile, optional"></label>
-          <div class="g-seg" role="group" aria-label="Where to send the code"><span class="g-seg-label">Code by</span><button type="button" data-via="email" aria-pressed="true">Email</button><button type="button" data-via="phone" aria-pressed="false">WhatsApp</button></div>
-          <p class="g-fine" style="margin:-4px 0 12px">Your code comes by email or WhatsApp, whichever you pick; the receipt goes to the email. The WhatsApp number, if you give it, also gets your purchase confirmation, nothing else. If you start a purchase and do not finish it, or a payment fails, we may email you once to help. By continuing you agree to the <a href="../terms.html">terms</a> and the <a href="../privacy.html">privacy policy</a>.</p>
+          <label>Email<input id="buy-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="Your receipt goes here" required></label>
+          <label>Mobile number (WhatsApp)<input id="buy-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="10-digit mobile, gets your code" required></label>
+          <p class="g-fine" style="margin:-4px 0 12px">Your 6-digit code comes to this mobile number on WhatsApp, and the receipt goes to the email. The number also gets your purchase confirmation, nothing else. If you start a purchase and do not finish it, or a payment fails, we may email you once to help. By continuing you agree to the <a href="../terms.html">terms</a> and the <a href="../privacy.html">privacy policy</a>.</p>
           <label class="g-check"><input type="checkbox" id="buy-offers"> Email me about new courses and offers. Optional; reply to any email to stop.</label>
           <p class="g-err" id="buy-err" hidden></p>
-          <button class="g-btn" type="submit" id="buy-next">Send my code</button>
+          <button class="g-btn" type="submit" id="buy-next">Send code to WhatsApp</button>
           <div class="g-row"><span class="g-secure"><i></i>Payment by Razorpay</span><span>Receipt by email</span></div>
         </form>
         <p class="g-fine" data-signed-in hidden>Signed in as <b data-who></b>. <button type="button" class="linkish" data-signout>Not you? Sign out</button></p>
         <p class="g-fine">All sales are final; read the <a href="syllabus.html">syllabus</a> first. Already bought? <a href="../learn/">Log in</a>. Prefer the downloadable pack? <a data-playto href="#pricing">Buy it on Playto</a>. <a href="../privacy.html">How your data is used</a>.</p>
       </div>
       <div data-step="code" hidden>
-        <span class="g-eyebrow" data-step2-eyebrow>Confirm your email</span>
-        <h3 data-step2-title>Enter the code we emailed you</h3>
+        <span class="g-eyebrow" data-step2-eyebrow>Confirm your mobile</span>
+        <h3 data-step2-title>Enter the code from WhatsApp</h3>
         <p class="g-sub">Sent to <b data-email></b>. Six digits, valid for ten minutes. <span data-slow>If it is slow, check the spam folder.</span></p>
         <form id="code-form" novalidate>
           <label>Code<input id="buy-code" class="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="000000"></label>
@@ -1304,7 +1303,7 @@
     if (!modal) return;
     const $ = (sel) => modal.querySelector(sel);
     const steps = Array.from(modal.querySelectorAll("[data-step]"));
-    let via = "email";
+    let attach = false;   // true: already signed in by email, so the code confirms a number on that account
     function normalisePhone(raw) {
       const digits = raw.replace(/[^\d+]/g, "");
       if (/^\+\d{8,15}$/.test(digits)) return digits;
@@ -1313,17 +1312,10 @@
       if (/^[6-9]\d{9}$/.test(d)) return "+91" + d;
       return null;
     }
-    modal.querySelectorAll("[data-via]").forEach((b) => b.addEventListener("click", () => {
-      via = b.dataset.via;
-      modal.querySelectorAll("[data-via]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-      $("#buy-phone").placeholder = via === "phone" ? "10-digit mobile, gets the code" : "10-digit mobile, optional";
-      err("buy-err", "");
-      if (via === "phone" && !$("#buy-phone").value) $("#buy-phone").focus();
-    }));
     function sendCode() {
-      return via === "phone"
-        ? client().auth.signInWithOtp({ phone: buyer.phoneE164, options: { shouldCreateUser: true } })
-        : client().auth.signInWithOtp({ email: buyer.email, options: { shouldCreateUser: true } });
+      return attach
+        ? client().auth.updateUser({ phone: buyer.phoneE164 })
+        : client().auth.signInWithOtp({ phone: buyer.phoneE164, options: { shouldCreateUser: true } });
     }
     const show = (name) => {
       steps.forEach((s) => { s.hidden = s.dataset.step !== name; });
@@ -1358,19 +1350,18 @@
       setCookie(session);
       const signedIn = $("[data-signed-in]");
       const u = session && session.user && (session.user.email || session.user.phone) ? session.user : null;
-      modal.querySelector(".g-seg").hidden = !!u;   // already verified, no code to send
       if (u) {
-        // An email account locks the email; a WhatsApp-only account locks the number and leaves the email open for the receipt.
+        // What the account already has is locked; whatever is missing is asked for. A confirmed number skips the code.
         if (u.email) { buyer.email = u.email; $("#buy-email").value = buyer.email; }
         $("#buy-email").readOnly = !!u.email;
-        if (!u.email && u.phone) $("#buy-phone").value = "+" + u.phone.replace(/[^0-9]/g, "");
-        $("#buy-phone").readOnly = !u.email && !!u.phone;
+        if (u.phone) $("#buy-phone").value = "+" + u.phone.replace(/[^0-9]/g, "");
+        $("#buy-phone").readOnly = !!u.phone;
         $("[data-who]").textContent = u.email || ("+" + u.phone); signedIn.hidden = false;
-        $("#buy-next").textContent = "Continue to payment";
+        $("#buy-next").textContent = u.phone ? "Continue to payment" : "Send code to WhatsApp";
         const { data: owns } = await client().rpc("has_course", { course: PAY.course });
         if (owns === true) { show("owned"); return; }
       } else {
-        $("#buy-email").readOnly = false; $("#buy-phone").readOnly = false; signedIn.hidden = true; $("#buy-next").textContent = "Send my code";
+        $("#buy-email").readOnly = false; $("#buy-phone").readOnly = false; signedIn.hidden = true; $("#buy-next").textContent = "Send code to WhatsApp";
       }
       setTimeout(() => $(session ? "#buy-name" : "#buy-name").focus(), 30);
     }
@@ -1391,8 +1382,8 @@
       if (buyer.name.length < 2) return "Please give the name for the receipt.";
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(buyer.email)) return "That email address does not look right.";
       if (buyer.phone && !/^\+?[\d\s-]{10,16}$/.test(buyer.phone)) return "Use a 10-digit Indian mobile number, or +country code for others.";
-      buyer.phoneE164 = buyer.phone ? normalisePhone(buyer.phone) : null;
-      if (via === "phone" && !buyer.phoneE164) return "Give the WhatsApp number that should receive the code.";
+      buyer.phoneE164 = normalisePhone(buyer.phone || "");
+      if (!buyer.phoneE164) return "Give your 10-digit mobile number. Your code is sent to it on WhatsApp.";
       return "";
     }
 
@@ -1403,16 +1394,17 @@
       if (problem) return err("buy-err", problem);
       const btn = $("#buy-next"); btn.disabled = true; err("buy-err", "");
       try {
-        if (session) { toPay(); return; }
+        if (session && session.user && session.user.phone) { toPay(); return; }
+        attach = !!session;
         const { error } = await sendCode();
         if (error) throw error;
-        $("[data-email]").textContent = via === "phone" ? buyer.phoneE164 + " on WhatsApp" : buyer.email;
-        $("[data-step2-eyebrow]").textContent = via === "phone" ? "Confirm your WhatsApp" : "Confirm your email";
-        $("[data-step2-title]").textContent = via === "phone" ? "Enter the code from WhatsApp" : "Enter the code we emailed you";
-        $("[data-slow]").hidden = via === "phone";
+        $("[data-email]").textContent = buyer.phoneE164 + " on WhatsApp";
+        $("[data-slow]").hidden = true;
         show("code"); setTimeout(() => $("#buy-code").focus(), 30);
       } catch (ex) {
-        err("buy-err", /hook/i.test(ex.message) ? "WhatsApp codes are not going out right now. Switch to Email, or try again in a few minutes." : /rate/i.test(ex.message) ? "Too many codes requested. Wait a minute and try again." : "The code could not be sent: " + ex.message);
+        err("buy-err", /hook/i.test(ex.message) ? "WhatsApp codes are not going out right now. Please try again in a few minutes."
+          : /already|registered|exists/i.test(ex.message) ? "This number is already linked to another account. Log in with that number, or use a different one."
+          : /rate/i.test(ex.message) ? "Too many codes requested. Wait a minute and try again." : "The code could not be sent: " + ex.message);
       } finally { btn.disabled = false; }
     });
     modal.querySelector("[data-resend]").addEventListener("click", async (e) => {
@@ -1429,12 +1421,12 @@
       const token = $("#buy-code").value.replace(/\D/g, "");
       if (token.length !== 6) return err("code-err", "The code is six digits.");
       const btn = $("#code-go"); btn.disabled = true; err("code-err", "");
-      const { data, error } = via === "phone"
-        ? await client().auth.verifyOtp({ phone: buyer.phoneE164, token, type: "sms" })
-        : await client().auth.verifyOtp({ email: buyer.email, token, type: "email" });
+      const { data, error } = await client().auth.verifyOtp({ phone: buyer.phoneE164, token, type: attach ? "phone_change" : "sms" });
       btn.disabled = false;
       if (error) return err("code-err", /expired|invalid/i.test(error.message) ? "That code did not match or has expired. Send a new one and try again." : error.message);
-      session = data.session; setCookie(session);
+      if (data.session) session = data.session;
+      else { const r = await client().auth.refreshSession(); session = (r.data && r.data.session) || session; }   // number added: fresh token carries it
+      setCookie(session);
       const { data: owns } = await client().rpc("has_course", { course: PAY.course });
       if (owns === true) return show("owned");
       toPay();
