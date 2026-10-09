@@ -86,7 +86,16 @@
   nav .links { display: flex; gap: 18px; align-items: center; }
   .side .poster { display: block; margin: 0 0 18px; }
   .side .poster img { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--rule); }
-  .course .facts .deal { color: var(--signal); }
+  /* MRP struck through, discounted price counts down then pops */
+  .px { white-space: nowrap; }
+  s.mrp { text-decoration: none; position: relative; opacity: .72; font-weight: 500; margin-right: .25em; }
+  s.mrp::after { content: ""; position: absolute; left: -2px; right: -2px; top: 52%; height: .09em; min-height: 2px; background: currentColor; transform: scaleX(0); transform-origin: left center; animation: strike .45s .6s cubic-bezier(.2,.8,.2,1) forwards; }
+  .sale { display: inline-block; font-variant-numeric: tabular-nums; }
+  .sale.pop { animation: pop .5s cubic-bezier(.2,.9,.3,1.4); }
+  @keyframes strike { to { transform: scaleX(1); } }
+  @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.14); } 100% { transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) { s.mrp::after { animation: none; transform: scaleX(1); } .sale.pop { animation: none; } }
+  .course .facts .deal { color: var(--signal); animation: pop .5s 1.15s; }
 </style>
 </head>
 <body>
@@ -212,7 +221,18 @@
       .then((r) => (r.ok ? r.json() : [])).then((rows) => {
         const p = rows[0]; if (!p) return;
         const rupees = (n) => "₹" + Number(n).toLocaleString("en-IN");
-        document.querySelectorAll(".course .facts b, .course .cta a.primary").forEach((el) => { el.textContent = el.textContent.replace("₹1,499", rupees(p.sale_price_inr)); });
+        function countTo(el, from, to, ms) {
+          if (from === to || matchMedia("(prefers-reduced-motion: reduce)").matches) { el.textContent = rupees(to); el.classList.add("pop"); return; }
+          const t0 = performance.now();
+          (function tick(now) {
+            const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+            el.textContent = rupees(Math.round(from + (to - from) * e));
+            if (k < 1) requestAnimationFrame(tick); else el.classList.add("pop");
+          })(t0);
+        }
+        const html = p.discount_pct ? '<span class="px"><s class="mrp">' + rupees(p.price_inr) + '</s><b class="sale">' + rupees(p.price_inr) + "</b></span>" : rupees(p.sale_price_inr);
+        document.querySelectorAll(".course .facts b, .course .cta a.primary").forEach((el) => { el.innerHTML = el.innerHTML.replace("₹1,499", html); });
+        document.querySelectorAll(".sale").forEach((el, i) => setTimeout(() => countTo(el, p.price_inr, p.sale_price_inr, 900), 120 + i * 60));
         if (p.discount_pct) {
           const f = document.querySelector(".course .facts");
           if (f) f.insertAdjacentHTML("beforeend", '<span class="deal"><b>' + p.discount_pct + '% off</b> ' + (p.discount_label ? p.discount_label.replace(/[<>&]/g, "") : "for now") + "</span>");

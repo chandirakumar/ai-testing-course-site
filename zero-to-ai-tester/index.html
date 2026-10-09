@@ -283,7 +283,18 @@
   .tier.featured { border: 2px solid var(--ink); }
   .tier .eyebrow { color: var(--muted); }
   .tier .price { font-family: "Archivo", sans-serif; font-weight: 850; font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
-  .tier .price s { color: var(--muted); font-weight: 500; font-size: 22px; margin-right: 6px; }
+  /* MRP struck through, discounted price counts down then pops */
+  .px { white-space: nowrap; }
+  s.mrp { text-decoration: none; position: relative; opacity: .72; font-weight: 500; margin-right: .25em; }
+  s.mrp::after { content: ""; position: absolute; left: -2px; right: -2px; top: 52%; height: .09em; min-height: 2px; background: currentColor; transform: scaleX(0); transform-origin: left center; animation: strike .45s .6s cubic-bezier(.2,.8,.2,1) forwards; }
+  .sale { display: inline-block; font-variant-numeric: tabular-nums; }
+  .sale.pop { animation: pop .5s cubic-bezier(.2,.9,.3,1.4); }
+  @keyframes strike { to { transform: scaleX(1); } }
+  @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.14); } 100% { transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) { s.mrp::after { animation: none; transform: scaleX(1); } .sale.pop { animation: none; } }
+  .tier .price s.mrp { color: var(--muted); font-size: 22px; }
+  .tier .deal { animation: pop .5s 1.15s; }
+  @media (max-width: 480px) { nav s.mrp { display: none; } }
   .tier .deal { align-self: flex-start; padding: 6px 10px; border-radius: 4px; background: var(--signal); color: #fff; font-weight: 700; font-size: 13px; }
   .tier .price small { font-size: 14px; font-weight: 500; color: var(--muted); font-family: "IBM Plex Sans", sans-serif; }
   .tier ul { padding-left: 18px; margin: 6px 0 14px; color: var(--ink-2); font-size: 14.5px; }
@@ -881,6 +892,7 @@
         <h3>Confirmed. Now the payment.</h3>
         <p class="g-sub">Course for <b data-who2></b>. UPI, card or net banking in Razorpay's window; nothing is charged until it completes.</p>
         <p class="g-err" id="pay-err" hidden></p>
+        <p class="g-fine" data-pay-deal hidden style="margin:0 0 10px"></p>
         <button class="g-btn" type="button" id="buy-pay">Pay ₹1,499</button>
         <div class="g-row"><span class="g-secure"><i></i>Secured by Razorpay</span><span>Course opens the moment it completes</span></div>
       </div>
@@ -997,11 +1009,26 @@
     const PRICE = { list: 1499, sale: 1499, pct: 0, label: "", until: null };
     const rupees = (n) => "₹" + Number(n).toLocaleString("en-IN");
     const payLabel = () => "Pay " + rupees(PRICE.sale);
+    function countTo(el, from, to, ms) {
+      if (from === to || matchMedia("(prefers-reduced-motion: reduce)").matches) { el.textContent = rupees(to); el.classList.add("pop"); return; }
+      const t0 = performance.now();
+      (function tick(now) {
+        const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+        el.textContent = rupees(Math.round(from + (to - from) * e));
+        if (k < 1) requestAnimationFrame(tick); else el.classList.add("pop");
+      })(t0);
+    }
     function paintPrice() {
-      const sale = rupees(PRICE.sale);
-      document.querySelectorAll("[data-buy], #buy-title, .bill text").forEach((el) => { el.textContent = el.textContent.replace("₹1,499", sale); });
+      const sale = rupees(PRICE.sale), start = rupees(PRICE.pct ? PRICE.list : PRICE.sale);
+      // Buttons and the modal title: MRP struck through, then the discounted price counts down into place.
+      const html = PRICE.pct ? '<span class="px"><s class="mrp">' + rupees(PRICE.list) + '</s><b class="sale">' + start + "</b></span>" : sale;
+      document.querySelectorAll("[data-buy], #buy-title").forEach((el) => { el.innerHTML = el.innerHTML.replace("₹1,499", html); });
+      document.querySelectorAll(".bill text").forEach((el) => { el.textContent = el.textContent.replace("₹1,499", sale); });
       const tier = document.querySelector(".tier .price");
-      if (tier) tier.innerHTML = (PRICE.pct ? "<s>" + rupees(PRICE.list) + "</s> " : "") + sale + " <small>one-time</small>";
+      if (tier) tier.innerHTML = (PRICE.pct ? '<s class="mrp">' + rupees(PRICE.list) + "</s>" : "") + '<b class="sale">' + start + "</b> <small>one-time</small>";
+      const payDeal = document.querySelector("[data-pay-deal]");
+      if (payDeal) { payDeal.hidden = !PRICE.pct; payDeal.textContent = PRICE.pct ? "MRP " + rupees(PRICE.list) + " · " + PRICE.pct + "% off" + (PRICE.label ? " · " + PRICE.label : "") + " · you pay " + sale : ""; }
+      document.querySelectorAll(".sale").forEach((el, i) => setTimeout(() => countTo(el, PRICE.list, PRICE.sale, 900), 120 + i * 60));
       let deal = document.querySelector(".tier .deal");
       if (PRICE.pct && tier) {
         if (!deal) { deal = document.createElement("div"); deal.className = "deal"; tier.insertAdjacentElement("afterend", deal); }
