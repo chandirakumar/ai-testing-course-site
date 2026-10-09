@@ -40,7 +40,7 @@ A full copy of the platform for trying changes and building new courses before c
 
 | | Live | Dev |
 |---|---|---|
-| Address | aiskillszone.com | dev.aiskillszone.com (password: the file `.dev-site-password`, any username) |
+| Address | aiskillszone.com | dev.aiskillszone.com (password: the file `.dev-site-password` in the private course folder, any username) |
 | Pages | this folder | the same folder, same files |
 | Database, sign-in, functions | Supabase project `cxiezjegnnbkghbevqra` | Supabase project `ofuydnjqsltvlalgvnod` |
 | Payments | Razorpay keys set on the live project | always Razorpay TEST keys: no real money |

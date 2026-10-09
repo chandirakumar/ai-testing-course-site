@@ -39,7 +39,7 @@ SUPABASE_PUBLISHABLE_KEY = "sb_publishable_6owpYUznjQkw2VH3kvNKVA_Ay3VNhlW"
 # ---------------------------------------------------------------- dev site: dev.aiskillszone.com
 #   Deploy: npx wrangler deploy --env dev
 # Same files and code as the live site, a separate Worker, a separate Supabase project and a separate course
-# store, behind a password (Worker secret DEV_PASSWORD; the value is in .dev-site-password, never committed).
+# store, behind a password (Worker secret DEV_PASSWORD; the value is in F:/Projects/ai-testing-course/.dev-site-password, never in this folder).
 # The Worker rewrites the live Supabase address and key in every page to the dev ones, so the HTML stays shared.
 [env.dev]
 name = "aiskillszone-dev"
