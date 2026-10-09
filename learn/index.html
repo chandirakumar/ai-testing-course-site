@@ -280,7 +280,7 @@
         $("[data-check]").textContent = via === "phone" ? "Check WhatsApp" : "Check your inbox";
         $("[data-slow]").hidden = via === "phone";
         step("code"); setTimeout(() => $("#login-code").focus(), 30); }
-      catch (ex) { err("email-err", /rate/i.test(ex.message) ? "Too many codes requested. Wait a minute and try again." : "The code could not be sent: " + ex.message); }
+      catch (ex) { err("email-err", /hook/i.test(ex.message) ? "WhatsApp codes are not going out right now. Switch to Email, or try again in a few minutes." : /rate/i.test(ex.message) ? "Too many codes requested. Wait a minute and try again." : "The code could not be sent: " + ex.message); }
       b.disabled = false; b.textContent = "Send my code";
     });
     login.querySelector("[data-resend]").addEventListener("click", async (e) => {

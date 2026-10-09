@@ -1073,7 +1073,7 @@
         $("[data-slow]").hidden = via === "phone";
         show("code"); setTimeout(() => $("#buy-code").focus(), 30);
       } catch (ex) {
-        err("buy-err", /rate/i.test(ex.message) ? "Too many codes requested. Wait a minute and try again." : "The code could not be sent: " + ex.message);
+        err("buy-err", /hook/i.test(ex.message) ? "WhatsApp codes are not going out right now. Switch to Email, or try again in a few minutes." : /rate/i.test(ex.message) ? "Too many codes requested. Wait a minute and try again." : "The code could not be sent: " + ex.message);
       } finally { btn.disabled = false; }
     });
     modal.querySelector("[data-resend]").addEventListener("click", async (e) => {
