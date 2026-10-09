@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin · AI Skills Zone</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root { --bg: #0B0F19; --ink: #E6E9F5; --ink-2: #B9C0D6; --muted: #8B93AD; --line: rgba(255,255,255,.12); --accent: #818CF8; --good: #34D399; --warn: #FBBF24; --bad: #F87171; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; font-size: 16px; line-height: 1.55; }
+  .sky { position: fixed; inset: 0; z-index: -1; background:
+    radial-gradient(900px 500px at 10% -10%, rgba(99,102,241,.32), transparent 60%),
+    radial-gradient(700px 500px at 100% 0%, rgba(16,185,129,.16), transparent 60%),
+    radial-gradient(800px 600px at 60% 110%, rgba(236,72,153,.14), transparent 60%); }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 18px 16px 60px; }
+  nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 22px; }
+  nav .brand { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 18px; color: #fff; text-decoration: none; }
+  nav .links { display: flex; gap: 14px; align-items: center; font-size: 14px; }
+  nav .links a, nav .links button { color: #C7D2FE; text-decoration: none; background: none; border: 0; font: inherit; cursor: pointer; padding: 0; }
+  main { display: grid; gap: 18px; }
+  .glass { position: relative; padding: 22px 18px; border-radius: 16px; color: var(--ink); background: linear-gradient(160deg, rgba(255,255,255,.10), rgba(255,255,255,.04)); border: 1px solid var(--line); box-shadow: 0 20px 60px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.12); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); min-width: 0; }
+  .eyebrow { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+  h1, h2 { font-family: "Archivo", sans-serif; font-weight: 800; letter-spacing: -0.01em; color: #fff; margin: 6px 0 10px; }
+  h1 { font-size: 26px; } h2 { font-size: 20px; }
+  p { color: var(--ink-2); margin: 0 0 12px; }
+  label { display: block; margin: 0 0 12px; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  input, select { display: block; width: 100%; margin-top: 6px; font: inherit; font-size: 16px; font-family: "IBM Plex Sans", sans-serif; letter-spacing: 0; text-transform: none; padding: 11px 12px; border-radius: 10px; color: #fff; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.16); outline: none; }
+  input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(129,140,248,.22); }
+  input.code { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 26px; letter-spacing: .32em; text-align: center; }
+  .btn { display: inline-block; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 15px; padding: 12px 16px; border: 0; border-radius: 10px; color: #fff; cursor: pointer; background: linear-gradient(135deg, #6366F1, #4F46E5); box-shadow: 0 10px 30px rgba(79,70,229,.3); }
+  .btn.block { display: block; width: 100%; }
+  .btn.quiet { background: rgba(255,255,255,.08); box-shadow: none; border: 1px solid rgba(255,255,255,.16); }
+  .btn:disabled { opacity: .6; cursor: progress; }
+  .seg { display: flex; gap: 4px; padding: 4px; margin: 0 0 14px; border-radius: 10px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); }
+  .seg button { flex: 1; font: inherit; font-size: 14px; font-weight: 600; padding: 9px 10px; border: 0; border-radius: 7px; background: transparent; color: var(--ink-2); cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: rgba(129,140,248,.28); color: #fff; box-shadow: inset 0 0 0 1px rgba(165,180,252,.5); }
+  .err { margin: 0 0 12px; padding: 10px 12px; border-radius: 8px; font-size: 14px; color: #FECACA; background: rgba(239,68,68,.14); border: 1px solid rgba(239,68,68,.3); }
+  .ok { color: var(--good); font-size: 14px; }
+  .fine { font-size: 13px; color: var(--muted); }
+  .fine a, .linkish { color: #C7D2FE; }
+  .linkish { font: inherit; background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
+  [hidden] { display: none !important; }
+  /* dashboard */
+  .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 6px; }
+  .tile { padding: 12px 12px 10px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid var(--line); min-width: 0; }
+  .tile b { display: block; font-family: "Archivo", sans-serif; font-weight: 800; font-size: 24px; color: #fff; line-height: 1.1; }
+  .tile span { font-size: 12.5px; color: var(--muted); }
+  .course { padding: 14px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid var(--line); margin-top: 10px; }
+  .course h3 { font-family: "Archivo", sans-serif; font-size: 18px; margin: 0 0 2px; color: #fff; }
+  .course .now { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 13px; color: var(--ink-2); margin: 0 0 12px; }
+  .course .now b { color: var(--good); }
+  .course .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+  .course .grid label { margin-bottom: 10px; }
+  .course .grid .full { grid-column: 1 / -1; }
+  .course .preview { font-size: 14px; color: var(--ink-2); margin: 2px 0 12px; }
+  .course .preview b { color: #fff; }
+  .course .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .list { display: grid; gap: 8px; margin-top: 10px; }
+  .item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px solid var(--line); font-size: 14px; min-width: 0; }
+  .item .who { color: #fff; font-weight: 600; overflow-wrap: anywhere; }
+  .item .meta { color: var(--muted); font-size: 12.5px; grid-column: 1 / -1; overflow-wrap: anywhere; }
+  .item .amt { font-family: "Archivo", sans-serif; font-weight: 800; color: #fff; text-align: right; white-space: nowrap; }
+  .item .amt small { display: block; font-family: "IBM Plex Mono", Consolas, monospace; font-weight: 500; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+  .st-paid { color: var(--good); } .st-failed { color: var(--bad); } .st-created { color: var(--warn); } .st-refunded { color: var(--muted); }
+  .pairs { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 14px; margin-top: 8px; }
+  .pairs span:nth-child(even) { text-align: right; font-family: "IBM Plex Mono", Consolas, monospace; color: #fff; }
+  .skeleton { height: 48px; border-radius: 10px; background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05)); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+  @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+  @media (min-width: 720px) {
+    .wrap { padding: 28px 24px 80px; }
+    .glass { padding: 26px 26px 22px; border-radius: 18px; }
+    .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .course .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .course .grid .full { grid-column: span 2; }
+    main.two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    main.two .span { grid-column: 1 / -1; }
+  }
+  @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
+</style>
+</head>
+<body>
+<div class="sky" aria-hidden="true"></div>
+<div class="wrap">
+  <nav><a class="brand" href="../">AI Skills Zone</a><span class="links"><a href="../learn/">Courses page</a><button type="button" id="signout" hidden>Sign out</button></span></nav>
+
+  <main id="auth">
+    <section class="glass" id="login" style="max-width:480px;margin:0 auto;width:100%">
+      <div data-step="id">
+        <span class="eyebrow">Admin</span>
+        <h1>Sign in</h1>
+        <p>Same one-time code as the courses page. Only identities on the admin list get past this card.</p>
+        <form id="id-form" novalidate>
+          <div class="seg" role="group" aria-label="Where to send the code"><button type="button" data-via="email" aria-pressed="true">Email</button><button type="button" data-via="phone" aria-pressed="false">WhatsApp</button></div>
+          <label data-for="email">Email<input id="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@example.com"></label>
+          <label data-for="phone" hidden>WhatsApp number<input id="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="10-digit mobile, or +country code"></label>
+          <p class="err" id="id-err" hidden></p>
+          <button class="btn block" type="submit" id="id-go">Send my code</button>
+        </form>
+      </div>
+      <div data-step="code" hidden>
+        <span class="eyebrow" data-check>Check your inbox</span>
+        <h1>Enter the code</h1>
+        <p>Sent to <b data-to style="color:#fff"></b>. Six digits, valid for ten minutes.</p>
+        <form id="code-form" novalidate>
+          <label>Code<input id="code" class="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="000000"></label>
+          <p class="err" id="code-err" hidden></p>
+          <button class="btn block" type="submit" id="code-go">Open the dashboard</button>
+        </form>
+        <p class="fine"><button type="button" class="linkish" data-back>Use a different email or number</button></p>
+      </div>
+      <div data-step="denied" hidden>
+        <span class="eyebrow">Admin</span>
+        <h1>Not an admin</h1>
+        <p>Signed in as <b data-who style="color:#fff"></b>, but that identity is not on the admin list. Sign out and use the owner's email or WhatsApp number.</p>
+        <button class="btn block quiet" type="button" data-signout>Sign out</button>
+      </div>
+    </section>
+  </main>
+
+  <main id="dash" class="two" hidden>
+    <section class="glass span">
+      <span class="eyebrow">Overview</span>
+      <h2>Sales</h2>
+      <div class="tiles" id="tiles"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+    </section>
+
+    <section class="glass span" id="pricing">
+      <span class="eyebrow">Courses</span>
+      <h2>Price and discounts</h2>
+      <p>The list price is what the course normally costs. A discount is a percentage off, shown everywhere the price appears and charged by Razorpay, for as long as it is on. Leave the end date empty for no end.</p>
+      <div id="courses"><div class="skeleton"></div></div>
+    </section>
+
+    <section class="glass">
+      <span class="eyebrow">Latest</span>
+      <h2>Recent purchases</h2>
+      <div class="list" id="purchases"><div class="skeleton"></div></div>
+    </section>
+
+    <section class="glass">
+      <span class="eyebrow">Signals</span>
+      <h2>Interest and delivery</h2>
+      <p class="fine">Notify-me sign-ups per upcoming course, purchases by campaign, and WhatsApp delivery statuses in the last 24 hours.</p>
+      <div id="signals"><div class="skeleton"></div></div>
+    </section>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+  (function () {
+    const CFG = { supabaseUrl: "https://cxiezjegnnbkghbevqra.supabase.co", publishableKey: "sb_publishable_6owpYUznjQkw2VH3kvNKVA_Ay3VNhlW" };
+    const sb = window.supabase.createClient(CFG.supabaseUrl, CFG.publishableKey);
+    const $ = (s) => document.querySelector(s);
+    const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const rupees = (n) => "₹" + Number(n || 0).toLocaleString("en-IN");
+    const err = (id, msg) => { const el = document.getElementById(id); el.textContent = msg || ""; el.hidden = !msg; };
+    const login = $("#login");
+    const step = (name) => login.querySelectorAll("[data-step]").forEach((s) => { s.hidden = s.dataset.step !== name; });
+
+    // ---- sign in (email or WhatsApp code)
+    let via = "email", email = "", phone = "";
+    function normalisePhone(raw) {
+      const digits = raw.replace(/[^\d+]/g, "");
+      if (/^\+\d{8,15}$/.test(digits)) return digits;
+      const d = digits.replace(/^\+/, "").replace(/^0+/, "");
+      if (/^91\d{10}$/.test(d)) return "+" + d;
+      if (/^[6-9]\d{9}$/.test(d)) return "+91" + d;
+      return null;
+    }
+    login.querySelectorAll("[data-via]").forEach((b) => b.addEventListener("click", () => {
+      via = b.dataset.via;
+      login.querySelectorAll("[data-via]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      login.querySelectorAll("[data-for]").forEach((l) => { l.hidden = l.dataset.for !== via; });
+      err("id-err", "");
+    }));
+    $("#id-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (via === "phone") { phone = normalisePhone($("#phone").value.trim()) || ""; if (!phone) return err("id-err", "Use a 10-digit Indian mobile number, or +country code for others."); }
+      else { email = $("#email").value.trim().toLowerCase(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return err("id-err", "That email address does not look right."); }
+      const b = $("#id-go"); b.disabled = true; err("id-err", "");
+      const { error } = via === "phone"
+        ? await sb.auth.signInWithOtp({ phone, options: { shouldCreateUser: true } })
+        : await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+      b.disabled = false;
+      if (error) return err("id-err", /hook/i.test(error.message) ? "WhatsApp codes are not going out right now. Use email." : error.message);
+      $("[data-to]").textContent = via === "phone" ? phone + " on WhatsApp" : email;
+      $("[data-check]").textContent = via === "phone" ? "Check WhatsApp" : "Check your inbox";
+      step("code"); setTimeout(() => $("#code").focus(), 30);
+    });
+    login.querySelector("[data-back]").addEventListener("click", () => { step("id"); err("code-err", ""); });
+    $("#code-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const token = $("#code").value.replace(/\D/g, "");
+      if (token.length !== 6) return err("code-err", "The code is six digits.");
+      const b = $("#code-go"); b.disabled = true; err("code-err", "");
+      const { error } = via === "phone" ? await sb.auth.verifyOtp({ phone, token, type: "sms" }) : await sb.auth.verifyOtp({ email, token, type: "email" });
+      b.disabled = false;
+      if (error) return err("code-err", /expired|invalid/i.test(error.message) ? "That code did not match or has expired." : error.message);
+      await enter();
+    });
+    async function signOut() { await sb.auth.signOut(); location.reload(); }
+    $("#signout").addEventListener("click", signOut);
+    login.querySelector("[data-signout]").addEventListener("click", signOut);
+
+    // ---- gate: only listed identities
+    async function enter() {
+      const { data: { user } } = await sb.auth.getUser();
+      if (!user) return step("id");
+      const { data: admin } = await sb.rpc("is_admin");
+      if (admin !== true) { $("[data-who]").textContent = user.email || ("+" + user.phone); return step("denied"); }
+      $("#auth").hidden = true; $("#dash").hidden = false; $("#signout").hidden = false;
+      await Promise.all([loadStats(), loadCourses(), loadPurchases()]);
+    }
+
+    // ---- dashboard
+    let stats = null;
+    async function loadStats() {
+      const { data, error } = await sb.rpc("admin_stats");
+      const tiles = $("#tiles");
+      if (error) { tiles.innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
+      stats = data;
+      tiles.innerHTML = [
+        [rupees(data.revenue_inr), "revenue, all time"], [data.paid, "paid purchases"],
+        [rupees(data.revenue_7d), "last 7 days · " + data.paid_7d + " paid"], [data.learners, "learners with access"],
+        [data.failed, "failed payments"], [data.abandoned, "orders never paid"],
+      ].map(([n, l]) => '<div class="tile"><b>' + esc(n) + "</b><span>" + esc(l) + "</span></div>").join("");
+      const sig = $("#signals");
+      const interest = Object.entries(data.interest || {}).sort((a, b) => b[1] - a[1]);
+      const wa = Object.entries(data.whatsapp_24h || {});
+      sig.innerHTML =
+        '<div class="eyebrow" style="margin-top:4px">Notify me</div><div class="pairs">' + (interest.length ? interest.map(([k, v]) => "<span>" + esc(k) + "</span><span>" + v + "</span>").join("") : "<span>No sign-ups yet</span><span>0</span>") + "</div>" +
+        '<div class="eyebrow" style="margin-top:14px">Paid by campaign</div><div class="pairs">' + (data.by_campaign || []).map((c) => "<span>" + esc(c.campaign) + "</span><span>" + c.paid + " · " + rupees(c.inr) + "</span>").join("") + "</div>" +
+        '<div class="eyebrow" style="margin-top:14px">WhatsApp, last 24 h</div><div class="pairs">' + (wa.length ? wa.map(([k, v]) => "<span>" + esc(k) + "</span><span>" + v + "</span>").join("") : "<span>No messages</span><span>0</span>") + "</div>";
+    }
+
+    function localInput(iso) {
+      if (!iso) return "";
+      const d = new Date(iso), pad = (n) => String(n).padStart(2, "0");
+      return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
+    }
+    function live(c) { return c.discount_pct > 0 && (!c.discount_until || new Date(c.discount_until) > new Date()); }
+    function salePrice(price, pct) { return Math.round(price * (100 - pct) / 100); }
+
+    async function loadCourses() {
+      const box = $("#courses");
+      const { data, error } = await sb.from("courses").select("slug, title, price_inr, discount_pct, discount_label, discount_until, is_active").order("created_at");
+      if (error) { box.innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
+      box.innerHTML = data.map((c) => {
+        const on = live(c);
+        return '<form class="course" data-slug="' + esc(c.slug) + '">' +
+          "<h3>" + esc(c.title) + (c.is_active ? "" : ' <span class="fine">(not on sale)</span>') + "</h3>" +
+          '<p class="now">Buyers pay <b data-now>' + rupees(on ? salePrice(c.price_inr, c.discount_pct) : c.price_inr) + "</b>" + (on ? " · " + c.discount_pct + "% off" + (c.discount_until ? " until " + new Date(c.discount_until).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "") : " · no discount") + "</p>" +
+          '<div class="grid">' +
+          '<label>List price ₹<input name="price_inr" type="number" min="1" max="1000000" step="1" value="' + esc(c.price_inr) + '" required></label>' +
+          '<label>Discount %<input name="discount_pct" type="number" min="0" max="90" step="1" value="' + esc(c.discount_pct) + '"></label>' +
+          '<label class="full">Label<input name="discount_label" maxlength="60" value="' + esc(c.discount_label) + '" placeholder="Launch offer"></label>' +
+          '<label class="full">Ends (your local time)<input name="discount_until" type="datetime-local" value="' + localInput(c.discount_until) + '"></label>' +
+          "</div>" +
+          '<p class="preview">After saving, buyers pay <b data-preview></b></p>' +
+          '<div class="row"><button class="btn" type="submit">Save</button><button class="btn quiet" type="button" data-clear>Remove discount</button><span class="ok" data-msg></span></div>' +
+          "</form>";
+      }).join("");
+      box.querySelectorAll("form.course").forEach((f) => {
+        const preview = () => {
+          const price = Number(f.price_inr.value || 0), pct = Number(f.discount_pct.value || 0);
+          const until = f.discount_until.value ? new Date(f.discount_until.value) : null;
+          const on = pct > 0 && (!until || until > new Date());
+          f.querySelector("[data-preview]").textContent = rupees(on ? salePrice(price, pct) : price) + (pct > 0 && !on ? " (discount already expired)" : "");
+        };
+        f.addEventListener("input", preview); preview();
+        f.querySelector("[data-clear]").addEventListener("click", () => { f.discount_pct.value = 0; f.discount_label.value = ""; f.discount_until.value = ""; preview(); });
+        f.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const msg = f.querySelector("[data-msg]"); msg.textContent = "";
+          const price = Number(f.price_inr.value), pct = Number(f.discount_pct.value || 0);
+          if (!(price >= 1 && price <= 1000000)) { msg.textContent = "Price must be between 1 and 10,00,000."; return; }
+          if (!(pct >= 0 && pct <= 90)) { msg.textContent = "Discount must be 0 to 90 percent."; return; }
+          const patch = { price_inr: price, discount_pct: pct, discount_label: f.discount_label.value.trim() || null, discount_until: f.discount_until.value ? new Date(f.discount_until.value).toISOString() : null };
+          const b = f.querySelector("button[type=submit]"); b.disabled = true;
+          const { data, error } = await sb.from("courses").update(patch).eq("slug", f.dataset.slug).select("slug, price_inr, discount_pct, discount_until");
+          b.disabled = false;
+          if (error) { msg.textContent = "Not saved: " + error.message; msg.style.color = "#F87171"; return; }
+          if (!data || !data.length) { msg.textContent = "Not saved: this account may not be an admin any more."; msg.style.color = "#F87171"; return; }
+          msg.style.color = ""; msg.textContent = "Saved. Live on the site now.";
+          const c = data[0]; f.querySelector("[data-now]").textContent = rupees(live(c) ? salePrice(c.price_inr, c.discount_pct) : c.price_inr);
+        });
+      });
+    }
+
+    async function loadPurchases() {
+      const box = $("#purchases");
+      const { data, error } = await sb.from("purchases").select("created_at, paid_at, name, email, phone, course_slug, amount_paise, status, razorpay_order_id, utm").order("created_at", { ascending: false }).limit(25);
+      if (error) { box.innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
+      if (!data.length) { box.innerHTML = '<p class="fine">No purchases yet.</p>'; return; }
+      box.innerHTML = data.map((p) => {
+        const when = new Date(p.paid_at || p.created_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
+        const camp = p.utm && p.utm.utm_campaign ? " · " + esc(p.utm.utm_campaign) : "";
+        return '<div class="item"><span class="who">' + esc(p.name) + "</span>" +
+          '<span class="amt">' + rupees(p.amount_paise / 100) + '<small class="st-' + esc(p.status) + '">' + esc(p.status) + "</small></span>" +
+          '<span class="meta">' + esc(p.email) + (p.phone ? " · " + esc(p.phone) : "") + " · " + esc(p.course_slug) + " · " + when + camp + "</span></div>";
+      }).join("");
+    }
+
+    sb.auth.getSession().then(({ data: { session } }) => { if (session) enter(); else step("id"); });
+  })();
+</script>
+</body>
+</html>

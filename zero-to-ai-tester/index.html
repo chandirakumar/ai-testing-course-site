@@ -283,6 +283,8 @@
   .tier.featured { border: 2px solid var(--ink); }
   .tier .eyebrow { color: var(--muted); }
   .tier .price { font-family: "Archivo", sans-serif; font-weight: 850; font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .tier .price s { color: var(--muted); font-weight: 500; font-size: 22px; margin-right: 6px; }
+  .tier .deal { align-self: flex-start; padding: 6px 10px; border-radius: 4px; background: var(--signal); color: #fff; font-weight: 700; font-size: 13px; }
   .tier .price small { font-size: 14px; font-weight: 500; color: var(--muted); font-family: "IBM Plex Sans", sans-serif; }
   .tier ul { padding-left: 18px; margin: 6px 0 14px; color: var(--ink-2); font-size: 14.5px; }
   .tier li { margin: 4px 0; }
@@ -383,7 +385,9 @@
   .faq p { margin-top: 10px; color: var(--ink-2); font-size: 15px; }
 
   /* final */
-  .final { background: var(--term-bg); color: var(--term-ink); border-top: 0; }
+  .final { background: var(--term-bg); color: var(--term-ink); border-top: 0; padding: 72px 32px; border-radius: 6px; }
+  .bill svg { display: block; width: 100%; height: auto; }
+  @media (max-width: 600px) { .final { margin: 0 -18px; padding: 52px 18px; border-radius: 0; } .final h2 { font-size: clamp(26px, 7.4vw, 36px); } .final .eyebrow { white-space: normal; } }
   .final h2 { color: #fff; max-width: 26ch; }
   .final .lede { color: var(--term-ink); }
   .final .btn.primary { background: #fff; color: var(--term-bg); }
@@ -710,7 +714,7 @@
   <section id="pricing">
     <div class="eyebrow">Pricing</div>
     <h2>One price. Everything included. Yours to keep.</h2>
-    <p class="lede">Pay once by UPI or card. The whole course arrives by email within a minute, as pages you open in your browser. No subscription, no expiry.</p>
+    <p class="lede">Pay once by UPI or card. The course opens in your browser the moment the payment completes. No subscription, no expiry.</p>
     <div class="tiers one">
       <div class="tier featured">
         <span class="eyebrow">Zero to AI Tester · complete course</span>
@@ -720,7 +724,7 @@
           <li>The practice app with 12 planted defects, datasets, templates</li>
           <li>Answer keys and lab rubrics for every lesson</li>
           <li>50 interview questions with answers, resume rewrite, portfolio README</li>
-          <li>Yours forever; updated packs emailed when tools change</li>
+          <li>Yours forever; updated at no charge when tools change</li>
         </ul>
         <a class="btn signal" href="#pricing" data-buy>Buy the course · ₹1,499</a>
         <p class="fine" style="margin-top:10px;font-size:13px;color:var(--muted)">Lifetime online access with a login. Prefer a downloadable pack instead? <a data-playto href="#pricing">Buy it on Playto</a>.</p>
@@ -733,7 +737,7 @@
           <li><a href="syllabus.html">Read the complete syllabus</a></li>
           <li><a href="#who">Check "who it's for"</a></li>
         </ol>
-        <p class="final-line"><strong>All sales are final.</strong> It is a digital product delivered in full the moment you pay, so there are no refunds. Unsure? <a href="mailto:chandruss93@gmail.com">Email a question first.</a></p>
+        <p class="final-line"><strong>All sales are final.</strong> It is a digital product delivered in full the moment you pay, so there are no refunds. Unsure? <a href="mailto:help@aiskillszone.com">Email a question first.</a></p>
         <figure class="bill">
           <svg viewBox="0 0 420 112" role="img" aria-label="The whole bill: the course is 1,499 rupees, AI credit for the practice modules is about ten dollars bought from the model provider, and every other tool is free." xmlns="http://www.w3.org/2000/svg">
             <rect x="2" y="30" width="262" height="30" rx="4" style="fill:var(--signal)"/>
@@ -828,7 +832,7 @@
   </section>
 
   <section class="final" id="enrol">
-    <div class="eyebrow" style="color:var(--term-muted)">Delivered by email within a minute · learn at your own pace · keep it forever</div>
+    <div class="eyebrow" style="color:var(--term-muted)">Opens the moment you pay · learn at your own pace · keep it forever</div>
     <h2>Twenty-three weeks from "it seems fine" to "85%, interval 77 to 91, above threshold, here are the three that failed."</h2>
     <p class="lede">That sentence is the job. This is the course that gets you to it.</p>
     <div class="cta-row">
@@ -953,7 +957,7 @@
 
   // Checkout link. Paste the product URL from the payment platform here. Empty = email fallback.
   const CHECKOUT = "https://playto.so/p/chandirakumar/zero-to-ai-tester";
-  const FALLBACK = "mailto:chandruss93@gmail.com?subject=Zero%20to%20AI%20Tester%20%E2%80%93%20buy%20the%20course";
+  const FALLBACK = "mailto:help@aiskillszone.com?subject=Zero%20to%20AI%20Tester%20%E2%80%93%20buy%20the%20course";
   window.CHECKOUT = CHECKOUT; window.FALLBACK = FALLBACK;
 
 </script>
@@ -984,6 +988,29 @@
       try { var s = JSON.parse(localStorage.getItem("zta:utm") || "null"); if (s && Date.now() - s.at < 30 * 86400000) return s.tags; } catch (e) {}
       return null;
     };
+    // Live price. The list price and any discount come from the course_prices view, the same source the
+    // create-order function charges from, so the page and Razorpay never disagree. The ₹1,499 written in
+    // the markup is only the fallback if this fetch fails.
+    const PRICE = { list: 1499, sale: 1499, pct: 0, label: "", until: null };
+    const rupees = (n) => "₹" + Number(n).toLocaleString("en-IN");
+    const payLabel = () => "Pay " + rupees(PRICE.sale);
+    function paintPrice() {
+      const sale = rupees(PRICE.sale);
+      document.querySelectorAll("[data-buy], #buy-title, .bill text").forEach((el) => { el.textContent = el.textContent.replace("₹1,499", sale); });
+      const tier = document.querySelector(".tier .price");
+      if (tier) tier.innerHTML = (PRICE.pct ? "<s>" + rupees(PRICE.list) + "</s> " : "") + sale + " <small>one-time</small>";
+      let deal = document.querySelector(".tier .deal");
+      if (PRICE.pct && tier) {
+        if (!deal) { deal = document.createElement("div"); deal.className = "deal"; tier.insertAdjacentElement("afterend", deal); }
+        const until = PRICE.until ? " · ends " + new Date(PRICE.until).toLocaleDateString("en-IN", { day: "numeric", month: "long" }) : "";
+        deal.textContent = (PRICE.label || "Offer") + ": " + PRICE.pct + "% off" + until;
+      } else if (deal) { deal.remove(); }
+      const pay = document.getElementById("buy-pay"); if (pay && !pay.disabled) pay.textContent = payLabel();
+    }
+    fetch(PAY.supabaseUrl + "/rest/v1/course_prices?slug=eq." + PAY.course + "&select=price_inr,sale_price_inr,discount_pct,discount_label,discount_until", { headers: { apikey: PAY.publishableKey } })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((rows) => { const p = rows[0]; if (!p) return; Object.assign(PRICE, { list: p.price_inr, sale: p.sale_price_inr, pct: p.discount_pct, label: p.discount_label || "", until: p.discount_until }); paintPrice(); })
+      .catch(() => {});
     const fn = (name) => PAY.supabaseUrl + "/functions/v1/" + name;
     const modal = document.getElementById("buy");
     if (!modal) return;
@@ -1122,7 +1149,7 @@
 
     function toPay() {
       $("[data-who2]").textContent = buyer.email;
-      const btn = $("#buy-pay"); btn.disabled = false; btn.textContent = "Pay ₹1,499";
+      const btn = $("#buy-pay"); btn.disabled = false; btn.textContent = payLabel();
       show("pay"); setTimeout(() => btn.focus(), 30);
     }
 
@@ -1145,7 +1172,7 @@
     // Step 3: Razorpay
     $("#buy-pay").addEventListener("click", async () => {
       const btn = $("#buy-pay"); btn.disabled = true; btn.textContent = "Preparing your order…"; err("pay-err", "");
-      const reset = (msg) => { btn.disabled = false; btn.textContent = "Pay ₹1,499"; err("pay-err", msg); };
+      const reset = (msg) => { btn.disabled = false; btn.textContent = payLabel(); err("pay-err", msg); };
       try {
         const [order] = await Promise.all([post("create-order", { course_slug: PAY.course, name: buyer.name, email: buyer.email, phone: buyer.phone, utm: window.ztaUtm() }), loadCheckout()]);
         const rzp = new window.Razorpay({
@@ -1175,7 +1202,7 @@
         show("done");
         setTimeout(() => { location.href = PAY.open; }, 1200);
       } catch (ex) {
-        btn.disabled = false; btn.textContent = "Pay ₹1,499";
+        btn.disabled = false; btn.textContent = payLabel();
         err("pay-err", ex.message + " Your payment is safe: if money left your account, email help@aiskillszone.com with the payment id " + (resp.razorpay_payment_id || "") + ".");
       }
     }

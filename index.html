@@ -86,6 +86,7 @@
   nav .links { display: flex; gap: 18px; align-items: center; }
   .side .poster { display: block; margin: 0 0 18px; }
   .side .poster img { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--rule); }
+  .course .facts .deal { color: var(--signal); }
 </style>
 </head>
 <body>
@@ -206,6 +207,17 @@
     const cards = Array.from(document.querySelectorAll(".soon-card[data-course]"));
     if (!cards.length || !window.supabase) return;
     const sb = window.supabase.createClient(CFG.supabaseUrl, CFG.publishableKey);
+    // Live price on the course card, from the same view the checkout charges from.
+    fetch(CFG.supabaseUrl + "/rest/v1/course_prices?slug=eq.zero-to-ai-tester&select=price_inr,sale_price_inr,discount_pct,discount_label", { headers: { apikey: CFG.publishableKey } })
+      .then((r) => (r.ok ? r.json() : [])).then((rows) => {
+        const p = rows[0]; if (!p) return;
+        const rupees = (n) => "₹" + Number(n).toLocaleString("en-IN");
+        document.querySelectorAll(".course .facts b, .course .cta a.primary").forEach((el) => { el.textContent = el.textContent.replace("₹1,499", rupees(p.sale_price_inr)); });
+        if (p.discount_pct) {
+          const f = document.querySelector(".course .facts");
+          if (f) f.insertAdjacentHTML("beforeend", '<span class="deal"><b>' + p.discount_pct + '% off</b> ' + (p.discount_label ? p.discount_label.replace(/[<>&]/g, "") : "for now") + "</span>");
+        }
+      }).catch(() => {});
     const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     let known = "";
     try { known = localStorage.getItem("zta:notify-email") || ""; } catch (e) {}
