@@ -19,7 +19,7 @@
   nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
   .brand { font-family: "Archivo", sans-serif; font-weight: 800; font-stretch: 112%; font-size: 18px; color: #fff; text-decoration: none; }
   nav a.mail { font-size: 14px; color: #9AA3BD; text-decoration: none; }
-  main { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 26px; align-items: start; margin-top: 40px; }
+  main { display: grid; grid-template-columns: minmax(0, 480px); justify-content: center; gap: 26px; align-items: start; margin-top: 40px; }
   .col { display: grid; gap: 22px; min-width: 0; }
   @media (max-width: 900px) { main { grid-template-columns: 1fr; margin-top: 26px; } }
   /* buy modal and login card: deep indigo glass on midnight blue (#0B0F19), the same in both page themes */
@@ -110,12 +110,14 @@
     .g-btn:active { transform: translateY(1px) scale(.99); }
   }
   @media (max-width: 480px) { .card { grid-template-columns: 1fr; } .card .actions { justify-content: stretch; } .card .g-btn { flex: 1; } .continue { grid-template-columns: 1fr; } }
+  nav .links { display: flex; gap: 18px; align-items: center; }
+  .empty a { color: #C7D2FE; }
 </style>
 </head>
 <body>
 <div class="sky" aria-hidden="true"></div>
 <div class="wrap">
-  <nav><a class="brand" href="../">AI Skills Zone</a><a class="mail" href="mailto:help@aiskillszone.com">help@aiskillszone.com</a></nav>
+  <nav><a class="brand" href="../">AI Skills Zone</a><span class="links"><a class="mail" href="../">All courses</a><a class="mail" href="mailto:help@aiskillszone.com">help@aiskillszone.com</a></span></nav>
   <main>
     <div class="col">
       <section class="glass rise" data-i="1" id="login" aria-labelledby="login-title">
@@ -130,7 +132,7 @@
             <p class="g-err" id="email-err" hidden></p>
             <button class="g-btn" type="submit" id="email-go">Send my code</button>
           </form>
-          <p class="g-fine">New here? The courses are listed on the right, and the <a href="../zero-to-ai-tester/primer.html">first 15 minutes</a> of Zero to AI Tester are free to read.</p>
+          <p class="g-fine">New here? <a href="../">Browse the courses</a> on the home page; the <a href="../zero-to-ai-tester/primer.html">first 15 minutes</a> of Zero to AI Tester are free to read.</p>
         </div>
         <div data-step="code" hidden>
           <span class="g-eyebrow" data-check>Check your inbox</span>
@@ -149,31 +151,10 @@
         <div class="eyebrow-row"><span class="g-eyebrow">Signed in as <b data-who style="color:#fff"></b></span><button type="button" class="linkish" data-signout style="font-size:13px">Sign out</button></div>
         <h3 id="mine-title">Your courses</h3>
         <div class="cards" id="mine-list"><div class="skeleton"></div></div>
-        <p class="g-fine">Questions or a changed email address: help@aiskillszone.com · <a href="../privacy.html">Privacy</a></p>
+        <p class="g-fine"><a href="../">All courses</a> · Questions or a changed email address: help@aiskillszone.com · <a href="../privacy.html">Privacy</a></p>
       </section>
     </div>
 
-    <div class="col">
-      <section class="glass wide rise" data-i="2" id="explore" aria-labelledby="explore-title">
-        <span class="g-eyebrow">Explore</span>
-        <h3 id="explore-title">Courses you can start today</h3>
-        <p class="g-sub tight">Pay once, keep for life, learn at your own pace. Everything is self-paced and updated at no charge when the tools change.</p>
-        <div class="cards" id="explore-list"><div class="skeleton"></div></div>
-      </section>
-
-      <section class="glass wide rise" data-i="3" id="next" aria-labelledby="next-title">
-        <span class="g-eyebrow">In preparation</span>
-        <h3 id="next-title">What comes next</h3>
-        <p class="g-sub tight">Vote on the <a href="../zero-to-ai-tester/#interest">interest form</a>; the course with the most votes is built next.</p>
-        <div class="soon">
-          <div><span>Machine learning for testers</span><span class="pill">Planned</span></div>
-          <div><span>Agentic AI: building and testing agents</span><span class="pill">Planned</span></div>
-          <div><span>LLM application development</span><span class="pill">Planned</span></div>
-          <div><span>AI security: red-teaming and defence</span><span class="pill">Planned</span></div>
-          <div><span>Data engineering for AI systems</span><span class="pill">Planned</span></div>
-        </div>
-      </section>
-    </div>
   </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -212,32 +193,16 @@
     async function loadCatalogue() {
       const { data, error } = await sb.from("courses").select("slug, title, price_inr, weeks, hours, audience, tagline").eq("is_active", true).order("created_at");
       catalogue = error ? [] : data;
-      paintExplore();
     }
-    // Courses with a poster show it in place of the one-line description.
-    const COVERS = { "zero-to-ai-tester": "zero-to-ai-tester" };
-    function courseCard(c, isOwned) {
+    function courseCard(c) {
       const meta = [c.weeks && c.weeks + " weeks", c.hours && c.hours + " hours", c.audience].filter(Boolean).join(" · ");
-      if (isOwned) {
+      {
         const prog = progressFor(c.slug);
         return '<div class="card in"><div><b>' + esc(c.title) + '</b><small>Lifetime access' + (prog.done ? " · " + prog.done + " lesson" + (prog.done === 1 ? "" : "s") + " marked done" : "") + '</small></div>' +
           '<div class="actions"><a class="g-btn" href="' + esc(c.slug) + '/">Open</a></div>' +
           (prog.last ? '<div class="continue"><div><span class="eyebrow-sm">Continue where you left off</span><span>' + esc(prog.last.label) + ' · ' + esc(prog.last.title) + '</span></div><a class="g-btn" href="' + esc(c.slug) + '/modules/' + esc(prog.last.file) + '.html#' + esc(prog.last.lesson) + '">Resume</a></div>' : "") +
           '</div>';
       }
-      const cover = COVERS[c.slug];
-      const body = cover
-        ? '<picture class="cover"><source srcset="../covers/' + cover + '.webp" type="image/webp"><img src="../covers/' + cover + '.jpg" width="896" height="1139" loading="lazy" alt="' + esc(c.title) + ' course map"></picture>'
-        : '<p>' + esc(c.tagline) + '</p>';
-      return '<div class="card in"><div><b>' + esc(c.title) + '</b><small>' + esc(meta) + '</small></div>' + body +
-        '<div class="actions"><span class="price">' + fmt(c.price_inr) + '<small>once</small></span></div>' +
-        '<div class="actions" style="grid-column:1 / -1;justify-content:flex-start"><a class="g-btn quiet" href="../' + esc(c.slug) + '/">See the course</a><a class="g-btn" href="../' + esc(c.slug) + '/?buy=1">Buy and start</a></div></div>';
-    }
-    function paintExplore() {
-      const list = $("#explore-list");
-      const rest = catalogue.filter((c) => !owned.has(c.slug));
-      list.innerHTML = rest.length ? rest.map((c) => courseCard(c, false)).join("") : '<div class="empty">You own every course that exists so far. The next ones are listed below.</div>';
-      $("#explore-title").textContent = owned.size ? "More courses" : "Courses you can start today";
     }
     function progressFor(slug) {
       // Written by the course pages themselves into this browser; same origin, so readable here.
@@ -312,7 +277,7 @@
     });
     mine.querySelector("[data-signout]").addEventListener("click", async () => {
       await sb.auth.signOut(); setCookie(null); owned = new Set();
-      mine.hidden = true; login.hidden = false; login.classList.add("rise"); step("email"); paintExplore();
+      mine.hidden = true; login.hidden = false; login.classList.add("rise"); step("email");
     });
 
     async function showMine() {
@@ -326,9 +291,8 @@
       owned = new Set(data.map((r) => r.course_slug));
       if (!catalogue.length) await loadCatalogue();
       const mineCourses = catalogue.filter((c) => owned.has(c.slug));
-      list.innerHTML = mineCourses.length ? mineCourses.map((c) => courseCard(c, true)).join("")
-        : '<div class="empty">No course on this account yet. If you paid a moment ago, give it a minute and reload. Bought with a different email? Sign out and use that one. Otherwise pick a course on the right.</div>';
-      paintExplore();
+      list.innerHTML = mineCourses.length ? mineCourses.map(courseCard).join("")
+        : '<div class="empty">No course on this account yet. If you paid a moment ago, give it a minute and reload. Bought with a different email or number? Sign out and use that one. Otherwise <a href="../">browse the courses</a>.</div>';
       list.querySelectorAll(".bar i").forEach((i) => { requestAnimationFrame(() => { i.style.width = i.dataset.w + "%"; }); });
     }
 

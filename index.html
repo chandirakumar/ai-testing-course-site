@@ -83,13 +83,16 @@
   .soon-card .btn { margin: 0; font-size: 14px; padding: 10px 14px; border: 0; cursor: pointer; font-family: var(--display); font-weight: 700; }
   .soon-card .note { font-size: 13px; color: var(--signal); }
   .soon-card .note.ok { color: var(--accent); }
+  nav .links { display: flex; gap: 18px; align-items: center; }
+  .side .poster { display: block; margin: 0 0 18px; }
+  .side .poster img { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--rule); }
 </style>
 </head>
 <body>
 <div class="wrap">
   <nav>
     <a class="brand" href="./">AI Skills Zone</a>
-    <a class="mail" href="mailto:chandruss93@gmail.com">chandruss93@gmail.com</a>
+    <span class="links"><a class="mail" href="learn/">Log in</a><a class="mail" href="mailto:help@aiskillszone.com">help@aiskillszone.com</a></span>
   </nav>
 
   <header>
@@ -108,11 +111,13 @@
         <p>From your first terminal command to a release assessment of an AI product you present on video. Python from zero, test automation, then evaluation, RAG and agent testing, and AI security, all practised on a deliberately broken AI product.</p>
         <div class="facts"><span><b>23</b> weeks</span><span><b>167</b> hours</span><span><b>7</b> portfolio projects</span><span><b>₹1,499</b> once</span></div>
         <div class="cta">
-          <a class="btn primary" href="zero-to-ai-tester/">See the course</a>
+          <a class="btn primary" href="zero-to-ai-tester/?buy=1">Buy and start · ₹1,499</a>
+          <a class="btn ghost" href="zero-to-ai-tester/">See the course</a>
           <a class="btn ghost" href="zero-to-ai-tester/primer.html">Read the first 15 minutes free</a>
         </div>
       </div>
       <div class="side">
+        <a class="poster" href="zero-to-ai-tester/" aria-label="Zero to AI Tester course page"><picture><source srcset="covers/zero-to-ai-tester.webp" type="image/webp"><img src="covers/zero-to-ai-tester.jpg" width="896" height="1139" alt="Zero to AI Tester course map: four stages over 23 weeks, 167 hours" loading="lazy"></picture></a>
         <div class="eyebrow">What you leave with</div>
         <ul>
           <li>An evaluation suite that gates releases in CI</li>
