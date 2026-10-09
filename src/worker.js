@@ -60,8 +60,23 @@ function readCookie(header, name) {
   return null;
 }
 
-/** true / false from has_course(); null when the token is not accepted. */
+/** true / false from has_course(); null when the token is not accepted.
+ *  Answers are remembered for 60 seconds per token in this isolate, so a learner clicking through
+ *  lessons costs one database round-trip a minute instead of one per page. Revoking access or a
+ *  token therefore takes effect within a minute. */
+const ACCESS_CACHE = new Map();
 async function hasCourse(env, token, course) {
+  const key = course + ":" + token.slice(-48);
+  const hit = ACCESS_CACHE.get(key);
+  if (hit && hit.until > Date.now()) return hit.value;
+  const value = await hasCourseUncached(env, token, course);
+  if (value !== null) {
+    if (ACCESS_CACHE.size > 5000) ACCESS_CACHE.clear();
+    ACCESS_CACHE.set(key, { value, until: Date.now() + 60000 });
+  }
+  return value;
+}
+async function hasCourseUncached(env, token, course) {
   const res = await fetch(env.SUPABASE_URL + "/rest/v1/rpc/has_course", {
     method: "POST",
     headers: { ...anon(env, token), "Content-Type": "application/json" },
