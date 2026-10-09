@@ -75,6 +75,8 @@
   .card b { display: block; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 18px; color: #fff; line-height: 1.2; }
   .card small { display: block; color: #8B93AD; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; margin-top: 4px; }
   .card p { margin: 6px 0 0; color: #B9C0D6; font-size: 14px; grid-column: 1 / -1; }
+  .card .cover { grid-column: 1 / -1; display: block; margin-top: 4px; border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,.14); }
+  .card .cover img { display: block; width: 100%; height: auto; }
   .card .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
   .card .g-btn { width: auto; margin: 0; padding: 10px 16px; font-size: 14.5px; text-decoration: none; text-align: center; }
   .card .g-btn.quiet { background: rgba(255,255,255,.08); box-shadow: none; border: 1px solid rgba(255,255,255,.16); }
@@ -212,6 +214,8 @@
       catalogue = error ? [] : data;
       paintExplore();
     }
+    // Courses with a poster show it in place of the one-line description.
+    const COVERS = { "zero-to-ai-tester": "zero-to-ai-tester" };
     function courseCard(c, isOwned) {
       const meta = [c.weeks && c.weeks + " weeks", c.hours && c.hours + " hours", c.audience].filter(Boolean).join(" · ");
       if (isOwned) {
@@ -221,7 +225,11 @@
           (prog.last ? '<div class="continue"><div><span class="eyebrow-sm">Continue where you left off</span><span>' + esc(prog.last.label) + ' · ' + esc(prog.last.title) + '</span></div><a class="g-btn" href="' + esc(c.slug) + '/modules/' + esc(prog.last.file) + '.html#' + esc(prog.last.lesson) + '">Resume</a></div>' : "") +
           '</div>';
       }
-      return '<div class="card in"><div><b>' + esc(c.title) + '</b><small>' + esc(meta) + '</small><p>' + esc(c.tagline) + '</p></div>' +
+      const cover = COVERS[c.slug];
+      const body = cover
+        ? '<picture class="cover"><source srcset="../covers/' + cover + '.webp" type="image/webp"><img src="../covers/' + cover + '.jpg" width="900" height="1205" loading="lazy" alt="' + esc(c.title) + ' course map"></picture>'
+        : '<p>' + esc(c.tagline) + '</p>';
+      return '<div class="card in"><div><b>' + esc(c.title) + '</b><small>' + esc(meta) + '</small></div>' + body +
         '<div class="actions"><span class="price">' + fmt(c.price_inr) + '<small>once</small></span></div>' +
         '<div class="actions" style="grid-column:1 / -1;justify-content:flex-start"><a class="g-btn quiet" href="../' + esc(c.slug) + '/">See the course</a><a class="g-btn" href="../' + esc(c.slug) + '/?buy=1">Buy and start</a></div></div>';
     }

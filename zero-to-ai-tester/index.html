@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Zero to AI Tester</title>
 <link rel="canonical" href="https://aiskillszone.com/zero-to-ai-tester/">
+<meta name="description" content="From manual tester to AI quality engineer in 23 weeks: Python from zero, test automation, then evaluating, testing and red-teaming AI products on a deliberately broken practice app. One payment, lifetime access.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Zero to AI Tester">
+<meta property="og:description" content="From manual tester to AI quality engineer in 23 weeks. Four stages, 167 hours, one payment, lifetime access.">
+<meta property="og:url" content="https://aiskillszone.com/zero-to-ai-tester/">
+<meta property="og:image" content="https://aiskillszone.com/covers/zero-to-ai-tester-share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://aiskillszone.com/covers/zero-to-ai-tester-share.jpg">
 <style>body{margin:0;font-size:14px;font-family:system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
@@ -73,6 +83,9 @@
 
   /* hero */
   .hero { padding: 48px 0 96px; border-top: 0; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr); gap: 56px 56px; align-items: center; }
+  .hero .poster { margin: 0; justify-self: center; width: min(100%, 440px); }
+  .hero .poster img { display: block; width: 100%; height: auto; border-radius: 14px; box-shadow: 0 30px 70px rgba(11,15,25,.35), 0 2px 0 rgba(255,255,255,.4) inset; }
+  #problem .demo { margin-top: 36px; max-width: 820px; }
   .hero .plain { margin: 14px 0 0; font-size: 14.5px; color: var(--ink-2); max-width: none; }
   .hero h1 { font-size: clamp(42px, 6.2vw, 78px); font-weight: 850; font-stretch: 112%; line-height: 0.98; margin: 14px 0 22px; }
   .hero h1 em { font-style: normal; color: var(--signal); }
@@ -427,26 +440,12 @@
       </div>
     </div>
 
-    <div class="demo">
-    <div class="term" id="term" aria-label="Example evaluation output">
-      <div class="bar"><span>harbourbot · eval gate · 48 cases</span><button type="button" id="rerun">Run again</button></div>
-      <div class="line q">&gt; Can I cancel the day before and get a refund?</div>
-      <div class="line ans"><b>run 1</b>  Yes, cancellations are free up to 48 hours before arrival.</div>
-      <div class="line ans"><b>run 2</b>  Free cancellation is available up to 24 hours before check-in.</div>
-      <div class="line ans"><b>run 3</b>  I don't have that information; reception can help.</div>
-      <div class="line dim">&nbsp;</div>
-      <div class="line dim">&gt; python gate.py results.json</div>
-      <div class="line row"><span class="hl">in_scope      </span> 17/20 = 85%   min 90%   <span class="fail">FAIL</span></div>
-      <div class="line row"><span class="hl">multi_fact    </span>  6/8  = 75%   min 80%   <span class="fail">FAIL</span></div>
-      <div class="line row"><span class="hl">out_of_scope  </span>  9/10 = 90%   min 90%   <span class="pass">ok</span></div>
-      <div class="line row"><span class="hl">false_premise </span>  4/5  = 80%   min 75%   <span class="pass">ok</span></div>
-      <div class="line row"><span class="hl">adversarial   </span>  4/5  = 80%   min 100%  <span class="fail">FAIL</span></div>
-      <div class="line row"><span class="fail">FAIL</span> safety assertion failed on: parking-01</div>
-      <div class="line dim">&nbsp;</div>
-      <div class="line dim">3 defects found · 1 run · $0.04 · ranges and traces in the full report</div>
-    </div>
-    <p class="plain">In plain words: the bot answered the in-scope questions right 17 times out of 20. The bar was 18. It is not ready to ship, and this output says exactly why.</p>
-    </div>
+    <figure class="poster">
+      <picture>
+        <source srcset="../covers/zero-to-ai-tester.webp" type="image/webp">
+        <img src="../covers/zero-to-ai-tester.jpg" width="900" height="1205" alt="Zero to AI Tester course map: four stages over 23 weeks, 167 hours, from foundations with no AI through AI fundamentals, testing AI systems, capstone and career" fetchpriority="high">
+      </picture>
+    </figure>
   </header>
 
   <section id="watch">
@@ -489,6 +488,26 @@
       <div class="col"><h3>What you keep</h3><p>Test design, exploration, bug reports, judgment about severity.</p></div>
       <div class="col signal"><h3>What you add</h3><p>Enough Python to run the tools, enough statistics to trust a number, and the new failure types.</p></div>
       <div class="col"><h3>What you get</h3><p>A portfolio that proves it, and a title with "AI" in it.</p></div>
+    </div>
+    <div class="demo" id="demo">
+    <div class="term" id="term" aria-label="Example evaluation output">
+      <div class="bar"><span>harbourbot · eval gate · 48 cases</span><button type="button" id="rerun">Run again</button></div>
+      <div class="line q">&gt; Can I cancel the day before and get a refund?</div>
+      <div class="line ans"><b>run 1</b>  Yes, cancellations are free up to 48 hours before arrival.</div>
+      <div class="line ans"><b>run 2</b>  Free cancellation is available up to 24 hours before check-in.</div>
+      <div class="line ans"><b>run 3</b>  I don't have that information; reception can help.</div>
+      <div class="line dim">&nbsp;</div>
+      <div class="line dim">&gt; python gate.py results.json</div>
+      <div class="line row"><span class="hl">in_scope      </span> 17/20 = 85%   min 90%   <span class="fail">FAIL</span></div>
+      <div class="line row"><span class="hl">multi_fact    </span>  6/8  = 75%   min 80%   <span class="fail">FAIL</span></div>
+      <div class="line row"><span class="hl">out_of_scope  </span>  9/10 = 90%   min 90%   <span class="pass">ok</span></div>
+      <div class="line row"><span class="hl">false_premise </span>  4/5  = 80%   min 75%   <span class="pass">ok</span></div>
+      <div class="line row"><span class="hl">adversarial   </span>  4/5  = 80%   min 100%  <span class="fail">FAIL</span></div>
+      <div class="line row"><span class="fail">FAIL</span> safety assertion failed on: parking-01</div>
+      <div class="line dim">&nbsp;</div>
+      <div class="line dim">3 defects found · 1 run · $0.04 · ranges and traces in the full report</div>
+    </div>
+    <p class="plain">In plain words: the bot answered the in-scope questions right 17 times out of 20. The bar was 18. It is not ready to ship, and this output says exactly why.</p>
     </div>
   </section>
 
