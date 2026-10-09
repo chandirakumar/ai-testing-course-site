@@ -1264,7 +1264,7 @@
     // Live price. The list price and any discount come from the course_prices view, the same source the
     // create-order function charges from, so the page and Razorpay never disagree. The ₹1,499 written in
     // the markup is only the fallback if this fetch fails.
-    const PRICE = { list: 1499, sale: 1499, pct: 0, label: "", until: null };
+    const PRICE = { list: 1499, sale: 1499, pct: 0, label: "" };
     const rupees = (n) => "₹" + Number(n).toLocaleString("en-IN");
     const payLabel = () => "Pay " + rupees(PRICE.sale);
     function countTo(el, from, to, ms) {
@@ -1292,25 +1292,13 @@
       let deal = document.querySelector(".tier .deal");
       if (PRICE.pct && tier) {
         if (!deal) { deal = document.createElement("div"); deal.className = "deal"; tier.insertAdjacentElement("afterend", deal); }
-        const until = PRICE.until ? " · ends " + new Date(PRICE.until).toLocaleDateString("en-IN", { day: "numeric", month: "long" }) : "";
-        deal.textContent = (PRICE.label || "Offer") + ": " + PRICE.pct + "% off" + until;
-        const end = PRICE.until ? new Date(PRICE.until).getTime() : 0;
-        if (end && end - Date.now() < 14 * 864e5) {
-          const base = (PRICE.label || "Offer") + ": " + PRICE.pct + "% off", pad = (n) => String(n).padStart(2, "0");
-          const left = () => {
-            const s = Math.max(0, Math.floor((end - Date.now()) / 1000)), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
-            return s <= 0 ? base + " · ended" : base + " · ends in " + (d ? d + "d " : "") + pad(h) + ":" + pad(m) + ":" + pad(x);
-          };
-          const sbSub2 = document.querySelector("[data-sticky-sub]");
-          const paintLeft = () => { deal.textContent = left(); if (sbSub2) sbSub2.textContent = left().replace(/^.*?: /, ""); };
-          paintLeft(); setInterval(paintLeft, 1000);
-        }
+        deal.textContent = (PRICE.label || "Offer") + ": " + PRICE.pct + "% off";
       } else if (deal) { deal.remove(); }
       const pay = document.getElementById("buy-pay"); if (pay && !pay.disabled) pay.textContent = payLabel();
     }
-    fetch(PAY.supabaseUrl + "/rest/v1/course_prices?slug=eq." + PAY.course + "&select=price_inr,sale_price_inr,discount_pct,discount_label,discount_until", { headers: { apikey: PAY.publishableKey } })
+    fetch(PAY.supabaseUrl + "/rest/v1/course_prices?slug=eq." + PAY.course + "&select=price_inr,sale_price_inr,discount_pct,discount_label", { headers: { apikey: PAY.publishableKey } })
       .then((r) => (r.ok ? r.json() : []))
-      .then((rows) => { const p = rows[0]; if (!p) return; Object.assign(PRICE, { list: p.price_inr, sale: p.sale_price_inr, pct: p.discount_pct, label: p.discount_label || "", until: p.discount_until }); paintPrice(); })
+      .then((rows) => { const p = rows[0]; if (!p) return; Object.assign(PRICE, { list: p.price_inr, sale: p.sale_price_inr, pct: p.discount_pct, label: p.discount_label || "" }); paintPrice(); })
       .catch(() => {});
     const fn = (name) => PAY.supabaseUrl + "/functions/v1/" + name;
     const modal = document.getElementById("buy");

@@ -152,7 +152,7 @@
     <section class="glass span" id="pricing">
       <span class="eyebrow">Courses</span>
       <h2>Price and discounts</h2>
-      <p>The list price is what the course normally costs. A discount is a percentage off, shown everywhere the price appears and charged by Razorpay, for as long as it is on. Leave the end date empty for no end.</p>
+      <p>The list price is what the course normally costs. A discount is a percentage off, shown everywhere the price appears and charged by Razorpay. It stays on until you set it back to 0 or press Remove discount.</p>
       <div id="courses"><div class="skeleton"></div></div>
     </section>
 
@@ -307,29 +307,23 @@
         '<div class="eyebrow" style="margin-top:14px">WhatsApp, last 24 h</div><div class="pairs">' + (wa.length ? wa.map(([k, v]) => "<span>" + esc(k) + "</span><span>" + v + "</span>").join("") : "<span>No messages</span><span>0</span>") + "</div>";
     }
 
-    function localInput(iso) {
-      if (!iso) return "";
-      const d = new Date(iso), pad = (n) => String(n).padStart(2, "0");
-      return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
-    }
-    function live(c) { return c.discount_pct > 0 && (!c.discount_until || new Date(c.discount_until) > new Date()); }
+    function live(c) { return c.discount_pct > 0; }
     function salePrice(price, pct) { return Math.round(price * (100 - pct) / 100); }
 
     async function loadCourses() {
       const box = $("#courses");
-      const { data, error } = await sb.from("courses").select("slug, title, price_inr, discount_pct, discount_label, discount_until, is_active").order("created_at");
+      const { data, error } = await sb.from("courses").select("slug, title, price_inr, discount_pct, discount_label, is_active").order("created_at");
       if (error) { box.innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
       courseList = data;
       box.innerHTML = data.map((c) => {
         const on = live(c);
         return '<form class="course" data-slug="' + esc(c.slug) + '">' +
           "<h3>" + esc(c.title) + (c.is_active ? "" : ' <span class="fine">(not on sale)</span>') + "</h3>" +
-          '<p class="now">Buyers pay <b data-now>' + rupees(on ? salePrice(c.price_inr, c.discount_pct) : c.price_inr) + "</b>" + (on ? " · " + c.discount_pct + "% off" + (c.discount_until ? " until " + new Date(c.discount_until).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "") : " · no discount") + "</p>" +
+          '<p class="now">Buyers pay <b data-now>' + rupees(on ? salePrice(c.price_inr, c.discount_pct) : c.price_inr) + "</b>" + (on ? " · " + c.discount_pct + "% off" : " · no discount") + "</p>" +
           '<div class="grid">' +
           '<label>List price ₹<input name="price_inr" type="number" min="1" max="1000000" step="1" value="' + esc(c.price_inr) + '" required></label>' +
           '<label>Discount %<input name="discount_pct" type="number" min="0" max="90" step="1" value="' + esc(c.discount_pct) + '"></label>' +
           '<label class="full">Label<input name="discount_label" maxlength="60" value="' + esc(c.discount_label) + '" placeholder="Launch offer"></label>' +
-          '<label class="full">Ends (your local time)<input name="discount_until" type="datetime-local" value="' + localInput(c.discount_until) + '"></label>' +
           '<label class="check full"><input type="checkbox" name="is_active"' + (c.is_active ? " checked" : "") + '> On sale: listed on the site and purchasable</label>' +
           "</div>" +
           '<p class="preview">After saving, buyers pay <b data-preview></b></p>' +
@@ -339,21 +333,19 @@
       box.querySelectorAll("form.course").forEach((f) => {
         const preview = () => {
           const price = Number(f.price_inr.value || 0), pct = Number(f.discount_pct.value || 0);
-          const until = f.discount_until.value ? new Date(f.discount_until.value) : null;
-          const on = pct > 0 && (!until || until > new Date());
-          f.querySelector("[data-preview]").textContent = rupees(on ? salePrice(price, pct) : price) + (pct > 0 && !on ? " (discount already expired)" : "");
+          f.querySelector("[data-preview]").textContent = rupees(pct > 0 ? salePrice(price, pct) : price);
         };
         f.addEventListener("input", preview); preview();
-        f.querySelector("[data-clear]").addEventListener("click", () => { f.discount_pct.value = 0; f.discount_label.value = ""; f.discount_until.value = ""; preview(); });
+        f.querySelector("[data-clear]").addEventListener("click", () => { f.discount_pct.value = 0; f.discount_label.value = ""; preview(); });
         f.addEventListener("submit", async (e) => {
           e.preventDefault();
           const msg = f.querySelector("[data-msg]"); msg.textContent = "";
           const price = Number(f.price_inr.value), pct = Number(f.discount_pct.value || 0);
           if (!(price >= 1 && price <= 1000000)) { msg.textContent = "Price must be between 1 and 10,00,000."; return; }
           if (!(pct >= 0 && pct <= 90)) { msg.textContent = "Discount must be 0 to 90 percent."; return; }
-          const patch = { price_inr: price, discount_pct: pct, discount_label: f.discount_label.value.trim() || null, discount_until: f.discount_until.value ? new Date(f.discount_until.value).toISOString() : null, is_active: f.is_active.checked };
+          const patch = { price_inr: price, discount_pct: pct, discount_label: f.discount_label.value.trim() || null, is_active: f.is_active.checked };
           const b = f.querySelector("button[type=submit]"); b.disabled = true;
-          const { data, error } = await sb.from("courses").update(patch).eq("slug", f.dataset.slug).select("slug, price_inr, discount_pct, discount_until, is_active");
+          const { data, error } = await sb.from("courses").update(patch).eq("slug", f.dataset.slug).select("slug, price_inr, discount_pct, is_active");
           b.disabled = false;
           if (error) { msg.textContent = "Not saved: " + error.message; msg.style.color = "#F87171"; return; }
           if (!data || !data.length) { msg.textContent = "Not saved: this account may not be an admin any more."; msg.style.color = "#F87171"; return; }
