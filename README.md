@@ -43,7 +43,7 @@ A full copy of the platform for trying changes and building new courses before c
 | Address | aiskillszone.com | dev.aiskillszone.com (password: the file `.dev-site-password` in the private course folder, any username) |
 | Pages | this folder | the same folder, same files |
 | Database, sign-in, functions | Supabase project `cxiezjegnnbkghbevqra` | Supabase project `ofuydnjqsltvlalgvnod` |
-| Payments | Razorpay keys set on the live project | always Razorpay TEST keys: no real money |
+| Payments | Razorpay LIVE keys since 10 October 2026: real money | always Razorpay TEST keys: no real money |
 | Course pages | KV store `COURSE_FILES` | KV store `COURSE_FILES_DEV` |
 | Admin | aiskillszone.com/admin/ | dev.aiskillszone.com/admin/ (same owner email or WhatsApp number) |
 
@@ -54,7 +54,7 @@ points every page at the dev database automatically, so the HTML is never edited
 - Publish course pages to dev: `python platform/publish_course.py --env dev` in the course repo. To live: without `--env dev`.
 - Database changes: add a migration file in the course repo's `supabase/migrations/`, apply it to dev, test, then apply it to live.
 - Backend functions: `npx supabase functions deploy --project-ref ofuydnjqsltvlalgvnod` for dev, then the live ref.
-- Tests against dev: `AKZ_TARGET=dev` before the pytest command in `tests/payment` (without it the tests run against live).
+- Tests: run pytest in `tests/payment`; they target dev by default. Never point them at live, which takes real payments.
 
 A new course: build its folder and pack, publish it to dev, add its row to the dev `courses` table, buy it on dev with a
 Razorpay test card, then repeat the publish and the row on live.
