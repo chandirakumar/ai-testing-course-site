@@ -61,16 +61,17 @@ function readCookie(header, name) {
 }
 
 /** true / false from has_course(); null when the token is not accepted.
- *  Answers are remembered for 60 seconds per token in this isolate, so a learner clicking through
+ *  A "yes" is remembered for 60 seconds per token in this isolate, so a learner clicking through
  *  lessons costs one database round-trip a minute instead of one per page. Revoking access or a
- *  token therefore takes effect within a minute. */
+ *  token therefore takes effect within a minute. A "no" is never remembered: someone who was turned
+ *  away and then buys gets in on their very next click. */
 const ACCESS_CACHE = new Map();
 async function hasCourse(env, token, course) {
   const key = course + ":" + token.slice(-48);
   const hit = ACCESS_CACHE.get(key);
   if (hit && hit.until > Date.now()) return hit.value;
   const value = await hasCourseUncached(env, token, course);
-  if (value !== null) {
+  if (value === true) {
     if (ACCESS_CACHE.size > 5000) ACCESS_CACHE.clear();
     ACCESS_CACHE.set(key, { value, until: Date.now() + 60000 });
   }
