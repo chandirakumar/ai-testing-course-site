@@ -606,6 +606,9 @@
   .lp-instr { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: start; }
   .lp-instr .lp-mono { width: 88px; height: 88px; font-size: 40px; box-shadow: 0 0 0 4px rgba(249,115,22,.25), 0 20px 50px rgba(234,88,12,.35); }
   .lp-instr p { color: #C9D4E8; font-size: 16.5px; }
+  .lp-instr .lp-role { display: inline-block; margin: 0 0 14px; padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 14px; color: #FDBA74; background: rgba(249,115,22,.12); border: 1px solid rgba(249,115,22,.35); }
+  .lp-mono { letter-spacing: -0.04em; }
+  .lp-chip small[data-content] { margin-top: 2px; color: #FDBA74; }
   .tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 26px; padding: 0; list-style: none; }
   .tools li { padding: 8px 12px; border-radius: 10px; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 13px; color: #DCE6F7; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.10); }
 
@@ -716,7 +719,7 @@
     </div>
     <p class="plain">In plain words: the bot answered the in-scope questions right 17 times out of 20. The bar was 18. It is not ready to ship, and this output says exactly why.</p>
     </div>
-      <a class="lp-chip" href="#instructor"><span class="lp-mono" aria-hidden="true">C</span><span><small>Every lesson written and tested by</small><b>Chandru, instructor</b></span></a>
+      <a class="lp-chip" href="#instructor"><span class="lp-mono" aria-hidden="true">CM</span><span><small>Every lesson written and tested by</small><b><span data-content="instructor_name">Chandirakumar M</span></b><small data-content="instructor_title">Lead AI Engineer · 10+ years in software</small></span></a>
     </div>
   </header>
   <div class="lp-facts" aria-label="The course in numbers">
@@ -934,12 +937,12 @@
 <div class="lp-band lp-dark" id="instructor" style="background:radial-gradient(700px 400px at 100% 0%,rgba(249,115,22,.14),transparent 60%),#0A1020">
  <div class="lp-in">
   <div class="lp-instr">
-    <span class="lp-mono rv" aria-hidden="true">C</span>
+    <span class="lp-mono rv" aria-hidden="true">CM</span>
     <div>
       <span class="lp-eyebrow">Your instructor</span>
-      <h2>Taught by Chandru.</h2>
-      <p>Chandru builds and tests software products, and wrote every lesson, lab, and line of practice code in Zero to AI Tester. It is the path Chandru wanted and could not find: one that starts at the terminal and ends at a release assessment.</p>
-      <p>Built for testers who are told AI will replace them, by someone who thinks the opposite: the people who already know how to design a test are the people AI teams need most.</p>
+      <h2>Taught by <span data-content="instructor_name">Chandirakumar M</span>.</h2>
+      <p class="lp-role" data-content="instructor_title">Lead AI Engineer · 10+ years in software</p>
+      <div data-content="instructor_bio" data-paras><p>I'm Chandirakumar M, a Lead AI Engineer with more than ten years of experience building and testing software. I wrote every lesson, lab and line of practice code in Zero to AI Tester. It is the path I wanted and could not find: one that starts at the terminal and ends at a release assessment.</p><p>I built it for testers who are told AI will replace them. I think the opposite: the people who already know how to design a test are the people AI teams need most.</p></div>
       <ul class="tools" aria-label="Tools you will use"><li>Python</li><li>pytest</li><li>Playwright</li><li>GitHub Actions</li><li>promptfoo</li><li>DeepEval</li><li>RAGAS</li><li>Langfuse</li><li>PyRIT</li><li>Garak</li></ul>
       <a class="lp-btn cta" href="#pricing" data-buy>Start the course · ₹1,499 <span class="arr" aria-hidden="true">→</span></a>
     </div>
@@ -1166,7 +1169,7 @@
   </div>
 
   <footer>
-    <span><a href="../" style="color:inherit;text-decoration:none">AI Skills Zone</a> · Zero to AI Tester · © 2026 Chandru</span>
+    <span><a href="../" style="color:inherit;text-decoration:none">AI Skills Zone</a> · Zero to AI Tester · © 2026 Chandirakumar M</span>
     <span><a href="#faq">FAQ</a> · <a href="../terms.html">Terms and refunds</a> · <a href="../privacy.html">Privacy</a> · <a href="mailto:help@aiskillszone.com">Contact</a></span>
   </footer>
 </div>
@@ -1608,6 +1611,25 @@
       (function tick(now) { const k = Math.max(0, Math.min(1, (now - t0) / 900)); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(tick); })(t0);
     }), { threshold: 0.5 });
     document.querySelectorAll("[data-count]").forEach((el) => cnt.observe(el));
+  })();
+</script>
+<script>
+  // Editable site text: rows from site_content replace the matching [data-content] elements. The HTML already
+  // holds the same words, so nothing changes if the fetch fails. Text is set as text, never as HTML.
+  (function () {
+    const els = document.querySelectorAll("[data-content]"); if (!els.length) return;
+    const keys = Array.from(new Set(Array.from(els, (e) => e.dataset.content)));
+    fetch("https://cxiezjegnnbkghbevqra.supabase.co/rest/v1/site_content?select=key,value&key=in.(" + keys.join(",") + ")",
+          { headers: { apikey: "sb_publishable_6owpYUznjQkw2VH3kvNKVA_Ay3VNhlW" } })
+      .then((r) => (r.ok ? r.json() : [])).then((rows) => {
+        const map = Object.fromEntries(rows.map((r) => [r.key, r.value]));
+        els.forEach((el) => {
+          const v = map[el.dataset.content]; if (!v) return;
+          if (el.hasAttribute("data-paras")) {
+            el.replaceChildren(...v.split(/\n\s*\n/).map((para) => { const p = document.createElement("p"); p.textContent = para.trim(); return p; }).filter((p) => p.textContent));
+          } else { el.textContent = v; }
+        });
+      }).catch(() => {});
   })();
 </script>
 </body>

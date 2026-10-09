@@ -26,6 +26,8 @@
   h1 { font-size: 26px; } h2 { font-size: 20px; }
   p { color: var(--ink-2); margin: 0 0 12px; }
   label { display: block; margin: 0 0 12px; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  textarea { display: block; width: 100%; margin-top: 6px; font: inherit; font-size: 16px; font-family: "IBM Plex Sans", sans-serif; letter-spacing: 0; text-transform: none; line-height: 1.5; padding: 11px 12px; border-radius: 10px; color: #fff; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.16); outline: none; resize: vertical; }
+  textarea:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(129,140,248,.22); }
   input, select { display: block; width: 100%; margin-top: 6px; font: inherit; font-size: 16px; font-family: "IBM Plex Sans", sans-serif; letter-spacing: 0; text-transform: none; padding: 11px 12px; border-radius: 10px; color: #fff; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.16); outline: none; }
   input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(129,140,248,.22); }
   input.code { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 26px; letter-spacing: .32em; text-align: center; }
@@ -154,6 +156,19 @@
       <div id="courses"><div class="skeleton"></div></div>
     </section>
 
+    <section class="glass span" id="sitetext">
+      <span class="eyebrow">Site text</span>
+      <h2>About the instructor</h2>
+      <p>Shown on the course page in the hero card and the instructor section. Leave a blank line between paragraphs. Saved text goes live on the next page load.</p>
+      <form id="st-form" novalidate>
+        <label>Name<input name="instructor_name" maxlength="80" required></label>
+        <label>Role line<input name="instructor_title" maxlength="120" placeholder="Lead AI Engineer · 10+ years in software" required></label>
+        <label>About you<textarea name="instructor_bio" rows="8" maxlength="4000" required></textarea></label>
+        <div class="row"><button class="btn" type="submit">Save</button><a class="btn quiet sm" href="../zero-to-ai-tester/#instructor" target="_blank" rel="noopener">View on the page</a><span class="ok" id="st-msg"></span></div>
+        <p class="fine" id="st-meta"></p>
+      </form>
+    </section>
+
     <section class="glass span" id="learners">
       <span class="eyebrow">Learners</span>
       <h2>Course access</h2>
@@ -268,7 +283,7 @@
       if (admin !== true) { $("[data-who]").textContent = user.email || ("+" + user.phone); return step("denied"); }
       $("#auth").hidden = true; $("#dash").hidden = false; $("#signout").hidden = false;
       await Promise.all([loadStats(), loadCourses(), loadPurchases()]);
-      await Promise.all([loadFollowups(), loadAudience()]);
+      await Promise.all([loadFollowups(), loadAudience(), loadSiteText()]);
     }
 
     // ---- dashboard
@@ -496,6 +511,28 @@
       if (error) { $("#fu-msg").textContent = error.message; return; }
       $("#fu-msg").textContent = data ? data + " new follow-up" + (data === 1 ? "" : "s") + " added." : "Nothing new.";
       await Promise.all([loadFollowups(), loadAudience()]);
+    });
+
+    // ---- site text
+    const ST_KEYS = ["instructor_name", "instructor_title", "instructor_bio"];
+    async function loadSiteText() {
+      const f = $("#st-form");
+      const { data, error } = await sb.from("site_content").select("key, value, updated_at, updated_by").in("key", ST_KEYS);
+      if (error) { $("#st-msg").textContent = error.message; return; }
+      data.forEach((r) => { if (f[r.key]) f[r.key].value = r.value; });
+      const last = data.filter((r) => r.updated_at).sort((a, b) => b.updated_at.localeCompare(a.updated_at))[0];
+      $("#st-meta").textContent = last ? "Last saved " + new Date(last.updated_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) + (last.updated_by ? " by " + last.updated_by : "") : "";
+    }
+    $("#st-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const f = e.target, msg = $("#st-msg"); msg.style.color = ""; msg.textContent = "";
+      const rows = ST_KEYS.map((k) => ({ key: k, value: f[k].value.trim() }));
+      if (rows.some((r) => !r.value)) { msg.textContent = "Fill in all three fields."; msg.style.color = "#F87171"; return; }
+      const b = f.querySelector("button[type=submit]"); b.disabled = true;
+      const { error } = await sb.from("site_content").upsert(rows, { onConflict: "key" });
+      b.disabled = false;
+      if (error) { msg.textContent = "Not saved: " + error.message; msg.style.color = "#F87171"; return; }
+      msg.textContent = "Saved. Live on the next page load."; loadSiteText();
     });
 
     sb.auth.getSession().then(({ data: { session } }) => { if (session) enter(); else step("id"); });
