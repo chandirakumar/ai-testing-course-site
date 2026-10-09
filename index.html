@@ -15,133 +15,164 @@
 <meta property="og:description" content="Self-paced online courses on AI skills. Pay once, keep forever.">
 <meta property="og:type" content="website">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css">
 <style>
-  :root {
-    --ground: #F2F4F6; --panel: #FFFFFF; --ink: #14212B; --ink-2: #435060; --muted: #71808F;
-    --rule: #D9DEE4; --accent: #0B6E99; --signal: #E8641B; --tint: #E4EFF5;
+  .hm-hero { overflow: hidden; padding: 40px 0 56px; background: radial-gradient(700px 420px at 85% 10%, rgba(249,115,22,.18), transparent 60%), radial-gradient(800px 500px at 0% 0%, rgba(59,130,246,.20), transparent 60%), var(--sz-navy); }
+  .hm-hero .grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 36px; align-items: center; }
+  .hm-hero h1 { font-weight: 850; font-stretch: 106%; font-size: clamp(38px, 10.5vw, 68px); line-height: 1.02; letter-spacing: -0.02em; color: #fff; margin: 0 0 16px; }
+  .hm-hero h1 .sz-grad { display: block; }
+  .hm-hero .sub { font-size: 17.5px; color: var(--sz-ink-2); max-width: 56ch; margin: 0 0 24px; }
+  .hm-hero .ctas { display: flex; flex-wrap: wrap; gap: 12px; } .hm-hero .ctas .sz-btn { flex: 1 1 100%; }
+  .hm-poster { position: relative; display: block; max-width: 420px; margin: 0 auto; }
+  .hm-poster::before { content: ""; position: absolute; inset: -30px; background: radial-gradient(closest-side, rgba(249,115,22,.32), transparent 70%); filter: blur(10px); }
+  .hm-poster img { position: relative; display: block; width: 100%; height: auto; border-radius: 16px; border: 1px solid rgba(255,255,255,.14); box-shadow: 0 30px 80px rgba(0,0,0,.5); transition: transform 300ms ease; }
+  .hm-poster:hover img { transform: translateY(-4px) rotate(-.4deg); }
+  .hm-poster .tag { position: absolute; left: 12px; top: 12px; padding: 5px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 700; color: #0A1020; background: #34D399; }
+  .course { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; margin-top: 28px; padding: 22px 20px; border-radius: 20px; background: #fff; border: 1px solid var(--sz-paper-line); box-shadow: 0 24px 60px rgba(15,23,42,.10); }
+  .course .k { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #EA580C; }
+  .course h3 { font-weight: 850; font-size: clamp(26px, 6vw, 34px); color: var(--sz-paper-ink); margin: 6px 0 10px; }
+  .course p { font-size: 16px; margin: 0 0 16px; }
+  .course .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 18px; }
+  .course .facts span { padding: 10px 12px; border-radius: 12px; background: #F4F6FB; font-size: 13.5px; color: var(--sz-paper-muted); }
+  .course .facts b { display: block; font-family: "Archivo", sans-serif; font-weight: 850; font-size: 22px; color: var(--sz-paper-ink); }
+  .course .facts .deal { grid-column: 1 / -1; color: #EA580C; background: #FFF1E6; font-weight: 600; }
+  .course .facts .deal b { display: inline; font-size: 15px; color: #EA580C; }
+  .course .cta { display: flex; flex-wrap: wrap; gap: 10px; } .course .cta .sz-btn { flex: 1 1 100%; }
+  .course .cta .ghost { color: var(--sz-paper-ink); box-shadow: inset 0 0 0 1.5px var(--sz-paper-line); }
+  .course .leave { padding: 18px; border-radius: 16px; background: linear-gradient(160deg, #0F1830, #16244A); color: #E8EEF8; }
+  .course .leave b { display: block; font-family: "Archivo", sans-serif; font-size: 17px; color: #fff; margin-bottom: 8px; }
+  .course .leave ul { list-style: none; padding: 0; margin: 0; }
+  .course .leave li { display: flex; gap: 10px; padding: 7px 0; font-size: 15px; color: #C9D4E8; border-top: 1px solid rgba(255,255,255,.08); }
+  .course .leave li:first-child { border-top: 0; }
+  .course .leave svg { width: 18px; height: 18px; flex: 0 0 auto; color: #34D399; margin-top: 3px; }
+  .hm-instr { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; padding: 22px 20px; border-radius: 20px; background: linear-gradient(160deg, #16244A, #0F1830); border: 1px solid var(--sz-line); }
+  .hm-instr h3 { color: #fff; font-size: 22px; margin: 0 0 2px; }
+  .hm-instr .role { color: #FDBA74; font-weight: 700; font-size: 14px; margin: 0 0 6px; }
+  .hm-instr p { color: #C9D4E8; margin: 0; max-width: 60ch; }
+  .hm-instr .txt { flex: 1 1 260px; }
+  .soon-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 28px; }
+  .soon-card { display: flex; flex-direction: column; padding: 20px; border-radius: 18px; background: #fff; border: 1px solid var(--sz-paper-line); box-shadow: 0 10px 30px rgba(15,23,42,.06); transition: transform 200ms ease, border-color 200ms ease; }
+  .soon-card:hover { transform: translateY(-3px); border-color: #F9731666; }
+  .soon-card .soon-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .soon-card .eyebrow { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: #EA580C; }
+  .soon-card .waiting { font-size: 12.5px; font-weight: 700; color: #15803D; background: #DCFCE7; padding: 2px 8px; border-radius: 999px; }
+  .soon-card h3 { font-weight: 800; font-size: 19px; color: var(--sz-paper-ink); margin: 10px 0 6px; }
+  .soon-card p { margin: 0 0 10px; font-size: 15px; }
+  .soon-card .who { font-size: 13px; color: var(--sz-paper-muted); margin-bottom: 14px; }
+  .soon-card form.notify { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+  .soon-card form.notify input { flex: 1 1 180px; min-width: 0; font: inherit; font-size: 16px; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--sz-paper-line); }
+  .soon-card form.notify .btn { min-height: 44px; padding: 10px 16px; border: 0; border-radius: 10px; font-family: "Archivo", sans-serif; font-weight: 800; font-size: 15px; color: #fff; background: #0F172A; cursor: pointer; }
+  .soon-card form.notify .btn:hover { background: #1E293B; }
+  .soon-card .note { font-size: 13.5px; color: #B91C1C; margin: 10px 0 0; } .soon-card .note.ok { color: #15803D; }
+  .hm-final { text-align: center; padding: 48px 20px; border-radius: 22px; background: linear-gradient(160deg, #16244A, #0F1830); border: 1px solid var(--sz-line); }
+  .hm-final .sz-lede { margin: 0 auto 22px; color: var(--sz-ink-2); }
+  @media (min-width: 640px) {
+    .hm-hero .ctas .sz-btn, .course .cta .sz-btn { flex: 0 0 auto; }
+    .course .facts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .soon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --ground: #0E151B; --panel: #14202A; --ink: #E7EDF2; --ink-2: #B4C0CB; --muted: #8B9AA8;
-      --rule: #263441; --accent: #5DB3DA; --signal: #FF8A4C; --tint: #15283A;
-    }
+  @media (min-width: 960px) {
+    .hm-hero { padding: 72px 0 96px; }
+    .hm-hero .grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 56px; }
+    .course { grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); gap: 36px; padding: 36px; }
+    .soon-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .hm-final { padding: 72px 56px; }
   }
-  :root[data-theme="dark"] {
-    --ground: #0E151B; --panel: #14202A; --ink: #E7EDF2; --ink-2: #B4C0CB; --muted: #8B9AA8;
-    --rule: #263441; --accent: #5DB3DA; --signal: #FF8A4C; --tint: #15283A;
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--ground); color: var(--ink); font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
-  a { color: var(--accent); }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
-  nav { display: flex; justify-content: space-between; align-items: center; padding: 22px 0; }
-  .brand { font-family: "Archivo", sans-serif; font-weight: 800; font-stretch: 112%; font-size: 19px; color: var(--ink); text-decoration: none; letter-spacing: -0.01em; }
-  nav a.mail { font-size: 14.5px; color: var(--ink-2); text-decoration: none; }
-  .eyebrow { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
-  header { padding: 56px 0 44px; }
-  h1 { font-family: "Archivo", sans-serif; font-weight: 850; font-stretch: 112%; font-size: clamp(38px, 6.5vw, 72px); line-height: 0.98; letter-spacing: -0.02em; margin: 12px 0 18px; max-width: 16ch; }
-  h1 em { font-style: normal; color: var(--accent); }
-  .lede { font-size: 19px; color: var(--ink-2); max-width: 56ch; margin: 0; }
-  section { padding: 44px 0 56px; border-top: 1px solid var(--rule); }
-  h2 { font-family: "Archivo", sans-serif; font-weight: 800; font-stretch: 110%; font-size: clamp(26px, 3.4vw, 36px); line-height: 1.08; margin: 8px 0 22px; }
-  .course { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 32px; background: var(--panel); border: 1px solid var(--rule); border-top: 4px solid var(--accent); padding: 30px 32px 28px; }
-  .course h3 { font-family: "Archivo", sans-serif; font-weight: 800; font-stretch: 110%; font-size: 30px; line-height: 1.08; margin: 6px 0 12px; }
-  .course p { color: var(--ink-2); margin: 0 0 14px; }
-  .facts { display: flex; flex-wrap: wrap; gap: 10px 26px; margin: 4px 0 20px; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 13px; color: var(--muted); }
-  .facts b { color: var(--ink); font-weight: 500; }
-  .cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-  .btn { display: inline-block; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 15px; padding: 13px 20px; border-radius: 4px; text-decoration: none; border: 2px solid transparent; }
-  .btn.primary { background: var(--ink); color: var(--ground); }
-  .btn.ghost { border-color: var(--ink); color: var(--ink); }
-  .side { border-left: 1px solid var(--rule); padding-left: 28px; }
-  .side ul { margin: 8px 0 0; padding-left: 18px; color: var(--ink-2); font-size: 15px; }
-  .side li { margin: 6px 0; }
-  .next-unused { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 8px; }
-  .next-unused div { background: var(--panel); border: 1px solid var(--rule); padding: 16px 18px; color: var(--ink-2); font-size: 15px; }
-  .next-unused b { display: block; color: var(--ink); font-family: "Archivo", sans-serif; font-weight: 700; margin-bottom: 4px; }
-  .next-unused .soon { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
-  footer { padding: 28px 0 44px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-  footer a { color: var(--muted); }
-  @media (max-width: 760px) {
-    .wrap { padding: 0 18px; }
-    header { padding: 36px 0 30px; }
-    .course { grid-template-columns: 1fr; padding: 22px 20px; }
-    .side { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 18px; }
-  }
-  /* coming-soon cards on the hub: glass */
-  .soon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; margin-top: 8px; }
-  .soon-card { background: var(--panel); border: 1px solid var(--rule); border-top: 3px solid var(--accent); padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; transition: transform 160ms ease; }
-  .soon-card:hover { transform: translateY(-2px); }
-  .soon-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
-  .soon-top .eyebrow { color: var(--accent); }
-  .soon-card .waiting { font-family: var(--mono); font-size: 11.5px; color: var(--accent); }
-  .soon-card h3 { font-family: var(--display); font-weight: 800; font-stretch: 110%; font-size: 19px; line-height: 1.15; margin: 2px 0 0; color: var(--ink); }
-  .soon-card p { font-size: 14px; color: var(--ink-2); margin: 0; }
-  .soon-card .who { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin-top: auto; padding-top: 6px; }
-  .soon-card form.notify { display: grid; gap: 8px; margin-top: 10px; }
-  .soon-card input[type="email"] { width: 100%; font: inherit; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 8px; background: var(--ground); color: var(--ink); }
-  .soon-card .btn { margin: 0; font-size: 14px; padding: 10px 14px; border: 0; cursor: pointer; font-family: var(--display); font-weight: 700; }
-  .soon-card .note { font-size: 13px; color: var(--signal); }
-  .soon-card .note.ok { color: var(--accent); }
-  nav .links { display: flex; gap: 18px; align-items: center; }
-  .side .poster { display: block; margin: 0 0 18px; }
-  .side .poster img { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--rule); }
-  /* MRP struck through, discounted price counts down then pops */
-  .px { white-space: nowrap; }
-  s.mrp { text-decoration: none; position: relative; opacity: .72; font-weight: 500; margin-right: .25em; }
-  s.mrp::after { content: ""; position: absolute; left: -2px; right: -2px; top: 52%; height: .09em; min-height: 2px; background: currentColor; transform: scaleX(0); transform-origin: left center; animation: strike .45s .6s cubic-bezier(.2,.8,.2,1) forwards; }
-  .sale { display: inline-block; font-variant-numeric: tabular-nums; }
-  .sale.pop { animation: pop .5s cubic-bezier(.2,.9,.3,1.4); }
-  @keyframes strike { to { transform: scaleX(1); } }
-  @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.14); } 100% { transform: scale(1); } }
-  @media (prefers-reduced-motion: reduce) { s.mrp::after { animation: none; transform: scaleX(1); } .sale.pop { animation: none; } }
-  .course .facts .deal { color: var(--signal); animation: pop .5s 1.15s; }
 </style>
 </head>
-<body>
-<div class="wrap">
-  <nav>
-    <a class="brand" href="./">AI Skills Zone</a>
-    <span class="links"><a class="mail" href="learn/">Log in</a><a class="mail" href="mailto:help@aiskillszone.com">help@aiskillszone.com</a></span>
-  </nav>
+<body class="sz">
+<nav class="sz-nav" aria-label="Site">
+  <div class="sz-in">
+    <a class="brand" href="./">AI Skills Zone<b>.</b></a>
+    <span class="links"><a class="wide" href="#courses">Courses</a><a class="wide" href="#next">Coming soon</a><a href="learn/">Log in</a><a class="sz-btn cta" href="zero-to-ai-tester/">Explore</a></span>
+  </div>
+</nav>
 
-  <header>
-    <div class="eyebrow">Self-paced courses · pay once · keep forever</div>
-    <h1>Practical AI skills, <em>taught by doing.</em></h1>
-    <p class="lede">Courses for working professionals who want an "AI" in their job title and the portfolio to back it up. Everything is self-paced, delivered as pages you keep, and updated at no charge when the tools change.</p>
-  </header>
+<header class="hm-hero">
+  <div class="sz-in grid">
+    <div>
+      <div class="sz-badges"><span class="sz-badge"><i></i>Self-paced</span><span class="sz-badge"><i></i>Pay once, keep for life</span><span class="sz-badge"><i></i>Built for working testers</span></div>
+      <h1><span class="sz-grad">Practical AI skills,</span>taught by doing.</h1>
+      <p class="sub">Courses for working professionals who want "AI" in their job title and the portfolio to back it up. Every course is self-paced, built around real projects, and updated at no charge when the tools change.</p>
+      <div class="ctas">
+        <a class="sz-btn cta" href="zero-to-ai-tester/">Explore Zero to AI Tester <span class="arr" aria-hidden="true">→</span></a>
+        <a class="sz-btn ghost" href="learn/">Log in to your courses</a>
+      </div>
+      <ul class="sz-ticks">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>One payment, lifetime access</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Sign in by email or WhatsApp code</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>UPI or card through Razorpay</li>
+      </ul>
+    </div>
+    <a class="hm-poster" href="zero-to-ai-tester/" aria-label="Zero to AI Tester course page"><span class="tag">Open now</span><picture><source srcset="covers/zero-to-ai-tester.webp" type="image/webp"><img src="covers/zero-to-ai-tester.jpg" width="896" height="1139" alt="Zero to AI Tester course map: four stages over 23 weeks, 167 hours"></picture></a>
+  </div>
+</header>
 
-  <section id="courses">
-    <div class="eyebrow">Courses</div>
-    <h2>Available now</h2>
-    <article class="course">
+<section class="sz-band sz-light" id="courses">
+  <div class="sz-in">
+    <span class="sz-eyebrow">Available now</span>
+    <h2>Start with Zero to AI Tester.</h2>
+    <p class="sz-lede">The first course on AI Skills Zone, for manual and functional testers who have never written code.</p>
+    <article class="course rv">
       <div>
-        <div class="eyebrow" style="color:var(--accent)">Course 1 · for manual and functional testers</div>
+        <span class="k">Course 1 · for manual and functional testers</span>
         <h3>Zero to AI Tester</h3>
-        <p>From your first terminal command to a release assessment of an AI product you present on video. Python from zero, test automation, then evaluation, RAG and agent testing, and AI security, all practised on a deliberately broken AI product.</p>
+        <p>From your first terminal command to a release assessment of an AI product you present on video. Python from zero, test automation, then evaluation, RAG and agent testing, and AI security, all practised on a deliberately broken AI app.</p>
         <div class="facts"><span><b>23</b> weeks</span><span><b>167</b> hours</span><span><b>7</b> portfolio projects</span><span><b>₹1,499</b> once</span></div>
         <div class="cta">
-          <a class="btn primary" href="zero-to-ai-tester/?buy=1">Buy and start · ₹1,499</a>
-          <a class="btn ghost" href="zero-to-ai-tester/">See the course</a>
+          <a class="sz-btn cta primary" href="zero-to-ai-tester/?buy=1">Buy and start · ₹1,499 <span class="arr" aria-hidden="true">→</span></a>
+          <a class="sz-btn ghost" href="zero-to-ai-tester/">See the course</a>
         </div>
       </div>
-      <div class="side">
-        <a class="poster" href="zero-to-ai-tester/" aria-label="Zero to AI Tester course page"><picture><source srcset="covers/zero-to-ai-tester.webp" type="image/webp"><img src="covers/zero-to-ai-tester.jpg" width="896" height="1139" alt="Zero to AI Tester course map: four stages over 23 weeks, 167 hours" loading="lazy"></picture></a>
-        <div class="eyebrow">What you leave with</div>
+      <div class="leave">
+        <b>What you leave with</b>
         <ul>
-          <li>An evaluation suite that gates releases in CI</li>
-          <li>A red-team report on a tool-using AI agent</li>
-          <li>A recorded release assessment, the way interviews are run</li>
-          <li>A public GitHub portfolio of seven projects</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>An evaluation suite that gates releases in CI</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>A red-team report on a tool-using AI agent</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>A recorded release assessment, the way interviews are run</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>A public GitHub portfolio of seven projects</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Fifty interview answers and a resume rewrite</li>
         </ul>
       </div>
     </article>
-  </section>
+  </div>
+</section>
 
-  <section id="next">
-    <div class="eyebrow">In preparation</div>
-    <h2>What comes next</h2>
-    <p class="lede" style="font-size:17px;margin-bottom:18px">Each new course gets its own page here. Press Notify me on the ones you want; the one with the most people waiting is built next, and you hear first with an early price.</p>
+<section class="sz-band sz-dark" id="why">
+  <div class="sz-in">
+    <div class="sz-center">
+      <span class="sz-eyebrow">Why learn here</span>
+      <h2>Built for people who learn by doing.</h2>
+      <p class="sz-lede">Every course on AI Skills Zone works the same way, so you always know what you are paying for.</p>
+    </div>
+    <div class="sz-grid four">
+      <article class="sz-card rv"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.7-4-4-6-4a4 4 0 0 0 0 8c2 0 4-1.3 6-4Zm0 0c2 2.7 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.3-6 4Z"/></svg></div><h3>Lifetime access</h3><p>Pay once and keep the course for as long as it exists, every update included. Sign in with a code, never a password.</p></article>
+      <article class="sz-card rv"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="8" r="2.5"/><path d="M6 8.5v7"/><path d="M18 10.5c0 4-4 4-9.5 6"/></svg></div><h3>Projects you can show</h3><p>Each module ends in work a hiring manager can open and run, in your own GitHub repository.</p></article>
+      <article class="sz-card rv"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="10" height="13" rx="5"/><path d="M12 7V4M9 4l1.5 2M15 4l-1.5 2M3 13h4M17 13h4M4 19l3-2M20 19l-3-2M4 8l3 2M20 8l-3 2"/></svg></div><h3>Practise on something broken</h3><p>Every course ships a practice app with planted defects, so you learn on realistic failures.</p></article>
+      <article class="sz-card rv"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .9-3 2s1.3 1.7 3 2 3 .9 3 2-1.3 2-3 2c-1.4 0-2.5-.5-3-1.5M12 6.5v1.5M12 16v1.5"/></svg></div><h3>One payment, no subscription</h3><p>UPI or card through Razorpay. Nothing renews and nothing is charged again.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="sz-band sz-dark" style="padding-top:0">
+  <div class="sz-in">
+    <div class="hm-instr rv">
+      <span class="sz-mono" aria-hidden="true">CM</span>
+      <div class="txt">
+        <h3>Taught by <span data-content="instructor_name">Chandirakumar M</span></h3>
+        <p class="role" data-content="instructor_title">Lead AI Engineer · 10+ years in software</p>
+        <p>Every lesson, lab and line of practice code is written and tested by the instructor.</p>
+      </div>
+      <a class="sz-btn ghost" href="zero-to-ai-tester/#instructor">Meet the instructor</a>
+    </div>
+  </div>
+</section>
+
+<section class="sz-band sz-light" id="next">
+  <div class="sz-in">
+    <span class="sz-eyebrow">In preparation</span>
+    <h2>What comes next.</h2>
+    <p class="sz-lede">Press Notify me on the ones you want. The course with the most people waiting is built next, and you hear first with one email when it opens.</p>
     <div class="soon-grid">
       <article class="soon-card" data-course="ml-for-testers">
         <div class="soon-top"><span class="eyebrow">Coming soon</span><span class="waiting" data-waiting hidden></span></div>
@@ -199,13 +230,26 @@
         <p class="note" data-note hidden></p>
       </article>
     </div>
-  </section>
+  </div>
+</section>
 
-  <footer>
+<section class="sz-band sz-dark">
+  <div class="sz-in">
+    <div class="hm-final rv">
+      <span class="sz-eyebrow">Ready when you are</span>
+      <h2>Your next title can have "AI" in it.</h2>
+      <p class="sz-lede">Start with the course that turns a manual tester into an AI tester, one week at a time.</p>
+      <a class="sz-btn cta" href="zero-to-ai-tester/">Explore Zero to AI Tester <span class="arr" aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+
+<footer class="sz-foot">
+  <div class="sz-in">
     <span>AI Skills Zone · © 2026 Chandirakumar M</span>
-    <span><a href="terms.html">Terms and refunds</a> · <a href="privacy.html">Privacy</a> · <a href="mailto:help@aiskillszone.com">Contact</a></span>
-  </footer>
-</div>
+    <span class="cols"><a href="zero-to-ai-tester/">Zero to AI Tester</a><a href="zero-to-ai-tester/syllabus.html">Syllabus</a><a href="learn/">Log in</a><a href="terms.html">Terms and refunds</a><a href="privacy.html">Privacy</a><a href="mailto:help@aiskillszone.com">help@aiskillszone.com</a></span>
+  </div>
+</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
   // Coming-soon cards: Notify me stores one row per email and course. The email is remembered in this browser so
@@ -234,7 +278,7 @@
         document.querySelectorAll(".sale").forEach((el, i) => setTimeout(() => countTo(el, p.price_inr, p.sale_price_inr, 900), 120 + i * 60));
         if (p.discount_pct) {
           const f = document.querySelector(".course .facts");
-          if (f) f.insertAdjacentHTML("beforeend", '<span class="deal"><b>' + p.discount_pct + '% off</b> ' + (p.discount_label ? p.discount_label.replace(/[<>&]/g, "") : "for now") + "</span>");
+          if (f) f.insertAdjacentHTML("beforeend", '<span class="deal"><b>' + p.discount_pct + '% off</b> ' + (p.discount_label ? p.discount_label.replace(/[<>&]/g, "") : "") + "</span>");
         }
       }).catch(() => {});
     const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -265,6 +309,19 @@
         say(error ? "You are already on the list for this one." : "You are on the list. One message when it launches, nothing else.", true);
       });
     });
+  })();
+</script>
+<script>
+  // Instructor name and role from the admin's site text (same words are already in the HTML), then reveal on scroll.
+  (function () {
+    const els = document.querySelectorAll("[data-content]");
+    if (els.length) fetch("https://cxiezjegnnbkghbevqra.supabase.co/rest/v1/site_content?select=key,value&key=in.(instructor_name,instructor_title)",
+      { headers: { apikey: "sb_publishable_6owpYUznjQkw2VH3kvNKVA_Ay3VNhlW" } })
+      .then((r) => (r.ok ? r.json() : [])).then((rows) => { const m = Object.fromEntries(rows.map((r) => [r.key, r.value])); els.forEach((el) => { if (m[el.dataset.content]) el.textContent = m[el.dataset.content]; }); }).catch(() => {});
+    const items = document.querySelectorAll(".rv");
+    if (!("IntersectionObserver" in window)) { items.forEach((el) => el.classList.add("in")); return; }
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.12 });
+    items.forEach((el) => io.observe(el));
   })();
 </script>
 </body>

@@ -1,0 +1,127 @@
+/* AI Skills Zone: shared look for every page a visitor sees before buying.
+   Same design as the Zero to AI Tester course page: navy bands, orange calls to action, Archivo + IBM Plex.
+   Mobile first; wider layouts switch on at 640px and 960px. */
+
+:root {
+  --sz-navy: #0A1020; --sz-navy-2: #0F1830; --sz-card: #131E36; --sz-line: rgba(255,255,255,.10);
+  --sz-ink: #E8EEF8; --sz-ink-2: #A9B6CC; --sz-orange: #F97316; --sz-orange-2: #EA580C;
+  --sz-blue: #60A5FA; --sz-green: #34D399;
+  --sz-paper: #F4F6FB; --sz-paper-ink: #0F172A; --sz-paper-ink-2: #334155; --sz-paper-muted: #5B6B82; --sz-paper-line: #DCE2EC;
+}
+html { scroll-behavior: smooth; }
+body.sz { margin: 0; background: var(--sz-navy); color: var(--sz-ink); font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+.sz *, .sz *::before, .sz *::after { box-sizing: border-box; }
+.sz h1, .sz h2, .sz h3 { font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; letter-spacing: -0.015em; text-wrap: balance; }
+.sz img { max-width: 100%; }
+.sz [hidden] { display: none !important; }
+
+.sz-in { max-width: 1140px; margin: 0 auto; padding: 0 16px; }
+.sz-band { position: relative; padding: 64px 0; overflow: hidden; }
+.sz-dark { background: var(--sz-navy); color: var(--sz-ink); }
+.sz-light { background: var(--sz-paper); color: var(--sz-paper-ink); }
+.sz-light p, .sz-light li { color: var(--sz-paper-ink-2); }
+.sz-band h2 { font-weight: 850; font-stretch: 108%; font-size: clamp(28px, 7vw, 44px); line-height: 1.05; margin: 8px 0 12px; }
+.sz-dark h2 { color: #fff; } .sz-light h2 { color: var(--sz-paper-ink); }
+.sz-lede { font-size: 17px; max-width: 62ch; margin: 0 0 8px; }
+.sz-dark .sz-lede { color: var(--sz-ink-2); }
+.sz-center { text-align: center; } .sz-center .sz-lede { margin-left: auto; margin-right: auto; }
+.sz-eyebrow { display: inline-block; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--sz-orange); }
+.sz-grad { background: linear-gradient(90deg, #60A5FA, #A5B4FC 55%, #60A5FA); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* buttons */
+.sz-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 13px 22px; border-radius: 12px; font-family: "Archivo", sans-serif; font-weight: 800; font-size: 16px; text-decoration: none; cursor: pointer; border: 0; transition: transform 160ms ease, box-shadow 200ms ease; }
+.sz-btn.cta { color: #fff; background: linear-gradient(180deg, #FB923C, #EA580C); box-shadow: 0 10px 30px rgba(234,88,12,.40), inset 0 1px 0 rgba(255,255,255,.35); animation: szglow 2.6s ease-in-out infinite; }
+.sz-btn.cta:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(234,88,12,.55), inset 0 1px 0 rgba(255,255,255,.35); }
+.sz-btn .arr { transition: transform 200ms ease; } .sz-btn:hover .arr { transform: translateX(4px); }
+.sz-btn.ghost { color: inherit; background: transparent; box-shadow: inset 0 0 0 1.5px currentColor; }
+.sz-dark .sz-btn.ghost { color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.3); }
+.sz-btn.ghost:hover { box-shadow: inset 0 0 0 2px currentColor; }
+.sz-btn:focus-visible, .sz a:focus-visible { outline: 3px solid #93C5FD; outline-offset: 3px; }
+@keyframes szglow { 50% { box-shadow: 0 10px 34px rgba(234,88,12,.62), 0 0 0 6px rgba(249,115,22,.14), inset 0 1px 0 rgba(255,255,255,.35); } }
+
+/* nav */
+.sz-nav { position: sticky; top: 0; z-index: 40; background: rgba(10,16,32,.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.08); }
+.sz-nav .sz-in { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 60px; }
+.sz-nav .brand { display: inline-flex; align-items: center; min-height: 44px; font-family: "Archivo", sans-serif; font-weight: 850; font-size: 17px; color: #fff; text-decoration: none; white-space: nowrap; }
+.sz-nav .brand b { color: var(--sz-orange); }
+.sz-nav .links { display: flex; align-items: center; gap: 16px; }
+.sz-nav .links a { color: #C6D0E2; text-decoration: none; font-size: 14.5px; }
+.sz-nav .links a:hover { color: #fff; }
+.sz-nav .links .wide { display: none; }
+.sz-nav .links a.sz-btn, .sz-nav .links a.sz-btn:hover { color: #fff; }
+.sz-nav .sz-btn { min-height: 40px; padding: 8px 14px; font-size: 14px; animation: none; color: #fff; }
+
+/* badges and ticks */
+.sz-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.sz-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; font-size: 12.5px; font-weight: 600; color: #DCE6F7; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
+.sz-badge i { width: 7px; height: 7px; border-radius: 50%; background: var(--sz-green); box-shadow: 0 0 0 3px rgba(52,211,153,.18); }
+.sz-ticks { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; font-size: 13.5px; color: #B8C4D9; padding: 0; list-style: none; }
+.sz-ticks li { display: inline-flex; align-items: center; gap: 6px; color: inherit; }
+.sz-ticks svg { width: 15px; height: 15px; color: var(--sz-green); flex: 0 0 auto; }
+
+/* cards */
+.sz-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 28px; }
+.sz-card { position: relative; padding: 22px 20px; border-radius: 18px; transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease; }
+.sz-light .sz-card { background: #fff; border: 1px solid var(--sz-paper-line); box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 10px 30px rgba(15,23,42,.06); }
+.sz-dark .sz-card { background: var(--sz-card); border: 1px solid var(--sz-line); box-shadow: 0 20px 50px rgba(0,0,0,.30); }
+.sz-card:hover { transform: translateY(-3px); }
+.sz-card .ico { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 12px; margin-bottom: 14px; color: #fff; background: linear-gradient(135deg, #F97316, #EA580C); }
+.sz-light .sz-card .ico { color: #EA580C; background: #FFF1E6; }
+.sz-card .ico svg { width: 24px; height: 24px; }
+.sz-card h3 { font-weight: 800; font-size: 20px; margin: 0 0 6px; }
+.sz-dark .sz-card h3 { color: #fff; } .sz-dark .sz-card p { color: #B8C4D9; }
+.sz-card p { margin: 0; font-size: 15px; }
+
+/* monogram */
+.sz-mono { display: grid; place-items: center; width: 64px; height: 64px; flex: 0 0 auto; border-radius: 50%; font-family: "Archivo", sans-serif; font-weight: 850; font-size: 26px; letter-spacing: -0.04em; color: #fff; background: linear-gradient(135deg, #F97316, #EA580C); box-shadow: 0 0 0 4px rgba(249,115,22,.25), 0 20px 50px rgba(234,88,12,.35); }
+
+/* price animation (live price with struck MRP) */
+.px { white-space: nowrap; }
+s.mrp { text-decoration: none; position: relative; opacity: .72; font-weight: 500; margin-right: .25em; }
+s.mrp::after { content: ""; position: absolute; left: -2px; right: -2px; top: 52%; height: .09em; min-height: 2px; background: currentColor; transform: scaleX(0); transform-origin: left center; animation: szstrike .45s .6s cubic-bezier(.2,.8,.2,1) forwards; }
+.sale { display: inline-block; font-variant-numeric: tabular-nums; }
+.sale.pop { animation: szpop .5s cubic-bezier(.2,.9,.3,1.4); }
+@keyframes szstrike { to { transform: scaleX(1); } }
+@keyframes szpop { 0% { transform: scale(1); } 40% { transform: scale(1.14); } 100% { transform: scale(1); } }
+
+/* document pages: terms, privacy, syllabus body */
+.sz-dochero { padding: 44px 0 40px; background: radial-gradient(700px 360px at 90% 0%, rgba(249,115,22,.16), transparent 60%), radial-gradient(700px 400px at 0% 0%, rgba(59,130,246,.18), transparent 60%), var(--sz-navy); }
+.sz-dochero h1 { font-weight: 850; font-stretch: 106%; font-size: clamp(32px, 8vw, 52px); line-height: 1.04; color: #fff; margin: 8px 0 10px; }
+.sz-dochero .updated { font-size: 13.5px; color: #A9B6CC; margin: 0; }
+.sz-dochero .updated a { color: #93C5FD; }
+.sz-doc { background: var(--sz-paper); padding: 28px 0 64px;
+  --ground: #F4F6FB; --panel: #FFFFFF; --ink: #0F172A; --ink-2: #334155; --muted: #5B6B82; --rule: #DCE2EC; --rule-2: #E9EDF4; --accent: #1D4ED8; --tint: #E8EEFB; }
+.sz-doc .sz-paper { max-width: 820px; margin: 0 auto; padding: 24px 18px 32px; border-radius: 18px; background: #fff; border: 1px solid var(--sz-paper-line); box-shadow: 0 10px 30px rgba(15,23,42,.06); color: var(--sz-paper-ink); }
+.sz-doc .sz-paper h2 { font-weight: 800; font-size: 21px; color: var(--sz-paper-ink); margin: 30px 0 8px; }
+.sz-doc .sz-paper p, .sz-doc .sz-paper li { color: var(--sz-paper-ink-2); }
+.sz-doc .sz-paper a { color: #1D4ED8; }
+.sz-doc .glance { gap: 10px; }
+.sz-doc .glance div { border-radius: 14px; background: #F8FAFD; }
+.sz-doc table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.sz-doc th, .sz-doc td { text-align: left; vertical-align: top; padding: 10px 8px; border-top: 1px solid var(--sz-paper-line); }
+
+/* footer */
+.sz-foot { background: #070C18; color: #8C9AB3; padding: 36px 0 90px; font-size: 14px; border-top: 1px solid rgba(255,255,255,.06); }
+.sz-foot .sz-in { display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; }
+.sz-foot a { color: #C6D0E2; text-decoration: none; } .sz-foot a:hover { color: #fff; text-decoration: underline; }
+.sz-foot .cols { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+
+/* reveal on scroll */
+.rv { opacity: 0; transform: translateY(18px); transition: opacity 600ms ease, transform 600ms cubic-bezier(.2,.8,.2,1); }
+.rv.in { opacity: 1; transform: none; }
+
+@media (min-width: 640px) {
+  .sz-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sz-nav .links .wide { display: inline; }
+  .sz-doc .sz-paper { padding: 36px 40px 44px; }
+}
+@media (min-width: 960px) {
+  .sz-band { padding: 96px 0; }
+  .sz-in { padding: 0 28px; }
+  .sz-grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .sz-dochero { padding: 64px 0 56px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sz-btn.cta { animation: none; } .rv { opacity: 1; transform: none; transition: none; }
+  .sz-card, .sz-btn { transition: none; } s.mrp::after { animation: none; transform: scaleX(1); } .sale.pop { animation: none; }
+}
