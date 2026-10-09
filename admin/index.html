@@ -458,7 +458,7 @@
       payment_failed:     { label: "Payment failed, offer help", subject: "Your payment for {course} did not go through",
         body: "Hi {name},\n\nYour payment for {course} failed on the bank's side, so nothing was charged. If you would like to try again, UPI usually goes through first time: {buy}\n\nIf money did leave your account, reply with the payment id and I will sort it out.\n\nChandirakumar M\nAI Skills Zone" },
       abandoned_checkout: { label: "Started buying, did not pay", subject: "Finish setting up {course}?",
-        body: "Hi {name},\n\nYou started buying {course} but the payment was not completed, so nothing was charged. The first 15 minutes are free to read if you want another look: {primer}\n\nAny question about the course, just reply to this email.\n\nChandirakumar M\nAI Skills Zone" },
+        body: "Hi {name},\n\nYou started buying {course} but the payment was not completed, so nothing was charged. If you want another look first, the full syllabus is here: {syllabus}\n\nAny question about the course, just reply to this email.\n\nChandirakumar M\nAI Skills Zone" },
       launch_notice:      { label: "Asked to be told at launch", subject: "{course} is live",
         body: "Hi,\n\nYou asked to be told when {course} launches. It is live today: {link}\n\nChandirakumar M\nAI Skills Zone" },
       welcome_check_in:   { label: "One week in, check in", subject: "How is {course} going?",
@@ -468,7 +468,7 @@
     };
     function fill(s, f) {
       const c = courseList.find((x) => x.slug === f.course_slug), title = c ? c.title : f.course_slug;
-      return s.replace(/{name}/g, (f.name || "there").split(" ")[0]).replace(/{course}/g, title).replace(/{link}/g, SITE + f.course_slug + "/").replace(/{buy}/g, SITE + f.course_slug + "/?buy=1").replace(/{primer}/g, SITE + f.course_slug + "/primer");
+      return s.replace(/{name}/g, (f.name || "there").split(" ")[0]).replace(/{course}/g, title).replace(/{link}/g, SITE + f.course_slug + "/").replace(/{buy}/g, SITE + f.course_slug + "/?buy=1").replace(/{syllabus}/g, SITE + f.course_slug + "/syllabus");
     }
     async function loadFollowups() {
       const box = $("#fu-list");
