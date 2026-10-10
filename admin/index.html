@@ -48,6 +48,18 @@
   label.check input { display: inline-block; width: 20px; height: 20px; margin: 0; accent-color: #6366F1; }
   .row input { flex: 1; min-width: 0; margin-top: 0; }
   .btn.sm { padding: 8px 12px; font-size: 14px; }
+  .au-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 10px; margin-top: 10px; }
+  .au-filters label { margin-bottom: 10px; }
+  .au-filters .au-wide { grid-column: 1 / -1; }
+  .au-filters select, .au-filters input { padding: 10px 11px; font-size: 15px; }
+  .au-filters input[type="date"] { color-scheme: dark; }
+  .au-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin: 2px 0 10px; }
+  .au-frame { max-height: min(62vh, 640px); min-height: 220px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+    padding: 8px; border-radius: 14px; border: 1px solid var(--line); background: rgba(0,0,0,.22); box-shadow: inset 0 8px 16px -12px rgba(0,0,0,.6), inset 0 -8px 16px -12px rgba(0,0,0,.6); }
+  .au-frame:focus-visible { outline: 3px solid #93C5FD; outline-offset: 2px; }
+  .au-frame .list { margin-top: 0; }
+  .au-frame::-webkit-scrollbar { width: 8px; } .au-frame::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 8px; }
+  @media (min-width: 720px) { .au-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); } .au-filters .au-wide { grid-column: span 2; } }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
   .chip { font: inherit; font-size: 13px; font-weight: 600; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); color: var(--ink-2); cursor: pointer; }
   .chip[aria-pressed="true"] { background: rgba(129,140,248,.28); color: #fff; border-color: rgba(165,180,252,.5); }
@@ -199,8 +211,19 @@
         <button class="chip" type="button" data-f="verified" aria-pressed="false">Signed in only</button>
         <button class="chip" type="button" data-f="consent" aria-pressed="false">Consented to offers</button>
       </div>
-      <div class="row" style="margin:8px 0 4px"><input id="au-q" placeholder="filter by name, email, number, campaign" autocomplete="off"><button class="btn sm quiet" type="button" id="au-csv">Export CSV</button></div>
-      <div class="list" id="au-list"><div class="skeleton"></div></div>
+      <div class="au-filters">
+        <label class="au-wide">Search<input id="au-q" placeholder="name, email, mobile, campaign" autocomplete="off"></label>
+        <label>Course<select id="au-course"><option value="">Any course</option></select></label>
+        <label>Paid from ₹<input id="au-min" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></label>
+        <label>Paid up to ₹<input id="au-max" type="number" min="0" step="1" inputmode="numeric" placeholder="any"></label>
+        <label>Source<select id="au-source"><option value="">Any source</option></select></label>
+        <label>Contact<select id="au-contact"><option value="">Any</option><option value="both">Email and mobile</option><option value="phone">Has mobile</option><option value="email">Has email</option><option value="email-only">Email, no mobile</option></select></label>
+        <label>First seen from<input id="au-from" type="date"></label>
+        <label>First seen to<input id="au-to" type="date"></label>
+        <label>Sort<select id="au-sort"><option value="recent">Most recent</option><option value="paid">Amount paid, high first</option><option value="oldest">First seen, oldest</option><option value="name">Name, A to Z</option></select></label>
+      </div>
+      <div class="au-bar"><span id="au-sum" class="fine"></span><span class="row"><button class="btn sm quiet" type="button" id="au-reset">Reset filters</button><button class="btn sm quiet" type="button" id="au-csv">Export CSV</button></span></div>
+      <div class="au-frame" tabindex="0" aria-label="People matching the filters, scroll to see more"><div class="list" id="au-list"><div class="skeleton"></div></div></div>
     </section>
 
     <section class="glass">
@@ -404,9 +427,10 @@
       paintLearner(data);
     });
 
-    // ---- audience
+    // ---- audience: filters on the left of the decision, a framed scroll area for the people
     let audience = [], auFilter = "all";
     const SITE = "https://aiskillszone.com/";
+    const AU = ["au-course", "au-min", "au-max", "au-source", "au-contact", "au-from", "au-to", "au-sort"];
     function stageOf(r) {
       const s = [];
       if (r.paid > 0 || (r.owns && r.owns.length)) s.push("customer");
@@ -416,40 +440,99 @@
       if (!s.length) s.push("verified");
       return s;
     }
-    function paintAudience() {
+    function titleOf(slug) {
+      const c = (courseList || []).find((x) => x.slug === slug);
+      const UPCOMING = { "ml-for-testers": "Machine learning for testers", "agentic-ai": "Agentic AI", "llm-app-dev": "LLM application development",
+                         "ai-security": "AI security and red teaming", "data-engineering": "Data engineering for AI systems" };
+      return c ? c.title : UPCOMING[slug] || slug.replace(/-/g, " ").replace(/^./, (ch) => ch.toUpperCase());
+    }
+    function sourceOf(r) { return r.utm ? (r.utm.utm_source || "") + (r.utm.utm_campaign ? " / " + r.utm.utm_campaign : "") : "(direct)"; }
+    function coursesOf(r) { return [].concat(r.owns || [], r.paid_courses || [], r.interested || [], r.abandoned || [], r.failed || []); }
+    function fillFilterOptions() {
+      const keep = (id) => $("#" + id).value;
+      const courses = Array.from(new Set(audience.flatMap(coursesOf).concat((courseList || []).map((c) => c.slug)))).sort();
+      const cur = keep("au-course");
+      $("#au-course").innerHTML = '<option value="">Any course</option>' + courses.map((s) => '<option value="' + esc(s) + '">' + esc(titleOf(s)) + "</option>").join("");
+      $("#au-course").value = courses.includes(cur) ? cur : "";
+      const sources = Array.from(new Set(audience.map(sourceOf))).sort();
+      const curS = keep("au-source");
+      $("#au-source").innerHTML = '<option value="">Any source</option>' + sources.map((s) => '<option value="' + esc(s) + '">' + esc(s) + "</option>").join("");
+      $("#au-source").value = sources.includes(curS) ? curS : "";
+    }
+    function filtered() {
       const q = $("#au-q").value.trim().toLowerCase();
+      const course = $("#au-course").value, src = $("#au-source").value, contact = $("#au-contact").value;
+      const min = $("#au-min").value === "" ? null : Number($("#au-min").value), max = $("#au-max").value === "" ? null : Number($("#au-max").value);
+      const from = $("#au-from").value ? new Date($("#au-from").value + "T00:00:00") : null, to = $("#au-to").value ? new Date($("#au-to").value + "T23:59:59") : null;
       const rows = audience.filter((r) => {
-        const st = stageOf(r);
-        const okF = auFilter === "all" || (auFilter === "consent" ? r.consent : st.includes(auFilter));
-        const hay = [r.name, r.email, r.phone, r.utm && r.utm.utm_campaign, r.utm && r.utm.utm_source].filter(Boolean).join(" ").toLowerCase();
-        return okF && (!q || hay.includes(q));
+        const st = stageOf(r), paid = Number(r.paid_inr || 0), seen = new Date(r.first_seen);
+        if (auFilter !== "all" && !(auFilter === "consent" ? r.consent : st.includes(auFilter))) return false;
+        if (course && !coursesOf(r).includes(course)) return false;
+        if (min !== null && paid < min) return false;
+        if (max !== null && paid > max) return false;
+        if (src && sourceOf(r) !== src) return false;
+        if (contact === "email" && !r.email) return false;
+        if (contact === "phone" && !r.phone) return false;
+        if (contact === "both" && !(r.email && r.phone)) return false;
+        if (contact === "email-only" && !(r.email && !r.phone)) return false;
+        if (from && seen < from) return false;
+        if (to && seen > to) return false;
+        if (q && ![r.name, r.email, r.phone, sourceOf(r)].filter(Boolean).join(" ").toLowerCase().includes(q)) return false;
+        return true;
       });
+      const by = $("#au-sort").value;
+      const cmp = {
+        recent: (a, b) => new Date(b.last_seen) - new Date(a.last_seen),
+        oldest: (a, b) => new Date(a.first_seen) - new Date(b.first_seen),
+        paid: (a, b) => Number(b.paid_inr || 0) - Number(a.paid_inr || 0) || new Date(b.last_seen) - new Date(a.last_seen),
+        name: (a, b) => String(a.name || a.email || a.phone || "").localeCompare(String(b.name || b.email || b.phone || "")),
+      }[by] || (() => 0);
+      return rows.sort(cmp);
+    }
+    function paintAudience() {
+      const rows = filtered();
+      const total = rows.reduce((n, r) => n + Number(r.paid_inr || 0), 0);
       $("#au-count").textContent = rows.length + " of " + audience.length;
+      $("#au-sum").textContent = rows.length + " " + (rows.length === 1 ? "person" : "people") + " · " + rupees(total) + " paid in total";
+      $("#au-csv").textContent = "Export these " + rows.length;
       const when = (iso) => iso ? new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "2-digit" }) : "";
+      const LABEL = { customer: "customer", abandoned: "started, not paid", failed: "payment failed", interested: "interested", verified: "signed in only" };
       $("#au-list").innerHTML = rows.length ? rows.map((r) => {
-        const tags = stageOf(r).map((s) => '<span class="tag ' + s + '">' + ({ customer: "customer", abandoned: "started, not paid", failed: "payment failed", interested: "interested", verified: "signed in only" }[s]) + "</span>").join("") + (r.consent ? '<span class="tag consent">consent</span>' : "");
-        const courses = [].concat((r.owns || []).map((c) => "owns " + c), (r.interested || []).map((c) => "wants " + c), (r.abandoned || []).map((c) => "left " + c), (r.failed || []).map((c) => "failed " + c)).join(" · ");
-        const camp = r.utm ? [r.utm.utm_source, r.utm.utm_campaign].filter(Boolean).join(" / ") : "";
+        const tags = stageOf(r).map((s) => '<span class="tag ' + s + '">' + LABEL[s] + "</span>").join("") + (r.consent ? '<span class="tag consent">consent</span>' : "");
+        const courses = [].concat((r.paid_courses || []).map((c) => "paid " + titleOf(c)), (r.interested || []).map((c) => "wants " + titleOf(c)),
+          (r.abandoned || []).map((c) => "left " + titleOf(c)), (r.failed || []).map((c) => "failed " + titleOf(c))).join(" · ");
+        const paid = Number(r.paid_inr || 0);
         return '<div class="item"><span class="who">' + esc(r.name || r.email || r.phone) + "</span>" +
-          '<span class="amt" style="font-weight:500;font-size:12.5px;color:var(--muted)">' + when(r.first_seen) + " → " + when(r.last_seen) + "</span>" +
-          '<span class="meta">' + esc(r.email || "") + (r.phone ? " · " + esc(r.phone) : "") + (courses ? " · " + esc(courses) : "") + (camp ? " · via " + esc(camp) : "") + (r.open_followups ? " · " + r.open_followups + " follow-up open" : "") + "<br>" + tags + "</span></div>";
-      }).join("") : '<p class="fine">Nobody matches.</p>';
+          '<span class="amt">' + (paid ? rupees(paid) : '<span style="color:var(--muted);font-weight:500">₹0</span>') + '<small>' + (r.last_paid_at ? "paid " + when(r.last_paid_at) : "seen " + when(r.last_seen)) + "</small></span>" +
+          '<span class="meta">' + esc(r.email || "no email") + " · " + esc(r.phone || "no mobile") + (courses ? " · " + esc(courses) : "") + " · via " + esc(sourceOf(r)) +
+          " · first seen " + when(r.first_seen) + (r.open_followups ? " · " + r.open_followups + " follow-up open" : "") + "<br>" + tags + "</span></div>";
+      }).join("") : '<p class="fine" style="padding:12px">Nobody matches these filters.</p>';
     }
     async function loadAudience() {
       const { data, error } = await sb.rpc("admin_audience");
       if (error) { $("#au-list").innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
-      audience = data || []; paintAudience();
+      audience = data || []; fillFilterOptions(); paintAudience();
     }
     $("#au-chips").addEventListener("click", (e) => {
       const b = e.target.closest("[data-f]"); if (!b) return;
       auFilter = b.dataset.f; $("#au-chips").querySelectorAll("[data-f]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); paintAudience();
     });
     $("#au-q").addEventListener("input", paintAudience);
+    AU.forEach((id) => { $("#" + id).addEventListener("input", paintAudience); $("#" + id).addEventListener("change", paintAudience); });
+    $("#au-reset").addEventListener("click", () => {
+      AU.forEach((id) => { const el = $("#" + id); el.value = id === "au-sort" ? "recent" : ""; });
+      $("#au-q").value = ""; auFilter = "all";
+      $("#au-chips").querySelectorAll("[data-f]").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.f === "all")));
+      paintAudience();
+    });
     $("#au-csv").addEventListener("click", () => {
+      const rows = filtered();
       const cell = (v) => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
-      const head = ["name", "email", "phone", "stage", "consent", "owns", "interested", "abandoned", "failed", "utm_source", "utm_campaign", "first_seen", "last_seen", "open_followups"];
-      const lines = [head.join(",")].concat(audience.map((r) => [r.name, r.email, r.phone, stageOf(r).join("|"), r.consent ? "yes" : "no", (r.owns || []).join("|"), (r.interested || []).join("|"), (r.abandoned || []).join("|"), (r.failed || []).join("|"), r.utm && r.utm.utm_source, r.utm && r.utm.utm_campaign, r.first_seen, r.last_seen, r.open_followups].map(cell).join(",")));
-      const blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+      const head = ["name", "email", "phone", "stage", "consent", "paid_inr", "last_paid_at", "paid_courses", "owns", "interested", "abandoned", "failed", "source", "first_seen", "last_seen", "open_followups"];
+      const lines = [head.join(",")].concat(rows.map((r) => [r.name, r.email, r.phone, stageOf(r).join("|"), r.consent ? "yes" : "no", r.paid_inr || 0, r.last_paid_at,
+        (r.paid_courses || []).join("|"), (r.owns || []).join("|"), (r.interested || []).join("|"), (r.abandoned || []).join("|"), (r.failed || []).join("|"),
+        sourceOf(r), r.first_seen, r.last_seen, r.open_followups].map(cell).join(",")));
+      const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "aiskillszone-audience-" + new Date().toISOString().slice(0, 10) + ".csv"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
     });
 
