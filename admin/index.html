@@ -60,6 +60,27 @@
   .au-frame .list { margin-top: 0; }
   .au-frame::-webkit-scrollbar { width: 8px; } .au-frame::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 8px; }
   @media (min-width: 720px) { .au-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); } .au-filters .au-wide { grid-column: span 2; } }
+  .fn-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 10px; margin-top: 10px; }
+  .fn-filters label { margin-bottom: 10px; } .fn-filters select, .fn-filters input { padding: 10px 11px; font-size: 15px; }
+  .fn-filters input[type="date"] { color-scheme: dark; }
+  .fn-custom { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
+  .fn-sum { margin: 4px 0 12px; font-size: 15px; } .fn-sum b { color: #fff; }
+  .fn-steps { display: grid; gap: 10px; }
+  .fn-row { padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+  .fn-row.fn-worst { border-color: rgba(249,115,22,.6); background: rgba(249,115,22,.08); }
+  .fn-head { display: flex; justify-content: space-between; gap: 10px; font-size: 14.5px; color: var(--ink); }
+  .fn-head b { font-family: "Archivo", sans-serif; font-size: 20px; color: #fff; }
+  .fn-bar { height: 10px; margin: 6px 0 4px; border-radius: 6px; background: rgba(255,255,255,.06); overflow: hidden; }
+  .fn-bar i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, #6366F1, #818CF8); transition: width 500ms ease; }
+  .fn-worst .fn-bar i { background: linear-gradient(90deg, #F97316, #FB923C); }
+  .fn-row small { color: var(--muted); font-size: 12.5px; } .fn-worst small { color: #FDBA74; }
+  .fn-chart { display: flex; align-items: flex-end; gap: 3px; height: 120px; margin-top: 8px; padding: 6px; border-radius: 12px; background: rgba(0,0,0,.2); border: 1px solid var(--line); overflow-x: auto; }
+  .fn-day { position: relative; flex: 1 0 8px; height: 100%; display: flex; align-items: flex-end; gap: 1px; }
+  .fn-day i { flex: 1; min-height: 1px; border-radius: 3px 3px 0 0; } .fn-day .o, .fn-key .o { background: #818CF8; } .fn-day .p, .fn-key .p { background: #34D399; }
+  .fn-axis { display: flex; justify-content: space-between; gap: 8px; margin-top: 4px; font-size: 12px; color: var(--muted); }
+  .fn-key i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 4px 0 8px; vertical-align: -1px; }
+  @media (min-width: 720px) { .fn-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); } .fn-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (prefers-reduced-motion: reduce) { .fn-bar i { transition: none; } }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
   .chip { font: inherit; font-size: 13px; font-weight: 600; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); color: var(--ink-2); cursor: pointer; }
   .chip[aria-pressed="true"] { background: rgba(129,140,248,.28); color: #fff; border-color: rgba(165,180,252,.5); }
@@ -190,6 +211,24 @@
       <div id="learner"></div>
     </section>
 
+    <section class="glass span" id="funnel">
+      <span class="eyebrow">Sales funnel</span>
+      <h2>Where buyers drop off</h2>
+      <p>Each step counts people once per visit. The first four come from the buy window, anonymously; orders and payments come from your records. The step with the biggest loss is marked.</p>
+      <div class="fn-filters">
+        <label>Period<select id="fn-range"><option value="today">Today</option><option value="7" selected>Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="all">All time</option><option value="custom">Custom dates</option></select></label>
+        <label>Course<select id="fn-course"><option value="">All courses</option></select></label>
+        <label>Source<select id="fn-source"><option value="">All sources</option></select></label>
+        <div id="fn-custom" class="fn-custom" hidden><label>From<input id="fn-from" type="date"></label><label>To<input id="fn-to" type="date"></label></div>
+      </div>
+      <p id="fn-sum" class="fn-sum"></p>
+      <div id="fn-steps" class="fn-steps"><div class="skeleton"></div></div>
+      <div class="eyebrow" style="margin-top:18px">Per day</div>
+      <div id="fn-daily"></div>
+      <div class="eyebrow" style="margin-top:18px">By source</div>
+      <div id="fn-sources"></div>
+    </section>
+
     <section class="glass span" id="followups">
       <span class="eyebrow">Follow-ups</span>
       <h2>Who to contact now <span class="count" id="fu-count"></span></h2>
@@ -306,7 +345,7 @@
       if (admin !== true) { $("[data-who]").textContent = user.email || ("+" + user.phone); return step("denied"); }
       $("#auth").hidden = true; $("#dash").hidden = false; $("#signout").hidden = false;
       await Promise.all([loadStats(), loadCourses(), loadPurchases()]);
-      await Promise.all([loadFollowups(), loadAudience(), loadSiteText()]);
+      await Promise.all([loadFollowups(), loadAudience(), loadSiteText(), loadFunnel()]);
     }
 
     // ---- dashboard
@@ -426,6 +465,66 @@
       if (error) { learnerBox.innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
       paintLearner(data);
     });
+
+    // ---- sales funnel
+    const FUNNEL_STEPS = [
+      ["open", "Opened the buy window"], ["code_sent", "Got a WhatsApp code"], ["verified", "Confirmed the code"],
+      ["ordered", "Pressed Pay (order created)"], ["pay_opened", "Opened the payment window"], ["paid", "Paid"],
+    ];
+    function funnelRange() {
+      const v = $("#fn-range").value, now = new Date();
+      if (v === "custom") {
+        const f = $("#fn-from").value, t2 = $("#fn-to").value;
+        return [f ? new Date(f + "T00:00:00") : new Date(now.getTime() - 30 * 864e5), t2 ? new Date(t2 + "T23:59:59") : now];
+      }
+      if (v === "all") return [new Date("2026-01-01T00:00:00"), now];
+      if (v === "today") { const d = new Date(now); d.setHours(0, 0, 0, 0); return [d, now]; }
+      return [new Date(now.getTime() - Number(v) * 864e5), now];
+    }
+    async function loadFunnel() {
+      $("#fn-custom").hidden = $("#fn-range").value !== "custom";
+      const [from, to] = funnelRange();
+      const box = $("#fn-steps");
+      const { data, error } = await sb.rpc("admin_funnel", { p_from: from.toISOString(), p_to: to.toISOString(), p_course: $("#fn-course").value || null, p_source: $("#fn-source").value || null });
+      if (error) { box.innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
+      // filter choices, kept when they still exist
+      const keepC = $("#fn-course").value, keepS = $("#fn-source").value;
+      $("#fn-course").innerHTML = '<option value="">All courses</option>' + (courseList || []).map((c) => '<option value="' + esc(c.slug) + '">' + esc(c.title) + "</option>").join("");
+      $("#fn-course").value = keepC;
+      $("#fn-source").innerHTML = '<option value="">All sources</option>' + (data.sources || []).map((s) => '<option value="' + esc(s) + '">' + esc(s) + "</option>").join("");
+      $("#fn-source").value = (data.sources || []).includes(keepS) ? keepS : "";
+
+      const s = data.steps || {}, top = Math.max(1, ...FUNNEL_STEPS.map(([k]) => Number(s[k] || 0)));
+      let worst = null;
+      FUNNEL_STEPS.forEach(([k], i) => {
+        if (!i) return;
+        const prev = Number(s[FUNNEL_STEPS[i - 1][0]] || 0), here = Number(s[k] || 0);
+        if (prev >= 3 && (!worst || prev - here > worst.lost)) worst = { i, lost: prev - here };
+      });
+      box.innerHTML = FUNNEL_STEPS.map(([k, label], i) => {
+        const n = Number(s[k] || 0), prev = i ? Number(s[FUNNEL_STEPS[i - 1][0]] || 0) : null;
+        const pct = prev ? Math.round(n * 100 / prev) + "% of the step before" : i ? "no one reached the step before" : "where every purchase starts";
+        return '<div class="fn-row' + (worst && worst.i === i ? " fn-worst" : "") + '"><div class="fn-head"><span>' + label + "</span><b>" + n + '</b></div>' +
+          '<div class="fn-bar"><i style="width:' + Math.max(n ? 2 : 0, Math.round(n * 100 / top)) + '%"></i></div><small>' + pct + (worst && worst.i === i ? " · biggest drop" : "") + "</small></div>";
+      }).join("");
+      const opened = Number(s.open || 0), paid = Number(s.paid || 0);
+      $("#fn-sum").innerHTML = "<b>" + (opened ? Math.round(paid * 1000 / opened) / 10 : 0) + "%</b> of people who opened the buy window paid · <b>" + rupees(data.revenue_inr) + "</b> revenue" +
+        (Number(s.failed || 0) ? " · " + s.failed + " failed payment" + (s.failed === 1 ? "" : "s") : "");
+
+      const days = data.daily || [], peak = Math.max(1, ...days.map((d) => Math.max(d.open, d.paid)));
+      $("#fn-daily").innerHTML = days.length > 120 ? '<p class="fine">Pick a shorter range to see the daily chart.</p>' :
+        '<div class="fn-chart" role="img" aria-label="Buy window opens and payments per day">' + days.map((d) => {
+          const lab = new Date(d.day + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+          return '<div class="fn-day" title="' + lab + ": " + d.open + " opened, " + d.paid + ' paid"><i class="o" style="height:' + Math.round(d.open * 100 / peak) + '%"></i><i class="p" style="height:' + Math.round(d.paid * 100 / peak) + '%"></i></div>';
+        }).join("") + '</div><div class="fn-axis"><span>' + (days[0] ? new Date(days[0].day + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" }) : "") +
+        '</span><span class="fn-key"><i class="o"></i>opened <i class="p"></i>paid</span><span>' + (days.length ? new Date(days[days.length - 1].day + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" }) : "") + "</span></div>";
+
+      const rows = data.by_source || [];
+      $("#fn-sources").innerHTML = rows.length ? '<div class="pairs"><span class="fine">Source</span><span class="fine">opened → paid · revenue</span>' + rows.map((r) =>
+        "<span>" + esc(r.source) + "</span><span>" + r.open + " → " + r.paid + (r.open ? " (" + Math.round(r.paid * 100 / r.open) + "%)" : "") + " · " + rupees(r.inr) + "</span>").join("") + "</div>"
+        : '<p class="fine">No activity in this range yet.</p>';
+    }
+    ["fn-range", "fn-course", "fn-source", "fn-from", "fn-to"].forEach((id) => $("#" + id).addEventListener("change", loadFunnel));
 
     // ---- audience: filters on the left of the decision, a framed scroll area for the people
     let audience = [], auFilter = "all";

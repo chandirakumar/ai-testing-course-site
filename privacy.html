@@ -72,11 +72,12 @@
       <tr><td>Purchase record</td><td>When you pay</td><td>Order id, payment id, amount, status and time, so we know what you own, plus the campaign tags (utm_*) of the link you arrived on, if any, so we know which ad worked. Payment is handled by Razorpay; we never see or store card or bank details</td></tr>
       <tr><td>Login session</td><td>While you are signed in</td><td>A session token kept in your browser and in one cookie (<code>sb_access</code>) that lets the course pages check you own the course</td></tr>
       <tr><td>Reading progress</td><td>As you read lessons</td><td>Which lessons you marked done and where you stopped. This is stored only in your own browser and is never sent to us</td></tr>
+      <tr><td>Buy-window steps</td><td>When you use the buy window</td><td>An anonymous count of how far people get: opened the window, received the code, confirmed it, opened the payment window. Each record holds only the step, the course, the ad campaign tags of the link you came from, and a random number that is new on every visit. No name, number, email or cookie</td></tr>
       <tr><td>Message delivery events</td><td>When we send you a WhatsApp message</td><td>Sent / delivered / read / failed per message, so we can tell whether codes are arriving</td></tr>
       <tr><td>Server logs</td><td>Every request</td><td>Standard logs kept by our hosting providers for security and to diagnose faults</td></tr>
     </tbody>
   </table></div>
-  <p>We do not use analytics scripts, advertising pixels or any third-party tracker on the site. The only cookie is the login cookie above, and it exists only under <code>/learn</code> while you are signed in.</p>
+  <p>We do not use analytics scripts, advertising pixels or any third-party tracker on the site. The only counting we do is the anonymous buy-window steps above. The only cookie is the login cookie above, and it exists only under <code>/learn</code> while you are signed in.</p>
 
   <h2>Who processes it for us</h2>
   <ul>
@@ -94,6 +95,7 @@
     <li><strong>Purchase records:</strong> for as long as Indian tax and accounting law requires, even after an account is closed.</li>
     <li><strong>Notify-me sign-ups:</strong> until the course launches and you have been told, or until you ask us to remove you.</li>
     <li><strong>WhatsApp delivery events:</strong> 90 days, then deleted automatically.</li>
+    <li><strong>Buy-window steps:</strong> 180 days, then deleted automatically.</li>
     <li><strong>Server logs:</strong> on the providers' standard short retention.</li>
   </ul>
 

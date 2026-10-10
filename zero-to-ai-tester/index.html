@@ -1327,6 +1327,20 @@
     let sb = null, lastOpener = null, buyer = { name: "", email: "", phone: "" }, session = null;
     const client = () => sb || (sb = window.supabase.createClient(PAY.supabaseUrl, PAY.publishableKey));
 
+    // Funnel counts: which buy steps were reached, with a random id made fresh on each page load. No name, number,
+    // email or cookie; only the step, the course and the campaign tags of the link. Each step counts once per visit.
+    const FID = Array.from(crypto.getRandomValues(new Uint8Array(8)), (b) => (b % 36).toString(36)).join("") + Date.now().toString(36).slice(-4);
+    const counted = new Set();
+    function track(step) {
+      if (counted.has(step)) return; counted.add(step);
+      const u = (window.ztaUtm && window.ztaUtm()) || {};
+      try {
+        fetch(PAY.supabaseUrl + "/rest/v1/funnel_events", { method: "POST", keepalive: true,
+          headers: { apikey: PAY.publishableKey, Authorization: "Bearer " + PAY.publishableKey, "Content-Type": "application/json", Prefer: "return=minimal" },
+          body: JSON.stringify({ fid: FID, step, course_slug: PAY.course, utm_source: u.utm_source || null, utm_campaign: u.utm_campaign || null }) }).catch(() => {});
+      } catch (e) {}
+    }
+
     document.querySelectorAll("[data-playto]").forEach((a) => { a.href = CHECKOUT || FALLBACK; });
 
     // The course pages are served by a Worker that reads this cookie; keep it in step with the session.
@@ -1344,7 +1358,7 @@
       lastOpener = document.activeElement;
       err("buy-err", ""); err("pay-err", "");
       modal.hidden = false; document.body.style.overflow = "hidden";
-      show("details");
+      show("details"); track("open");
       const { data } = await client().auth.getSession();
       session = data.session || null;
       setCookie(session);
@@ -1394,13 +1408,13 @@
       if (problem) return err("buy-err", problem);
       const btn = $("#buy-next"); btn.disabled = true; err("buy-err", "");
       try {
-        if (session && session.user && session.user.phone) { toPay(); return; }
+        if (session && session.user && session.user.phone) { track("code_sent"); track("verified"); toPay(); return; }
         attach = !!session;
         const { error } = await sendCode();
         if (error) throw error;
         $("[data-email]").textContent = buyer.phoneE164 + " on WhatsApp";
         $("[data-slow]").hidden = true;
-        show("code"); setTimeout(() => $("#buy-code").focus(), 30);
+        show("code"); track("code_sent"); setTimeout(() => $("#buy-code").focus(), 30);
       } catch (ex) {
         err("buy-err", /hook/i.test(ex.message) ? "WhatsApp codes are not going out right now. Please try again in a few minutes."
           : /already|registered|exists/i.test(ex.message) ? "This number is already linked to another account. Log in with that number, or use a different one."
@@ -1428,6 +1442,7 @@
       else { const r = await client().auth.refreshSession(); session = (r.data && r.data.session) || session; }   // number added: fresh token carries it
       setCookie(session);
       const { data: owns } = await client().rpc("has_course", { course: PAY.course });
+      track("verified");
       if (owns === true) return show("owned");
       toPay();
     });
@@ -1470,7 +1485,7 @@
         });
         rzp.on("payment.failed", (r) => reset((r.error && r.error.description) || "The payment did not go through. Nothing was charged."));
         btn.textContent = "Complete the payment in Razorpay's window…";
-        rzp.open();
+        rzp.open(); track("pay_opened");
       } catch (ex) {
         if (ex.code === "already_owned") show("owned");
         else if (ex.code === "sign_in_required") { session = null; reset("Your session expired. Please confirm your email again."); show("details"); }
