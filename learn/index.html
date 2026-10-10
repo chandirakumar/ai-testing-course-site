@@ -186,6 +186,7 @@
     const safeNext = /^\/learn\/[a-z0-9-]+\//.test(next) ? next : "";
     let email = (params.get("email") || "").trim().toLowerCase();
     if (email) $("#login-email").value = email;
+    if (params.get("signedout")) { const e = login.querySelector(".g-eyebrow"); if (e) e.textContent = "You are signed out"; }
     if (params.get("missing")) err("email-err", "That course is not on this account. Sign in with the email or WhatsApp number you bought with.");
 
     // ---- courses: the catalogue is public; access rows are the learner's own
