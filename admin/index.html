@@ -81,6 +81,9 @@
   .fn-key i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 4px 0 8px; vertical-align: -1px; }
   @media (min-width: 720px) { .fn-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); } .fn-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (prefers-reduced-motion: reduce) { .fn-bar i { transition: none; } }
+  .tag.ln-active { color: var(--good); } .tag.ln-slipping { color: var(--warn); } .tag.ln-quiet { color: var(--bad); } .tag.ln-never { color: #F9A8D4; } .tag.ln-new { color: #C7D2FE; }
+  #learnact .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 720px) { #learnact .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
   .chip { font: inherit; font-size: 13px; font-weight: 600; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); color: var(--ink-2); cursor: pointer; }
   .chip[aria-pressed="true"] { background: rgba(129,140,248,.28); color: #fff; border-color: rgba(165,180,252,.5); }
@@ -89,7 +92,7 @@
   .fu .item { grid-template-columns: minmax(0, 1fr); }
   .fu .msg { font-size: 13px; color: var(--ink-2); white-space: pre-wrap; margin: 6px 0 8px; padding: 8px 10px; border-radius: 8px; background: rgba(0,0,0,.25); }
   .fu .row { margin-top: 2px; }
-  .fu a.btn { text-decoration: none; }
+  a.btn { text-decoration: none; }
   .count { font-size: 13px; color: var(--muted); margin-left: 8px; }
 
   .acc { display: grid; gap: 8px; margin-top: 12px; }
@@ -229,6 +232,21 @@
       <div id="fn-sources"></div>
     </section>
 
+    <section class="glass span" id="learnact">
+      <span class="eyebrow">Learner activity</span>
+      <h2>Who is learning, who has gone quiet</h2>
+      <p>One line per course a person can open. "Last active" is the last time they were signed in and using the site, to within about an hour; reading progress stays in their browser and is not collected. Slipping and quiet learners get a ready-made check-in by email or WhatsApp.</p>
+      <div class="tiles" id="ln-tiles"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+      <div class="au-filters" style="margin-top:14px">
+        <label class="au-wide">Search<input id="ln-q" placeholder="name, email, mobile" autocomplete="off"></label>
+        <label>Course<select id="ln-course"><option value="">All courses</option></select></label>
+        <label>Status<select id="ln-status"><option value="">Any status</option><option value="active">Active this week</option><option value="slipping">Slipping, 8 to 21 days</option><option value="quiet">Quiet, over 21 days</option><option value="never">Never came back</option><option value="new">New, under a day</option></select></label>
+        <label>Sort<select id="ln-sort"><option value="recent">Most recently active</option><option value="idle">Longest idle first</option><option value="joined">Newest learners</option></select></label>
+      </div>
+      <div class="au-bar"><span id="ln-sum" class="fine"></span><button class="btn sm quiet" type="button" id="ln-csv">Export CSV</button></div>
+      <div class="au-frame" tabindex="0" aria-label="Learners matching the filters, scroll to see more"><div class="list" id="ln-list"><div class="skeleton"></div></div></div>
+    </section>
+
     <section class="glass span" id="followups">
       <span class="eyebrow">Follow-ups</span>
       <h2>Who to contact now <span class="count" id="fu-count"></span></h2>
@@ -345,7 +363,7 @@
       if (admin !== true) { $("[data-who]").textContent = user.email || ("+" + user.phone); return step("denied"); }
       $("#auth").hidden = true; $("#dash").hidden = false; $("#signout").hidden = false;
       await Promise.all([loadStats(), loadCourses(), loadPurchases()]);
-      await Promise.all([loadFollowups(), loadAudience(), loadSiteText(), loadFunnel()]);
+      await Promise.all([loadFollowups(), loadAudience(), loadSiteText(), loadFunnel(), loadLearners()]);
     }
 
     // ---- dashboard
@@ -525,6 +543,81 @@
         : '<p class="fine">No activity in this range yet.</p>';
     }
     ["fn-range", "fn-course", "fn-source", "fn-from", "fn-to"].forEach((id) => $("#" + id).addEventListener("change", loadFunnel));
+
+    // ---- learner activity
+    let learners = [];
+    const DAY = 864e5;
+    function learnerStatus(r) {
+      const now = Date.now(), granted = new Date(r.granted_at).getTime(), last = r.last_active ? new Date(r.last_active).getTime() : 0;
+      if (now - granted < DAY) return "new";
+      if (!last || last < granted + 2 * 3600e3) return "never";
+      const idle = (now - last) / DAY;
+      return idle <= 7 ? "active" : idle <= 21 ? "slipping" : "quiet";
+    }
+    const LS_LABEL = { new: "new, under a day", never: "never came back", active: "active this week", slipping: "slipping, 8 to 21 days", quiet: "quiet, over 21 days" };
+    const ago = (iso) => {
+      if (!iso) return "never";
+      const d = Math.floor((Date.now() - new Date(iso).getTime()) / DAY);
+      return d <= 0 ? "today" : d === 1 ? "yesterday" : d + " days ago";
+    };
+    function nudge(r) {
+      const first = (r.name || "there").split(" ")[0], course = titleOf(r.course_slug), link = SITE + "learn/" + r.course_slug + "/";
+      const st = learnerStatus(r);
+      const text = st === "never"
+        ? "Hi " + first + ", thank you for joining " + course + ". The best place to begin is Module 0, which gets your laptop set up. Your course is here: " + link + "\n\nIf anything is unclear, just reply and I will help.\n\nChandirakumar M\nAI Skills Zone"
+        : "Hi " + first + ", it is Chandirakumar from AI Skills Zone. You have not opened " + course + " for a little while. Is anything getting in the way? If a lesson is unclear or something is broken, reply and I will sort it out.\n\nPick up where you left off: " + link + "\n\nChandirakumar M\nAI Skills Zone";
+      const links = [];
+      if (r.email) links.push('<a class="btn sm quiet" href="mailto:' + encodeURIComponent(r.email) + "?subject=" + encodeURIComponent(st === "never" ? "Getting started with " + course : "How is " + course + " going?") + "&body=" + encodeURIComponent(text) + '">Email</a>');
+      if (r.phone) links.push('<a class="btn sm quiet" target="_blank" rel="noopener" href="https://wa.me/' + r.phone.replace(/[^0-9]/g, "") + "?text=" + encodeURIComponent(text) + '">WhatsApp</a>');
+      return links.join("");
+    }
+    function paintLearners() {
+      const q = $("#ln-q").value.trim().toLowerCase(), course = $("#ln-course").value, status = $("#ln-status").value, sort = $("#ln-sort").value;
+      const all = learners.map((r) => Object.assign({}, r, { status: learnerStatus(r) }));
+      const people = new Set(all.map((r) => r.user_id));
+      const count = (st) => new Set(all.filter((r) => r.status === st).map((r) => r.user_id)).size;
+      const active30 = new Set(all.filter((r) => r.last_active && Date.now() - new Date(r.last_active).getTime() <= 30 * DAY).map((r) => r.user_id)).size;
+      $("#ln-tiles").innerHTML = [
+        [people.size, "learners with a course"], [count("active"), "active in the last 7 days"], [active30, "active in the last 30 days"],
+        [count("slipping"), "slipping, 8 to 21 days idle"], [count("quiet"), "quiet, over 21 days"], [count("never"), "never came back after day one"],
+      ].map(([n, l]) => '<div class="tile"><b>' + n + "</b><span>" + l + "</span></div>").join("");
+      let rows = all.filter((r) => (!course || r.course_slug === course) && (!status || r.status === status) &&
+        (!q || [r.name, r.email, r.phone].filter(Boolean).join(" ").toLowerCase().includes(q)));
+      const t = (iso) => (iso ? new Date(iso).getTime() : 0);
+      rows.sort({ recent: (a, b) => t(b.last_active) - t(a.last_active), idle: (a, b) => t(a.last_active) - t(b.last_active), joined: (a, b) => t(b.granted_at) - t(a.granted_at) }[sort]);
+      $("#ln-sum").textContent = rows.length + " of " + all.length + " shown";
+      $("#ln-csv").textContent = "Export these " + rows.length;
+      const when = (iso) => iso ? new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "2-digit" }) : "";
+      $("#ln-list").innerHTML = rows.length ? rows.map((r) => {
+        const got = r.via === "purchase" ? "bought " + when(r.granted_at) + (r.paid_inr != null ? " · " + rupees(r.paid_inr) : "") + (r.source ? " · via " + esc(r.source) : "")
+          : r.via === "admin" ? "given by " + esc(r.granted_by) + " " + when(r.granted_at) : "access since " + when(r.granted_at);
+        return '<div class="item"><span class="who">' + esc(r.name || r.email || r.phone || "learner") + "</span>" +
+          '<span class="amt" style="font-size:14px">' + ago(r.last_active) + "<small>last active</small></span>" +
+          '<span class="meta">' + esc(r.email || "no email") + " · " + esc(r.phone || "no mobile") + " · " + esc(titleOf(r.course_slug)) + " · " + got + "<br>" +
+          '<span class="tag ln-' + r.status + '">' + LS_LABEL[r.status] + "</span></span>" +
+          (["never", "slipping", "quiet"].includes(r.status) ? '<div class="row" style="grid-column:1/-1;margin-top:6px">' + nudge(r) + "</div>" : "") + "</div>";
+      }).join("") : '<p class="fine" style="padding:12px">No learners match.</p>';
+    }
+    async function loadLearners() {
+      const { data, error } = await sb.rpc("admin_learners");
+      if (error) { $("#ln-list").innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
+      learners = data || [];
+      const keep = $("#ln-course").value, slugs = Array.from(new Set(learners.map((r) => r.course_slug))).sort();
+      $("#ln-course").innerHTML = '<option value="">All courses</option>' + slugs.map((s) => '<option value="' + esc(s) + '">' + esc(titleOf(s)) + "</option>").join("");
+      $("#ln-course").value = slugs.includes(keep) ? keep : "";
+      paintLearners();
+    }
+    ["ln-q", "ln-course", "ln-status", "ln-sort"].forEach((id) => { $("#" + id).addEventListener("input", paintLearners); $("#" + id).addEventListener("change", paintLearners); });
+    $("#ln-csv").addEventListener("click", () => {
+      const cell = (v) => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+      const course = $("#ln-course").value, status = $("#ln-status").value, q = $("#ln-q").value.trim().toLowerCase();
+      const rows = learners.map((r) => Object.assign({}, r, { status: learnerStatus(r) })).filter((r) => (!course || r.course_slug === course) && (!status || r.status === status) &&
+        (!q || [r.name, r.email, r.phone].filter(Boolean).join(" ").toLowerCase().includes(q)));
+      const head = ["name", "email", "phone", "course", "status", "via", "granted_at", "paid_inr", "source", "last_active", "last_sign_in_at"];
+      const lines = [head.join(",")].concat(rows.map((r) => [r.name, r.email, r.phone, r.course_slug, r.status, r.via, r.granted_at, r.paid_inr, r.source, r.last_active, r.last_sign_in_at].map(cell).join(",")));
+      const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "aiskillszone-learners-" + new Date().toISOString().slice(0, 10) + ".csv"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    });
 
     // ---- audience: filters on the left of the decision, a framed scroll area for the people
     let audience = [], auFilter = "all";
