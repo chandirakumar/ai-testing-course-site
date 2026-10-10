@@ -84,6 +84,8 @@
   .tag.ln-active { color: var(--good); } .tag.ln-slipping { color: var(--warn); } .tag.ln-quiet { color: var(--bad); } .tag.ln-never { color: #F9A8D4; } .tag.ln-new { color: #C7D2FE; }
   #learnact .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   @media (min-width: 720px) { #learnact .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  #adspend .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 720px) { #adspend .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
   .chip { font: inherit; font-size: 13px; font-weight: 600; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); color: var(--ink-2); cursor: pointer; }
   .chip[aria-pressed="true"] { background: rgba(129,140,248,.28); color: #fff; border-color: rgba(165,180,252,.5); }
@@ -232,6 +234,30 @@
       <div id="fn-sources"></div>
     </section>
 
+    <section class="glass span" id="adspend">
+      <span class="eyebrow">Ad spend</span>
+      <h2>What each campaign costs and returns</h2>
+      <p>Spend comes from Meta automatically once your ad account is assigned to the system user, or you add it by hand. Sales are the purchases whose link carried that campaign's name.</p>
+      <div class="fn-filters">
+        <label>Period<select id="ad-range"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option><option value="all">All time</option><option value="custom">Custom dates</option></select></label>
+        <div id="ad-custom" class="fn-custom" hidden><label>From<input id="ad-from" type="date"></label><label>To<input id="ad-to" type="date"></label></div>
+      </div>
+      <div class="tiles" id="ad-tiles"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+      <p class="fine" id="ad-note" style="margin:12px 0"></p>
+      <div class="au-bar"><span class="fine" id="ad-sync-msg"></span><button class="btn sm" type="button" id="ad-sync">Sync from Meta</button></div>
+      <div class="au-frame" tabindex="0" aria-label="Campaigns"><div class="list" id="ad-table"><div class="skeleton"></div></div></div>
+      <details style="margin-top:14px">
+        <summary class="fine" style="cursor:pointer">Add spend by hand (Google, Instagram boosts, anything Meta sync does not cover)</summary>
+        <form id="ad-form" class="fn-filters" style="margin-top:10px" novalidate>
+          <label>Date<input name="day" type="date" required></label>
+          <label>Platform<select name="platform"><option value="meta">Meta</option><option value="google">Google</option><option value="instagram">Instagram boost</option><option value="other">Other</option></select></label>
+          <label class="au-wide">Campaign name, exactly as in its links<input name="campaign_name" maxlength="200" placeholder="META_Traffic_BroadIN_ZTAT_Oct26" required></label>
+          <label>Spend ₹<input name="spend_inr" type="number" min="0" step="0.01" inputmode="decimal" required></label>
+          <div class="row" style="align-self:end;margin-bottom:10px"><button class="btn sm" type="submit">Save</button><span class="ok" id="ad-form-msg"></span></div>
+        </form>
+      </details>
+    </section>
+
     <section class="glass span" id="learnact">
       <span class="eyebrow">Learner activity</span>
       <h2>Who is learning, who has gone quiet</h2>
@@ -363,7 +389,7 @@
       if (admin !== true) { $("[data-who]").textContent = user.email || ("+" + user.phone); return step("denied"); }
       $("#auth").hidden = true; $("#dash").hidden = false; $("#signout").hidden = false;
       await Promise.all([loadStats(), loadCourses(), loadPurchases()]);
-      await Promise.all([loadFollowups(), loadAudience(), loadSiteText(), loadFunnel(), loadLearners()]);
+      await Promise.all([loadFollowups(), loadAudience(), loadSiteText(), loadFunnel(), loadLearners(), loadAds()]);
     }
 
     // ---- dashboard
@@ -543,6 +569,65 @@
         : '<p class="fine">No activity in this range yet.</p>';
     }
     ["fn-range", "fn-course", "fn-source", "fn-from", "fn-to"].forEach((id) => $("#" + id).addEventListener("change", loadFunnel));
+
+    // ---- ad spend per campaign
+    function adsRange() {
+      const v = $("#ad-range").value, today = new Date(), ymd = (d) => d.toLocaleDateString("en-CA");
+      if (v === "custom") return [$("#ad-from").value || ymd(new Date(today.getTime() - 29 * 864e5)), $("#ad-to").value || ymd(today)];
+      if (v === "all") return ["2026-01-01", ymd(today)];
+      return [ymd(new Date(today.getTime() - (Number(v) - 1) * 864e5)), ymd(today)];
+    }
+    async function loadAds() {
+      $("#ad-custom").hidden = $("#ad-range").value !== "custom";
+      const [from, to] = adsRange();
+      const { data, error } = await sb.rpc("admin_ads", { p_from: from, p_to: to });
+      if (error) { $("#ad-table").innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
+      const rows = data.campaigns || [];
+      const sum = (k) => rows.reduce((n, r) => n + Number(r[k] || 0), 0);
+      const spend = sum("spend"), paid = sum("paid"), revenue = sum("revenue"), chats = sum("conversations");
+      const cps = paid ? spend / paid : null, roas = spend ? revenue / spend : null;
+      $("#ad-tiles").innerHTML = [
+        [rupees(Math.round(spend)), "ad spend"], [chats, "WhatsApp chats started"], [paid, "sales from tagged links"], [rupees(revenue), "revenue from those sales"],
+        [cps === null ? "–" : rupees(Math.round(cps)), "cost per sale"], [roas === null ? "–" : roas.toFixed(1) + "x", "return on ad spend"],
+      ].map(([n, l]) => '<div class="tile"><b>' + n + "</b><span>" + l + "</span></div>").join("");
+      const u = data.untagged || {};
+      $("#ad-note").textContent = (u.paid ? u.paid + " sale" + (u.paid === 1 ? "" : "s") + " (" + rupees(u.revenue) + ") came without a campaign tag, so they are not credited to any ad. " : "") +
+        "Sales are matched to campaigns by name, so the campaign name in Meta must equal the utm_campaign tag in its links.";
+      $("#ad-table").innerHTML = rows.length ? rows.map((r) => {
+        const c = r.paid && Number(r.spend) ? Number(r.spend) / r.paid : null, ro = Number(r.spend) ? Number(r.revenue) / Number(r.spend) : null;
+        const ctr = r.impressions ? (r.clicks * 100 / r.impressions).toFixed(1) + "% CTR" : "";
+        const verdict = !r.has_spend ? '<span class="tag">no spend recorded</span>' : c !== null && c < 400 ? '<span class="tag ln-active">profitable</span>'
+          : c !== null && c < 780 ? '<span class="tag ln-slipping">above target, still paying back</span>' : Number(r.spend) > 0 && !r.paid ? '<span class="tag ln-quiet">no sales yet</span>' : '<span class="tag ln-quiet">costs more than a sale</span>';
+        return '<div class="item"><span class="who">' + esc(r.campaign) + '</span><span class="amt">' + rupees(Math.round(r.spend)) + "<small>spent</small></span>" +
+          '<span class="meta">' + [r.impressions ? Number(r.impressions).toLocaleString("en-IN") + " impressions" : "", r.clicks ? r.clicks + " clicks" : "", ctr,
+            r.conversations ? r.conversations + " chats" : "", r.opened ? r.opened + " opened the buy window" : "", r.paid + " sale" + (r.paid === 1 ? "" : "s") + " · " + rupees(r.revenue),
+            c !== null ? rupees(Math.round(c)) + " per sale" : "", ro !== null ? ro.toFixed(1) + "x return" : "", r.has_manual ? "includes manual entries" : ""].filter(Boolean).join(" · ") +
+          "<br>" + verdict + "</span></div>";
+      }).join("") : '<p class="fine" style="padding:12px">No spend or tagged sales in this period yet.</p>';
+      const ls = data.last_sync;
+      $("#ad-sync-msg").textContent = ls ? (ls.ok ? "Last synced " : "Last sync failed ") + new Date(ls.at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) + ": " + ls.message : "Not synced from Meta yet.";
+      $("#ad-sync-msg").style.color = ls && !ls.ok ? "#F87171" : "";
+    }
+    $("#ad-sync").addEventListener("click", async () => {
+      const b = $("#ad-sync"); b.disabled = true; $("#ad-sync-msg").textContent = "Syncing from Meta…";
+      try {
+        const { data: { session } } = await sb.auth.getSession();
+        const res = await fetch(CFG.supabaseUrl + "/functions/v1/meta-sync", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (session && session.access_token) }, body: JSON.stringify({ days: 90 }) });
+        const out = await res.json().catch(() => ({}));
+        if (!out.ok) $("#ad-sync-msg").textContent = out.message || "Sync failed.";
+      } catch (e) { $("#ad-sync-msg").textContent = "Sync failed: " + e.message; }
+      b.disabled = false; loadAds();
+    });
+    $("#ad-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const f = e.target, msg = $("#ad-form-msg"); msg.style.color = ""; msg.textContent = "";
+      const row = { day: f.day.value, platform: f.platform.value, campaign_name: f.campaign_name.value.trim(), spend_inr: Number(f.spend_inr.value), source: "manual" };
+      if (!row.day || !row.campaign_name || !(row.spend_inr >= 0)) { msg.textContent = "Date, campaign name and amount are all needed."; msg.style.color = "#F87171"; return; }
+      const { error } = await sb.from("ad_spend").upsert([row], { onConflict: "platform,campaign_name,day,source" });
+      if (error) { msg.textContent = "Not saved: " + error.message; msg.style.color = "#F87171"; return; }
+      msg.textContent = "Saved."; f.spend_inr.value = ""; loadAds();
+    });
+    ["ad-range", "ad-from", "ad-to"].forEach((id) => $("#" + id).addEventListener("change", loadAds));
 
     // ---- learner activity
     let learners = [];
