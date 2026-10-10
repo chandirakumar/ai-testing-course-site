@@ -86,6 +86,23 @@
   @media (min-width: 720px) { #learnact .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   #adspend .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   @media (min-width: 720px) { #adspend .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .ib-wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  #inbox.ib-open .ib-listframe { display: none; }
+  .ib-row { display: grid; gap: 4px; width: 100%; text-align: left; font: inherit; color: var(--ink); cursor: pointer; padding: 10px 12px; margin-bottom: 8px; border-radius: 12px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+  .ib-row.on { border-color: rgba(129,140,248,.7); background: rgba(129,140,248,.10); }
+  .ib-top { display: flex; justify-content: space-between; gap: 8px; } .ib-top b { color: #fff; } .ib-top span { font-size: 12.5px; color: var(--muted); }
+  .ib-snip { font-size: 14px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ib-tags { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .ib-badge { min-width: 20px; padding: 1px 7px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #0A1020; background: #34D399; text-align: center; }
+  .ib-thread { padding: 12px; border-radius: 14px; border: 1px solid var(--line); background: rgba(0,0,0,.22); min-width: 0; }
+  .ib-head { display: grid; gap: 2px; margin-bottom: 10px; } .ib-head b { color: #fff; font-size: 17px; } .ib-back { justify-self: start; font-size: 14px; }
+  .ib-msgs { max-height: min(50vh, 460px); overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 8px; padding: 4px 2px 8px; }
+  .ib-msg { max-width: 85%; padding: 8px 11px; border-radius: 14px; font-size: 15px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .ib-msg small { display: block; margin-top: 4px; font-size: 11.5px; color: var(--muted); }
+  .ib-msg.in { align-self: flex-start; background: rgba(255,255,255,.08); border-top-left-radius: 4px; }
+  .ib-msg.out { align-self: flex-end; background: rgba(52,211,153,.16); border-top-right-radius: 4px; }
+  .ib-quick { margin: 10px 0 8px; } .ib-closed { padding: 10px; border-radius: 10px; background: rgba(248,113,113,.10); }
+  @media (min-width: 900px) { .ib-wrap { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); } #inbox.ib-open .ib-listframe { display: block; } .ib-back { display: none; } }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
   .chip { font: inherit; font-size: 13px; font-weight: 600; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); color: var(--ink-2); cursor: pointer; }
   .chip[aria-pressed="true"] { background: rgba(129,140,248,.28); color: #fff; border-color: rgba(165,180,252,.5); }
@@ -181,6 +198,15 @@
   </main>
 
   <main id="dash" class="two" hidden>
+    <section class="glass span" id="inbox">
+      <span class="eyebrow">WhatsApp</span>
+      <h2>Inbox <span class="count" id="ib-count"></span></h2>
+      <p class="fine" style="margin:0 0 10px">Chats with your business number. Reply free within 24 hours of their last message; quick replies and the buy link carry the ad's campaign name so the sale is credited. New chats also email help@.</p>
+      <div class="ib-wrap">
+        <div class="au-frame ib-listframe" tabindex="0" aria-label="Chats"><div id="ib-list"><div class="skeleton"></div></div></div>
+        <div class="ib-thread" id="ib-thread" hidden></div>
+      </div>
+    </section>
     <section class="glass span">
       <span class="eyebrow">Overview</span>
       <h2>Sales</h2>
@@ -389,7 +415,8 @@
       if (admin !== true) { $("[data-who]").textContent = user.email || ("+" + user.phone); return step("denied"); }
       $("#auth").hidden = true; $("#dash").hidden = false; $("#signout").hidden = false;
       await Promise.all([loadStats(), loadCourses(), loadPurchases()]);
-      await Promise.all([loadFollowups(), loadAudience(), loadSiteText(), loadFunnel(), loadLearners(), loadAds()]);
+      await Promise.all([loadFollowups(), loadAudience(), loadSiteText(), loadFunnel(), loadLearners(), loadAds(), loadInbox()]);
+      startInboxPolling();
     }
 
     // ---- dashboard
@@ -569,6 +596,99 @@
         : '<p class="fine">No activity in this range yet.</p>';
     }
     ["fn-range", "fn-course", "fn-source", "fn-from", "fn-to"].forEach((id) => $("#" + id).addEventListener("change", loadFunnel));
+
+    // ---- WhatsApp inbox
+    let inbox = [], openChat = null, inboxTimer = null;
+    const WIN = 24 * 3600e3;
+    const QUICK = [
+      ["Greeting", "Hi {first}, thanks for writing. I am Chandirakumar, I teach Zero to AI Tester. Two quick questions so I can point you right: how many years have you been testing, and have you written any code before?"],
+      ["Fit + link", "Then this fits you well. The course starts with no code and teaches Python from zero, then testing AI products, with seven projects for your GitHub and a career module. It is self-paced, about 7 hours a week, with lifetime access. Full syllabus and price: {link}"],
+      ["Can't code", "No problem. Stage A teaches Python from zero, on purpose, before any AI. Most people on the course start with no code at all."],
+      ["How long", "About 23 weeks at roughly 7 hours a week. You keep access for life, so you can go at your own pace."],
+      ["Job?", "No course can promise a job. You leave with seven projects a hiring manager can open and run, plus 50 interview answers and a resume rewrite."],
+      ["Refund", "All sales are final, which is why the full syllabus is public. Please read it first, then decide: {link}"],
+      ["Other cost", "Only about $10 of AI credit over the whole course, bought from the model provider. Everything else is free and open source."],
+      ["Buy link", "{link}"],
+    ];
+    const since = (iso) => {
+      if (!iso) return "";
+      const m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+      return m < 1 ? "now" : m < 60 ? m + " min" : m < 1440 ? Math.floor(m / 60) + " h" : Math.floor(m / 1440) + " d";
+    };
+    const windowLeft = (c) => c.last_in_at ? WIN - (Date.now() - new Date(c.last_in_at).getTime()) : -1;
+    const buyLink = (c) => SITE + "zero-to-ai-tester/?utm_source=meta&utm_medium=whatsapp&utm_campaign=" + encodeURIComponent(c.campaign_name || "whatsapp-direct");
+    function paintInboxList() {
+      const unread = inbox.reduce((n, c) => n + Number(c.unread || 0), 0);
+      $("#ib-count").textContent = unread ? unread + " unread" : "";
+      $("#ib-list").innerHTML = inbox.length ? inbox.map((c) => {
+        const left = windowLeft(c), open = left > 0;
+        return '<button type="button" class="ib-row' + (openChat === c.wa_id ? " on" : "") + '" data-wa="' + esc(c.wa_id) + '">' +
+          '<span class="ib-top"><b>' + esc(c.name || "+" + c.wa_id) + "</b><span>" + since(c.last && c.last.at) + "</span></span>" +
+          '<span class="ib-snip">' + (c.last && c.last.direction === "out" ? "You: " : "") + esc((c.last && c.last.body) || "") + "</span>" +
+          '<span class="ib-tags">' + (Number(c.unread) ? '<span class="ib-badge">' + c.unread + "</span>" : "") +
+          '<span class="tag ' + (open ? "ln-active" : "ln-quiet") + '">' + (open ? "reply window " + Math.ceil(left / 3600e3) + " h left" : "window closed") + "</span>" +
+          (c.campaign_name ? '<span class="tag">' + esc(c.campaign_name) + "</span>" : "") + "</span></button>";
+      }).join("") : '<p class="fine" style="padding:12px">No chats yet. Messages to your WhatsApp number appear here, and you get an email at help@ for each new one.</p>';
+    }
+    async function loadInbox() {
+      const { data, error } = await sb.rpc("admin_inbox");
+      if (error) { $("#ib-list").innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
+      inbox = data || []; paintInboxList();
+      if (openChat) await loadThread(openChat, false);
+    }
+    async function loadThread(waId, markRead) {
+      const c = inbox.find((x) => x.wa_id === waId); if (!c) return;
+      const { data, error } = await sb.from("wa_messages").select("direction, at, body, type, status, error, sent_by").eq("wa_id", waId).order("at", { ascending: true }).limit(300);
+      if (error) { $("#ib-thread").innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
+      const left = windowLeft(c), open = left > 0;
+      const keepDraft = $("#ib-text") ? $("#ib-text").value : "";
+      const tick = { sent: "✓", delivered: "✓✓", read: "✓✓ read", failed: "failed" };
+      $("#ib-thread").innerHTML =
+        '<div class="ib-head"><button type="button" class="linkish ib-back">‹ All chats</button><b>' + esc(c.name || "+" + c.wa_id) + '</b><span class="fine">+' + esc(c.wa_id) +
+        (c.campaign_name ? " · from " + esc(c.campaign_name) : c.ad_headline ? " · ad: " + esc(c.ad_headline) : "") + "</span></div>" +
+        '<div class="ib-msgs" id="ib-msgs">' + data.map((m) => '<div class="ib-msg ' + m.direction + '"><span>' + esc(m.body || "[" + m.type + "]") + "</span><small>" +
+          new Date(m.at).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) + (m.direction === "out" ? " · " + (tick[m.status] || m.status || "") : "") +
+          (m.error ? " · " + esc(m.error) : "") + "</small></div>").join("") + "</div>" +
+        (open ? '<div class="chips ib-quick">' + QUICK.map(([l], i) => '<button type="button" class="chip" data-q="' + i + '">' + l + "</button>").join("") + "</div>" +
+          '<textarea id="ib-text" rows="3" maxlength="4000" placeholder="Type a reply"></textarea>' +
+          '<div class="row" style="margin-top:8px"><button class="btn sm" type="button" id="ib-send">Send on WhatsApp</button><span class="fine">Free replies for ' + Math.ceil(left / 3600e3) + ' more hours.</span><span class="ok" id="ib-msg"></span></div>'
+          : '<p class="fine ib-closed">More than 24 hours since their last message, so WhatsApp only allows approved templates now. The chat reopens the moment they write again.</p>') +
+        '<label class="check" style="margin-top:12px"><input type="checkbox" id="ib-remind"' + (c.wants_reminder ? " checked" : "") + "> Agreed in this chat to one reminder later</label>" +
+        '<label style="margin-top:8px">Note<input id="ib-note" maxlength="1000" value="' + esc(c.note || "") + '" placeholder="e.g. 3 years manual testing, asked about EMI"></label>';
+      if ($("#ib-text")) $("#ib-text").value = keepDraft;
+      const box = $("#ib-msgs"); box.scrollTop = box.scrollHeight;
+      $("#ib-thread").hidden = false; $("#inbox").classList.add("ib-open");
+      $("#ib-thread .ib-back").addEventListener("click", () => { openChat = null; $("#inbox").classList.remove("ib-open"); $("#ib-thread").hidden = true; paintInboxList(); });
+      $("#ib-thread").querySelectorAll("[data-q]").forEach((b) => b.addEventListener("click", () => {
+        const t = QUICK[Number(b.dataset.q)][1].replace(/{first}/g, (c.name || "there").split(" ")[0]).replace(/{link}/g, buyLink(c));
+        const ta = $("#ib-text"); ta.value = ta.value ? ta.value + "\n\n" + t : t; ta.focus();
+      }));
+      if ($("#ib-send")) $("#ib-send").addEventListener("click", () => sendReply(c));
+      $("#ib-remind").addEventListener("change", (e) => sb.from("wa_contacts").update({ wants_reminder: e.target.checked }).eq("wa_id", c.wa_id));
+      $("#ib-note").addEventListener("change", (e) => sb.from("wa_contacts").update({ note: e.target.value.trim() || null }).eq("wa_id", c.wa_id));
+      if (markRead && Number(c.unread)) { await sb.from("wa_contacts").update({ last_read_at: new Date().toISOString() }).eq("wa_id", c.wa_id); c.unread = 0; paintInboxList(); }
+    }
+    async function sendReply(c) {
+      const ta = $("#ib-text"), text = ta.value.trim(), msg = $("#ib-msg"); msg.style.color = ""; msg.textContent = "";
+      if (!text) return;
+      const b = $("#ib-send"); b.disabled = true; msg.textContent = "Sending…";
+      try {
+        const { data: { session } } = await sb.auth.getSession();
+        const res = await fetch(CFG.supabaseUrl + "/functions/v1/wa-send", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (session && session.access_token) }, body: JSON.stringify({ to: c.wa_id, text }) });
+        const out = await res.json().catch(() => ({}));
+        if (!res.ok) { msg.textContent = out.message || "Not sent."; msg.style.color = "#F87171"; b.disabled = false; return; }
+        ta.value = ""; msg.textContent = "Sent.";
+      } catch (e) { msg.textContent = "Not sent: " + e.message; msg.style.color = "#F87171"; }
+      b.disabled = false; await loadInbox();
+    }
+    $("#ib-list").addEventListener("click", (e) => {
+      const row = e.target.closest("[data-wa]"); if (!row) return;
+      openChat = row.dataset.wa; paintInboxList(); loadThread(openChat, true);
+    });
+    function startInboxPolling() {
+      if (inboxTimer) return;
+      inboxTimer = setInterval(() => { if (!document.hidden) loadInbox(); }, 20000);
+    }
 
     // ---- ad spend per campaign
     function adsRange() {
