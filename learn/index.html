@@ -150,6 +150,7 @@
       <section class="glass rise" data-i="1" id="mine" hidden aria-labelledby="mine-title">
         <div class="eyebrow-row"><span class="g-eyebrow">Signed in as <b data-who style="color:#fff"></b></span><button type="button" class="linkish" data-signout style="font-size:13px">Sign out</button></div>
         <h3 id="mine-title">Your courses</h3>
+        <p class="g-err" id="mine-err" role="alert" hidden></p>
         <div class="cards" id="mine-list"><div class="skeleton"></div></div>
         <p class="g-fine"><a href="../">All courses</a> · Questions or a changed email address: help@aiskillszone.com · <a href="../privacy.html">Privacy</a></p>
       </section>
@@ -297,10 +298,34 @@
       list.querySelectorAll(".bar i").forEach((i) => { requestAnimationFrame(() => { i.style.width = i.dataset.w + "%"; }); });
     }
 
+    // A course page that will not open sends the reader back here (?next= or ?missing=). Say so on the course
+    // list instead of failing silently, and never bounce between the two pages for ever.
+    function mineErr(text) { const p = $("#mine-err"); p.textContent = text; p.hidden = !text; }
+    const cookieWorks = () => document.cookie.indexOf("sb_access=") !== -1;
+    function recentBounce(to) {
+      try {
+        const k = "akz:bounce", prev = JSON.parse(sessionStorage.getItem(k) || "null");
+        const loop = !!prev && prev.to === to && Date.now() - prev.at < 15000;
+        sessionStorage.setItem(k, JSON.stringify({ to, at: Date.now() }));
+        return loop;
+      } catch (e) { return false; }
+    }
+
     loadCatalogue();
-    sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) { setCookie(session); if (safeNext) { location.replace(safeNext); return; } showMine(); }
-      else step("email");
+    sb.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) return step("email");
+      setCookie(session);
+      if (safeNext && cookieWorks() && !recentBounce(safeNext)) { location.replace(safeNext); return; }
+      await showMine();
+      if (safeNext) {
+        mineErr(cookieWorks()
+          ? "That page would not open. Sign out, sign in again, and try once more. If it still will not open, write to help@aiskillszone.com."
+          : "Your browser is blocking cookies for aiskillszone.com. The course pages need one cookie to check that the course is yours: allow cookies for this site and reload.");
+      } else if (params.get("missing")) {
+        mineErr(owned.has(params.get("missing"))
+          ? "That page would not open. Sign out, sign in again, and try once more."
+          : "That course is not on this account. Sign in with the email or WhatsApp number you bought with.");
+      }
     });
   })();
 </script>
