@@ -997,7 +997,7 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Answer keys and rubrics</b> for every lesson and lab</span></li>
         </ul>
         <a class="lp-btn cta" href="#pricing" data-buy>Buy the course · ₹1,499 <span class="arr" aria-hidden="true">→</span></a>
-        <p class="fine" style="margin-top:12px;font-size:13px;color:var(--muted)">Plus about $10 of AI credit you buy from the model provider. Prefer a downloadable pack instead? <a data-playto href="#pricing">Buy it on Playto</a>.</p>
+        <p class="fine" style="margin-top:12px;font-size:13px;color:var(--muted)">Plus about $10 of AI credit you buy from the model provider.</p>
       </div>
       <div class="aside">
         <b>Before you buy</b>
@@ -1017,7 +1017,7 @@
   <section id="faq" class="faq">
     <div class="eyebrow">Questions</div>
     <h2>Things people ask before enrolling.</h2>
-    <details open><summary>How is the course delivered?</summary><p><strong>Online, on this site, the moment your payment completes.</strong> Sign in with a code sent to your email or WhatsApp, no password, on any phone or laptop. Your place is remembered, and when a lesson is updated you see the new version at no charge. Prefer files you keep offline? The downloadable pack is sold separately on Playto.</p></details>
+    <details open><summary>How is the course delivered?</summary><p><strong>Online, on this site, the moment your payment completes.</strong> Sign in with a code sent to your email or WhatsApp, no password, on any phone or laptop. Your place is remembered, and when a lesson is updated you see the new version at no charge.</p></details>
     <details><summary>Can I get a refund?</summary><p><strong>No. All sales are final.</strong> It is a digital product delivered in full the moment you pay, which is why the complete syllabus and the project list are public before you pay. Email a question first if anything is unclear.</p></details>
     <details><summary>What does it cost beyond the course?</summary><p><strong>About ten dollars of AI credit, bought from the model provider.</strong> Every script prints what it spent. Every other tool in the course is free and open source.</p></details>
     <details><summary>How much time does it really take?</summary><p><strong>About seven hours a week for 23 weeks.</strong> Two weekday evenings for lessons and one weekend block for the lab. Already write Python? Skip Modules 2 and 3 and finish in about 19.</p></details>
@@ -1125,7 +1125,7 @@
           <div class="g-row"><span class="g-secure"><i></i>Payment by Razorpay</span><span>Receipt by email</span></div>
         </form>
         <p class="g-fine" data-signed-in hidden>Signed in as <b data-who></b>. <button type="button" class="linkish" data-signout>Not you? Sign out</button></p>
-        <p class="g-fine">All sales are final; read the <a href="syllabus.html">syllabus</a> first. Already bought? <a href="../learn/">Log in</a>. Prefer the downloadable pack? <a data-playto href="#pricing">Buy it on Playto</a>. <a href="../privacy.html">How your data is used</a>.</p>
+        <p class="g-fine">All sales are final; read the <a href="syllabus.html">syllabus</a> first. Already bought? <a href="../learn/">Log in</a>. <a href="../privacy.html">How your data is used</a>.</p>
       </div>
       <div data-step="code" hidden>
         <span class="g-eyebrow" data-step2-eyebrow>Confirm your mobile</span>
@@ -1226,10 +1226,6 @@
     : `<div class="video"><div class="soon"><span class="k">video ${i + 1} · about ${v.minutes} min · recording</span><b>${v.title}</b><ol>${v.chapters.map(c => `<li>${c}</li>`).join('')}</ol></div></div>`
   ).join('');
 
-  // Checkout link. Paste the product URL from the payment platform here. Empty = email fallback.
-  const CHECKOUT = "https://playto.so/p/chandirakumar/zero-to-ai-tester";
-  const FALLBACK = "mailto:help@aiskillszone.com?subject=Zero%20to%20AI%20Tester%20%E2%80%93%20buy%20the%20course";
-  window.CHECKOUT = CHECKOUT; window.FALLBACK = FALLBACK;
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -1341,7 +1337,6 @@
       } catch (e) {}
     }
 
-    document.querySelectorAll("[data-playto]").forEach((a) => { a.href = CHECKOUT || FALLBACK; });
 
     // The course pages are served by a Worker that reads this cookie; keep it in step with the session.
     function setCookie(s) {
