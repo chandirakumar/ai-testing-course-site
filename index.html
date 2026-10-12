@@ -32,12 +32,17 @@
   .course .k { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #EA580C; }
   .course h3 { font-weight: 850; font-size: clamp(26px, 6vw, 34px); color: var(--sz-paper-ink); margin: 6px 0 10px; }
   .course p { font-size: 16px; margin: 0 0 16px; }
-  .course .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 18px; }
-  .course .facts span { padding: 10px 12px; border-radius: 12px; background: #F4F6FB; font-size: 13.5px; color: var(--sz-paper-muted); }
-  .course .facts b { display: block; font-family: "Archivo", sans-serif; font-weight: 850; font-size: 22px; color: var(--sz-paper-ink); }
-  .course .facts .deal { grid-column: 1 / -1; color: #EA580C; background: #FFF1E6; font-weight: 600; }
-  .course .facts .deal b { display: inline; font-size: 15px; color: #EA580C; }
+  .course .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0 0 10px; }
+  .course .facts span { padding: 10px 12px; border-radius: 12px; background: #F4F6FB; font-size: 13.5px; line-height: 1.3; color: var(--sz-paper-muted); }
+  .course .facts b { display: block; margin-bottom: 2px; font-family: "Archivo", sans-serif; font-weight: 850; font-size: 22px; color: var(--sz-paper-ink); }
+  .course .pricebox { display: grid; gap: 6px; margin: 0 0 18px; padding: 14px 16px; border-radius: 14px; background: #FFF7ED; border: 1px solid #FED7AA; }
+  .course .pb-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+  .course .pb-now { font-family: "Archivo", sans-serif; font-weight: 850; font-size: 30px; line-height: 1; color: var(--sz-paper-ink); font-variant-numeric: tabular-nums; }
+  .course .pricebox .mrp { font-size: 16px; font-weight: 600; color: var(--sz-paper-muted); opacity: 1; }
+  .course .pb-off { padding: 3px 10px; border-radius: 999px; font-style: normal; font-weight: 700; font-size: 13px; color: #fff; background: #EA580C; }
+  .course .pb-sub { font-size: 13.5px; line-height: 1.4; color: #9A3412; }
   .course .cta { display: flex; flex-wrap: wrap; gap: 10px; } .course .cta .sz-btn { flex: 1 1 100%; }
+  .course .cta a.primary { white-space: nowrap; font-size: clamp(15px, 4.2vw, 16px); }
   .course .cta .ghost { color: var(--sz-paper-ink); box-shadow: inset 0 0 0 1.5px var(--sz-paper-line); }
   .course .leave { padding: 18px; border-radius: 16px; background: linear-gradient(160deg, #0F1830, #16244A); color: #E8EEF8; }
   .course .leave b { display: block; font-family: "Archivo", sans-serif; font-size: 17px; color: #fff; margin-bottom: 8px; }
@@ -68,7 +73,6 @@
   .hm-final .sz-lede { margin: 0 auto 22px; color: var(--sz-ink-2); }
   @media (min-width: 640px) {
     .hm-hero .ctas .sz-btn, .course .cta .sz-btn { flex: 0 0 auto; }
-    .course .facts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .soon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (min-width: 960px) {
@@ -118,9 +122,10 @@
         <span class="k">Course 1 · for manual and functional testers</span>
         <h3>Zero to AI Tester</h3>
         <p>From your first terminal command to a release assessment of an AI product you present on video. Python from zero, test automation, then evaluation, RAG and agent testing, and AI security, all practised on a deliberately broken AI app.</p>
-        <div class="facts"><span><b>23</b> weeks</span><span><b>167</b> hours</span><span><b>7</b> portfolio projects</span><span><b>₹1,499</b> once</span></div>
+        <div class="facts"><span><b>23</b> weeks</span><span><b>167</b> hours</span><span><b>7</b> portfolio projects</span></div>
+        <div class="pricebox"><div class="pb-row"><b class="pb-now">₹1,499</b><s class="mrp" hidden></s><em class="pb-off" hidden></em></div><span class="pb-sub">One payment · lifetime access · every update free</span></div>
         <div class="cta">
-          <a class="sz-btn cta primary" href="zero-to-ai-tester/?buy=1">Buy and start · ₹1,499 <span class="arr" aria-hidden="true">→</span></a>
+          <a class="sz-btn cta primary" href="zero-to-ai-tester/?buy=1"><span>Buy and start · <span class="pb-btn">₹1,499</span></span><span class="arr" aria-hidden="true">→</span></a>
           <a class="sz-btn ghost" href="zero-to-ai-tester/">See the course</a>
         </div>
       </div>
@@ -273,12 +278,14 @@
             if (k < 1) requestAnimationFrame(tick); else el.classList.add("pop");
           })(t0);
         }
-        const html = p.discount_pct ? '<span class="px"><s class="mrp">' + rupees(p.price_inr) + '</s><b class="sale">' + rupees(p.price_inr) + "</b></span>" : rupees(p.sale_price_inr);
-        document.querySelectorAll(".course .facts b, .course .cta a.primary").forEach((el) => { el.innerHTML = el.innerHTML.replace("₹1,499", html); });
-        document.querySelectorAll(".sale").forEach((el, i) => setTimeout(() => countTo(el, p.price_inr, p.sale_price_inr, 900), 120 + i * 60));
+        const now = document.querySelector(".course .pb-now"), btn = document.querySelector(".course .pb-btn");
+        const mrp = document.querySelector(".course .pricebox .mrp"), off = document.querySelector(".course .pb-off");
         if (p.discount_pct) {
-          const f = document.querySelector(".course .facts");
-          if (f) f.insertAdjacentHTML("beforeend", '<span class="deal"><b>' + p.discount_pct + '% off</b> ' + (p.discount_label ? p.discount_label.replace(/[<>&]/g, "") : "") + "</span>");
+          mrp.textContent = rupees(p.price_inr); mrp.hidden = false;
+          off.textContent = p.discount_pct + "% off" + (p.discount_label ? " · " + p.discount_label : ""); off.hidden = false;
+          [now, btn].forEach((el, i) => setTimeout(() => countTo(el, p.price_inr, p.sale_price_inr, 900), 120 + i * 60));
+        } else {
+          now.textContent = btn.textContent = rupees(p.sale_price_inr);
         }
       }).catch(() => {});
     const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
