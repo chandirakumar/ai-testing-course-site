@@ -69,6 +69,14 @@
   .soon-card form.notify .btn { min-height: 44px; padding: 10px 16px; border: 0; border-radius: 10px; font-family: "Archivo", sans-serif; font-weight: 800; font-size: 15px; color: #fff; background: #0F172A; cursor: pointer; }
   .soon-card form.notify .btn:hover { background: #1E293B; }
   .soon-card .note { font-size: 13.5px; color: #B91C1C; margin: 10px 0 0; } .soon-card .note.ok { color: #15803D; }
+  .hm-film-band { padding-top: 8px; }
+  .hm-film { position: relative; max-width: 960px; margin: 28px auto 0; }
+  .hm-film::before { content: ""; position: absolute; inset: -24px; background: radial-gradient(closest-side, rgba(59,130,246,.22), transparent 70%); filter: blur(10px); pointer-events: none; }
+  .hm-film video { position: relative; display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 16px; border: 1px solid rgba(255,255,255,.14); box-shadow: 0 30px 80px rgba(0,0,0,.5); background: #0A1020; }
+  .hm-play-wrap { position: absolute; inset: 0; display: grid; place-items: center; }
+  .hm-play-wrap[hidden] { display: none; }
+  .hm-play { animation: none; }
+  .hm-play svg { width: 20px; height: 20px; }
   .hm-final { text-align: center; padding: 48px 20px; border-radius: 22px; background: linear-gradient(160deg, #16244A, #0F1830); border: 1px solid var(--sz-line); }
   .hm-final .sz-lede { margin: 0 auto 22px; color: var(--sz-ink-2); }
   @media (min-width: 640px) {
@@ -111,6 +119,22 @@
     <a class="hm-poster" href="zero-to-ai-tester/" aria-label="Zero to AI Tester course page"><span class="tag">Open now</span><picture><source srcset="covers/zero-to-ai-tester.webp" type="image/webp"><img src="covers/zero-to-ai-tester.jpg" width="896" height="1139" alt="Zero to AI Tester course map: four stages over 23 weeks, 167 hours"></picture></a>
   </div>
 </header>
+
+<section class="sz-band sz-dark hm-film-band" id="see-it" aria-labelledby="see-it-h">
+  <div class="sz-in">
+    <div class="sz-center">
+      <span class="sz-eyebrow">Inside the course</span>
+      <h2 id="see-it-h">Every hard idea, animated.</h2>
+      <p class="sz-lede">Ten of the animations inside the Zero to AI Tester lessons, from tests in CI to prompt injection and drift.</p>
+    </div>
+    <figure class="hm-film rv">
+      <video controls preload="none" playsinline width="1920" height="1080" poster="assets/video/zero-to-ai-tester-animations-poster.jpg" aria-label="Every hard idea, animated: ten lesson animations from Zero to AI Tester, 50 seconds, music only">
+        <source src="assets/video/zero-to-ai-tester-animations-1920x1080.mp4" type="video/mp4">
+      </video>
+      <div class="hm-play-wrap" hidden><button type="button" class="sz-btn cta hm-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z" fill="currentColor"/></svg>Play · 50 seconds</button></div>
+    </figure>
+  </div>
+</section>
 
 <section class="sz-band sz-light" id="courses">
   <div class="sz-in">
@@ -255,6 +279,17 @@
     <span class="cols"><a href="zero-to-ai-tester/">Zero to AI Tester</a><a href="zero-to-ai-tester/syllabus.html">Syllabus</a><a href="learn/">Log in</a><a href="terms.html">Terms and refunds</a><a href="privacy.html">Privacy</a><a href="mailto:help@aiskillszone.com">help@aiskillszone.com</a></span>
   </div>
 </footer>
+<script>
+  (() => {
+    const fig = document.querySelector(".hm-film");
+    if (!fig) return;
+    const v = fig.querySelector("video"), wrap = fig.querySelector(".hm-play-wrap");
+    const start = () => { wrap.hidden = true; v.controls = true; };
+    v.controls = false; wrap.hidden = false;
+    wrap.querySelector("button").addEventListener("click", () => { start(); v.play().catch(() => {}); v.focus(); });
+    v.addEventListener("play", start);
+  })();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
   // Coming-soon cards: Notify me stores one row per email and course. The email is remembered in this browser so

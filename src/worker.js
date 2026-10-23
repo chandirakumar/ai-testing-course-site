@@ -1,9 +1,10 @@
 // Three jobs.
 // 1) Serve the public site: requests for existing files are answered by Cloudflare's asset handling
-//    before this code runs, so fetch() only sees misses.
+//    before this code runs, so fetch() only sees misses, plus /assets/video/ (byte ranges for Safari, below).
 // 2) Gate the course area: /learn/<course>/... is served from the COURSE_FILES KV namespace, only to a
 //    signed-in learner whose account holds that course. The check is Supabase's own has_course() run
-//    with the learner's token, so row-level security decides, not this file.
+//    with the learner's token, so row-level security decides, not this file. Lesson videos (.mp4) come from
+//    the same store, behind the same check, and answer byte-range requests.
 // 3) Keep the Supabase free-tier project awake with a daily read (free projects pause after seven idle days).
 // On the dev site (SITE_ENV = "dev", dev.aiskillszone.com) it also asks for a password on every request, tells
 // search engines to stay away, and points every page at the dev Supabase project instead of the live one.
@@ -11,6 +12,7 @@
 const GATE = /^\/learn\/([a-z0-9-]+)\/(.*)$/;
 const TYPES = { html: "text/html; charset=utf-8", txt: "text/plain; charset=utf-8", css: "text/css", js: "text/javascript", json: "application/json", svg: "image/svg+xml", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", pdf: "application/pdf", zip: "application/zip", ico: "image/x-icon" };
 const COOKIE = "sb_access";
+const VIDEO = "/assets/video/";
 
 export default {
   async fetch(request, env) {
@@ -28,6 +30,7 @@ async function serve(request, env) {
     const url = new URL(request.url);
     const bare = /^\/learn\/([a-z0-9-]+)$/.exec(url.pathname);   // /learn/<course> without the slash
     if (bare) return Response.redirect(`${url.origin}${url.pathname}/${url.search}`, 301);
+    if (url.pathname.startsWith(VIDEO) && request.headers.has("range")) return serveRange(request, env);
     const m = GATE.exec(url.pathname);
     if (!m) return env.ASSETS.fetch(request);
 
@@ -41,6 +44,7 @@ async function serve(request, env) {
     if (allowed === false) return Response.redirect(`${url.origin}/learn/?missing=${encodeURIComponent(course)}`, 302);
 
     const path = rest === "" ? "START-HERE.html" : rest.replace(/\/$/, "/index.html");
+    if (path.endsWith(".mp4")) return courseVideo(request, env, `${course}/${path}`);
     const body = await env.COURSE_FILES.get(`${course}/${path}`, { type: "stream" });
     if (!body) return env.ASSETS.fetch(new Request(`${url.origin}/__missing__`, request)); // the site's 404 page
     const ext = (path.split(".").pop() || "").toLowerCase();
@@ -52,6 +56,46 @@ async function serve(request, env) {
         "Referrer-Policy": "same-origin",
       },
     });
+}
+
+// ---------------------------------------------------------------- video byte ranges
+// Safari only plays a video from a server that answers a byte-range request with 206 Partial Content, and the
+// asset service always sends the whole file. So range requests for /assets/video/ (routed here by
+// run_worker_first) get just the asked-for bytes.
+async function serveRange(request, env) {
+  const res = await env.ASSETS.fetch(new Request(request.url, { headers: { "Accept-Encoding": "identity" } }));
+  if (res.status !== 200) return res;
+  // the asset service gives a Worker no Content-Length, so read the whole file
+  return ranged(request, await res.arrayBuffer(), new Headers(res.headers));
+}
+
+// Lesson videos live in COURSE_FILES next to the pages, behind the same access check. KV hands back the whole
+// value, so a byte-range request is answered by slicing it, the same way as above.
+async function courseVideo(request, env, key) {
+  const buf = await env.COURSE_FILES.get(key, { type: "arrayBuffer" });
+  if (!buf) return new Response("Not found", { status: 404, headers: { "Cache-Control": "no-store" } });
+  return ranged(request, buf, new Headers({
+    "Content-Type": "video/mp4",
+    "Cache-Control": "private, max-age=3600",
+    "X-Robots-Tag": "noindex, nofollow",
+  }));
+}
+
+// A 200 with the whole body, or a 206 with the asked-for bytes, or a 416 for a range past the end.
+function ranged(request, buf, headers) {
+  const size = buf.byteLength;
+  const r = /^bytes=(\d*)-(\d*)$/.exec((request.headers.get("range") || "").trim());
+  let start = -1, end = -1;
+  if (r && r[1] !== "") { start = Number(r[1]); end = r[2] === "" ? size - 1 : Math.min(Number(r[2]), size - 1); }
+  else if (r && r[2] !== "") { start = Math.max(0, size - Number(r[2])); end = size - 1; }
+  headers.set("Accept-Ranges", "bytes");
+  if (!r) { headers.set("Content-Length", String(size)); return new Response(request.method === "HEAD" ? null : buf, { status: 200, headers }); }
+  if (start < 0 || start > end || start >= size || (r[1] === "" && Number(r[2]) === 0)) {
+    return new Response(null, { status: 416, headers: { "Content-Range": `bytes */${size}`, "Accept-Ranges": "bytes" } });
+  }
+  headers.set("Content-Range", `bytes ${start}-${end}/${size}`);
+  headers.set("Content-Length", String(end - start + 1));
+  return new Response(request.method === "HEAD" ? null : buf.slice(start, end + 1), { status: 206, headers });
 }
 
 // ---------------------------------------------------------------- dev site
