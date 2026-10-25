@@ -3,16 +3,17 @@
 //    before this code runs, so fetch() only sees misses, plus /assets/video/ (byte ranges for Safari, below).
 // 2) Gate the course area: /learn/<course>/... is served from the COURSE_FILES KV namespace, only to a
 //    signed-in learner whose account holds that course. The check is Supabase's own has_course() run
-//    with the learner's token, so row-level security decides, not this file. Lesson videos (.mp4) come from
-//    the same store, behind the same check, and answer byte-range requests.
+//    with the learner's token, so row-level security decides, not this file. Lesson videos and their posters
+//    (<course>/video/...) come from the COURSE_MEDIA R2 bucket, behind the same check, in byte ranges.
 // 3) Keep the Supabase free-tier project awake with a daily read (free projects pause after seven idle days).
 // On the dev site (SITE_ENV = "dev", dev.aiskillszone.com) it also asks for a password on every request, tells
 // search engines to stay away, and points every page at the dev Supabase project instead of the live one.
 
 const GATE = /^\/learn\/([a-z0-9-]+)\/(.*)$/;
-const TYPES = { html: "text/html; charset=utf-8", txt: "text/plain; charset=utf-8", css: "text/css", js: "text/javascript", json: "application/json", svg: "image/svg+xml", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", pdf: "application/pdf", zip: "application/zip", ico: "image/x-icon" };
+const TYPES = { mp4: "video/mp4", html: "text/html; charset=utf-8", txt: "text/plain; charset=utf-8", css: "text/css", js: "text/javascript", json: "application/json", svg: "image/svg+xml", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", pdf: "application/pdf", zip: "application/zip", ico: "image/x-icon" };
 const COOKIE = "sb_access";
 const VIDEO = "/assets/video/";
+const MEDIA = /^video\//;   // lesson videos and posters inside a course: <course>/video/<id>.mp4 and .jpg
 
 export default {
   async fetch(request, env) {
@@ -44,6 +45,10 @@ async function serve(request, env) {
     if (allowed === false) return Response.redirect(`${url.origin}/learn/?missing=${encodeURIComponent(course)}`, 302);
 
     const path = rest === "" ? "START-HERE.html" : rest.replace(/\/$/, "/index.html");
+    if (MEDIA.test(path) && env.COURSE_MEDIA) {
+      const media = await courseMedia(request, env, `${course}/${path}`);
+      if (media) return media;                                  // not in the bucket: the KV store below
+    }
     if (path.endsWith(".mp4")) return courseVideo(request, env, `${course}/${path}`);
     const body = await env.COURSE_FILES.get(`${course}/${path}`, { type: "stream" });
     if (!body) return env.ASSETS.fetch(new Request(`${url.origin}/__missing__`, request)); // the site's 404 page
@@ -69,8 +74,64 @@ async function serveRange(request, env) {
   return ranged(request, await res.arrayBuffer(), new Headers(res.headers));
 }
 
-// Lesson videos live in COURSE_FILES next to the pages, behind the same access check. KV hands back the whole
-// value, so a byte-range request is answered by slicing it, the same way as above.
+// Lesson videos and posters live in the COURSE_MEDIA R2 bucket under the same keys the KV store used
+// (zero-to-ai-tester/video/l0-0a.mp4). R2 reads just the asked-for bytes and streams them, so the Worker never
+// holds a whole video, however many learners press play at once. Returns null when the file is not in the
+// bucket, so a file not moved yet is still served from KV (courseVideo below).
+async function courseMedia(request, env, key) {
+  const want = parseRange(request.headers.get("range"));
+  const unsatisfiable = (size) => new Response(null, { status: 416, headers: { "Content-Range": `bytes */${size}`, "Accept-Ranges": "bytes" } });
+  if (want === false || (want && want.suffix === 0)) {
+    const head = await env.COURSE_MEDIA.head(key);
+    return head ? unsatisfiable(head.size) : null;
+  }
+  let obj;
+  try {
+    obj = request.method === "HEAD" ? await env.COURSE_MEDIA.head(key) : await env.COURSE_MEDIA.get(key, want ? { range: want } : {});
+  } catch (err) {                                               // R2 turns down a range that runs past the end
+    const head = await env.COURSE_MEDIA.head(key);
+    if (!head || !want) throw err;
+    if (want.offset >= head.size) return unsatisfiable(head.size);
+    obj = await env.COURSE_MEDIA.get(key, { range: { offset: want.offset || 0 } });   // HTTP reads it as "to the end"
+  }
+  if (!obj) return null;
+  const size = obj.size;
+  const headers = new Headers({
+    "Content-Type": TYPES[(key.split(".").pop() || "").toLowerCase()] || "application/octet-stream",
+    "Cache-Control": "private, max-age=3600",
+    "X-Robots-Tag": "noindex, nofollow",
+    "Accept-Ranges": "bytes",
+  });
+  const body = request.method === "HEAD" ? null : obj.body;
+  if (!want) {
+    headers.set("Content-Length", String(size));
+    return new Response(body, { status: 200, headers });
+  }
+  const start = want.suffix ? Math.max(0, size - want.suffix) : want.offset;
+  const end = want.length ? Math.min(start + want.length, size) - 1 : size - 1;
+  if (start >= size) {
+    if (body) await body.cancel();
+    return unsatisfiable(size);
+  }
+  headers.set("Content-Range", `bytes ${start}-${end}/${size}`);
+  headers.set("Content-Length", String(end - start + 1));
+  return new Response(body, { status: 206, headers });
+}
+
+// One "bytes=a-b", "bytes=a-" or "bytes=-n" as an R2 range; null for no (or an unsupported) Range header, which
+// gets the whole file; false for a range that ends before it starts.
+function parseRange(header) {
+  const r = /^bytes=(\d*)-(\d*)$/.exec((header || "").trim());
+  if (!r || (r[1] === "" && r[2] === "")) return null;
+  if (r[1] === "") return { suffix: Number(r[2]) };
+  const offset = Number(r[1]);
+  if (r[2] === "") return { offset };
+  const end = Number(r[2]);
+  return end < offset ? false : { offset, length: end - offset + 1 };
+}
+
+// Videos not moved to R2 yet are still read from COURSE_FILES next to the pages. KV hands back the whole value,
+// so a byte-range request is answered by slicing it, the same way as /assets/video/ above.
 async function courseVideo(request, env, key) {
   const buf = await env.COURSE_FILES.get(key, { type: "arrayBuffer" });
   if (!buf) return new Response("Not found", { status: 404, headers: { "Cache-Control": "no-store" } });

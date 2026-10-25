@@ -45,6 +45,7 @@ A full copy of the platform for trying changes and building new courses before c
 | Database, sign-in, functions | Supabase project `cxiezjegnnbkghbevqra` | Supabase project `ofuydnjqsltvlalgvnod` |
 | Payments | Razorpay LIVE keys since 10 October 2026: real money | always Razorpay TEST keys: no real money |
 | Course pages | KV store `COURSE_FILES` | KV store `COURSE_FILES_DEV` |
+| Lesson videos and posters | R2 bucket `aiskillszone-courses`, one folder per course (`zero-to-ai-tester/video/`) | R2 bucket `aiskillszone-courses-dev` |
 | Admin | aiskillszone.com/admin/ | dev.aiskillszone.com/admin/ (same owner email or WhatsApp number) |
 
 Dev shows an orange-and-black strip at the top and a "DEV · test payments only" tag, is hidden from search engines, and
@@ -52,6 +53,9 @@ points every page at the dev database automatically, so the HTML is never edited
 
 - Deploy pages to dev: `npx wrangler deploy --env dev`. To live: `npx wrangler deploy`.
 - Publish course pages to dev: `python platform/publish_course.py --env dev` in the course repo. To live: without `--env dev`.
+- Publish lesson videos to dev: `python platform/publish_videos.py --env dev` in the course repo, before the course pages
+  (they read the list of published videos). To live: without `--env dev`. The Worker reads videos from R2 in byte
+  ranges, and falls back to the KV store for any video not in the bucket (where they lived before October 2026).
 - Database changes: add a migration file in the course repo's `supabase/migrations/`, apply it to dev, test, then apply it to live.
 - Backend functions: `npx supabase functions deploy --project-ref ofuydnjqsltvlalgvnod` for dev, then the live ref.
 - Tests: run pytest in `tests/payment`; they target dev by default. Never point them at live, which takes real payments.
