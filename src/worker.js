@@ -45,11 +45,10 @@ async function serve(request, env) {
     if (allowed === false) return Response.redirect(`${url.origin}/learn/?missing=${encodeURIComponent(course)}`, 302);
 
     const path = rest === "" ? "START-HERE.html" : rest.replace(/\/$/, "/index.html");
-    if (MEDIA.test(path) && env.COURSE_MEDIA) {
-      const media = await courseMedia(request, env, `${course}/${path}`);
-      if (media) return media;                                  // not in the bucket: the KV store below
+    if (MEDIA.test(path)) {
+      return (await courseMedia(request, env, `${course}/${path}`))
+        || new Response("Not found", { status: 404, headers: { "Cache-Control": "no-store" } });
     }
-    if (path.endsWith(".mp4")) return courseVideo(request, env, `${course}/${path}`);
     const body = await env.COURSE_FILES.get(`${course}/${path}`, { type: "stream" });
     if (!body) return env.ASSETS.fetch(new Request(`${url.origin}/__missing__`, request)); // the site's 404 page
     const ext = (path.split(".").pop() || "").toLowerCase();
@@ -74,10 +73,9 @@ async function serveRange(request, env) {
   return ranged(request, await res.arrayBuffer(), new Headers(res.headers));
 }
 
-// Lesson videos and posters live in the COURSE_MEDIA R2 bucket under the same keys the KV store used
+// Lesson videos and posters live only in the COURSE_MEDIA R2 bucket, one folder per course
 // (zero-to-ai-tester/video/l0-0a.mp4). R2 reads just the asked-for bytes and streams them, so the Worker never
-// holds a whole video, however many learners press play at once. Returns null when the file is not in the
-// bucket, so a file not moved yet is still served from KV (courseVideo below).
+// holds a whole video, however many learners press play at once. Returns null when the file is not in the bucket.
 async function courseMedia(request, env, key) {
   const want = parseRange(request.headers.get("range"));
   const unsatisfiable = (size) => new Response(null, { status: 416, headers: { "Content-Range": `bytes */${size}`, "Accept-Ranges": "bytes" } });
@@ -128,18 +126,6 @@ function parseRange(header) {
   if (r[2] === "") return { offset };
   const end = Number(r[2]);
   return end < offset ? false : { offset, length: end - offset + 1 };
-}
-
-// Videos not moved to R2 yet are still read from COURSE_FILES next to the pages. KV hands back the whole value,
-// so a byte-range request is answered by slicing it, the same way as /assets/video/ above.
-async function courseVideo(request, env, key) {
-  const buf = await env.COURSE_FILES.get(key, { type: "arrayBuffer" });
-  if (!buf) return new Response("Not found", { status: 404, headers: { "Cache-Control": "no-store" } });
-  return ranged(request, buf, new Headers({
-    "Content-Type": "video/mp4",
-    "Cache-Control": "private, max-age=3600",
-    "X-Robots-Tag": "noindex, nofollow",
-  }));
 }
 
 // A 200 with the whole body, or a 206 with the asked-for bytes, or a 416 for a range past the end.

@@ -54,8 +54,8 @@ points every page at the dev database automatically, so the HTML is never edited
 - Deploy pages to dev: `npx wrangler deploy --env dev`. To live: `npx wrangler deploy`.
 - Publish course pages to dev: `python platform/publish_course.py --env dev` in the course repo. To live: without `--env dev`.
 - Publish lesson videos to dev: `python platform/publish_videos.py --env dev` in the course repo, before the course pages
-  (they read the list of published videos). To live: without `--env dev`. The Worker reads videos from R2 in byte
-  ranges, and falls back to the KV store for any video not in the bucket (where they lived before October 2026).
+  (they read the list of published videos). To live: without `--env dev`. The Worker reads videos only from R2, in byte
+  ranges; the KV store holds just the course pages.
 - Database changes: add a migration file in the course repo's `supabase/migrations/`, apply it to dev, test, then apply it to live.
 - Backend functions: `npx supabase functions deploy --project-ref ofuydnjqsltvlalgvnod` for dev, then the live ref.
 - Tests: run pytest in `tests/payment`; they target dev by default. Never point them at live, which takes real payments.
