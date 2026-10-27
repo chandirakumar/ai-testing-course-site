@@ -6,7 +6,13 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Admin · AI Skills Zone</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script src="../assets/ldrs/dot-pulse.js"></script>
 <style>
+  /* loading: the DotPulse loader (assets/ldrs) fills the screen while the page checks the sign-in and admin list, and
+     each section while its numbers load */
+  .loadscreen { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; color: #C7D2FE; pointer-events: none; }
+  .loadscreen[hidden] { display: none; }
+  .loading-dots { grid-column: 1 / -1; display: grid; place-items: center; min-height: 64px; color: #C7D2FE; }
   :root { --bg: #0B0F19; --ink: #E6E9F5; --ink-2: #B9C0D6; --muted: #8B93AD; --line: rgba(255,255,255,.12); --accent: #818CF8; --good: #34D399; --warn: #FBBF24; --bad: #F87171; }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; font-size: 16px; line-height: 1.55; }
@@ -144,8 +150,6 @@
   .st-paid { color: var(--good); } .st-failed { color: var(--bad); } .st-created { color: var(--warn); } .st-refunded { color: var(--muted); }
   .pairs { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 14px; margin-top: 8px; }
   .pairs span:nth-child(even) { text-align: right; font-family: "IBM Plex Mono", Consolas, monospace; color: #fff; }
-  .skeleton { height: 48px; border-radius: 10px; background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05)); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
-  @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
   @media (min-width: 720px) {
     .wrap { padding: 28px 24px 80px; }
     .glass { padding: 26px 26px 22px; border-radius: 18px; }
@@ -155,15 +159,15 @@
     main.two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
     main.two .span { grid-column: 1 / -1; }
   }
-  @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
 </style>
 </head>
 <body>
 <div class="sky" aria-hidden="true"></div>
+<div class="loadscreen" id="loadscreen" role="status" aria-label="Loading the dashboard"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div>
 <div class="wrap">
   <nav><a class="brand" href="../">AI Skills Zone</a><span class="links"><a href="../learn/">Courses page</a><button type="button" id="signout" hidden>Sign out</button></span></nav>
 
-  <main id="auth">
+  <main id="auth" hidden>
     <section class="glass" id="login" style="max-width:480px;margin:0 auto;width:100%">
       <div data-step="id">
         <span class="eyebrow">Admin</span>
@@ -203,21 +207,21 @@
       <h2>Inbox <span class="count" id="ib-count"></span></h2>
       <p class="fine" style="margin:0 0 10px">Chats with your business number. Reply free within 24 hours of their last message; quick replies and the buy link carry the ad's campaign name so the sale is credited. New chats also email help@.</p>
       <div class="ib-wrap">
-        <div class="au-frame ib-listframe" tabindex="0" aria-label="Chats"><div id="ib-list"><div class="skeleton"></div></div></div>
+        <div class="au-frame ib-listframe" tabindex="0" aria-label="Chats"><div id="ib-list"><div class="loading-dots" role="status" aria-label="Loading"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div></div></div>
         <div class="ib-thread" id="ib-thread" hidden></div>
       </div>
     </section>
     <section class="glass span">
       <span class="eyebrow">Overview</span>
       <h2>Sales</h2>
-      <div class="tiles" id="tiles"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+      <div class="tiles" id="tiles"><div class="loading-dots" role="status" aria-label="Loading"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div></div>
     </section>
 
     <section class="glass span" id="pricing">
       <span class="eyebrow">Courses</span>
       <h2>Price and discounts</h2>
       <p>The list price is what the course normally costs. A discount is a percentage off, shown everywhere the price appears and charged by Razorpay. It stays on until you set it back to 0 or press Remove discount.</p>
-      <div id="courses"><div class="skeleton"></div></div>
+      <div id="courses"><div class="loading-dots" role="status" aria-label="Loading"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div></div>
     </section>
 
     <section class="glass span" id="sitetext">
@@ -253,7 +257,7 @@
         <div id="fn-custom" class="fn-custom" hidden><label>From<input id="fn-from" type="date"></label><label>To<input id="fn-to" type="date"></label></div>
       </div>
       <p id="fn-sum" class="fn-sum"></p>
-      <div id="fn-steps" class="fn-steps"><div class="skeleton"></div></div>
+      <div id="fn-steps" class="fn-steps"><div class="loading-dots" role="status" aria-label="Loading"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div></div>
       <div class="eyebrow" style="margin-top:18px">Per day</div>
       <div id="fn-daily"></div>
       <div class="eyebrow" style="margin-top:18px">By source</div>
@@ -268,10 +272,10 @@
         <label>Period<select id="ad-range"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option><option value="all">All time</option><option value="custom">Custom dates</option></select></label>
         <div id="ad-custom" class="fn-custom" hidden><label>From<input id="ad-from" type="date"></label><label>To<input id="ad-to" type="date"></label></div>
       </div>
-      <div class="tiles" id="ad-tiles"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+      <div class="tiles" id="ad-tiles"><div class="loading-dots" role="status" aria-label="Loading"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div></div>
       <p class="fine" id="ad-note" style="margin:12px 0"></p>
       <div class="au-bar"><span class="fine" id="ad-sync-msg"></span><button class="btn sm" type="button" id="ad-sync">Sync from Meta</button></div>
-      <div class="au-frame" tabindex="0" aria-label="Campaigns"><div class="list" id="ad-table"><div class="skeleton"></div></div></div>
+      <div class="au-frame" tabindex="0" aria-label="Campaigns"><div class="list" id="ad-table"><div class="loading-dots" role="status" aria-label="Loading"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div></div></div>
       <details style="margin-top:14px">
         <summary class="fine" style="cursor:pointer">Add spend by hand (Google, Instagram boosts, anything Meta sync does not cover)</summary>
         <form id="ad-form" class="fn-filters" style="margin-top:10px" novalidate>
@@ -288,7 +292,7 @@
       <span class="eyebrow">Learner activity</span>
       <h2>Who is learning, who has gone quiet</h2>
       <p>One line per course a person can open. "Last active" is the last time they were signed in and using the site, to within about an hour; reading progress stays in their browser and is not collected. Slipping and quiet learners get a ready-made check-in by email or WhatsApp.</p>
-      <div class="tiles" id="ln-tiles"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+      <div class="tiles" id="ln-tiles"><div class="loading-dots" role="status" aria-label="Loading"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div></div>
       <div class="au-filters" style="margin-top:14px">
         <label class="au-wide">Search<input id="ln-q" placeholder="name, email, mobile" autocomplete="off"></label>
         <label>Course<select id="ln-course"><option value="">All courses</option></select></label>
@@ -296,7 +300,7 @@
         <label>Sort<select id="ln-sort"><option value="recent">Most recently active</option><option value="idle">Longest idle first</option><option value="joined">Newest learners</option></select></label>
       </div>
       <div class="au-bar"><span id="ln-sum" class="fine"></span><button class="btn sm quiet" type="button" id="ln-csv">Export CSV</button></div>
-      <div class="au-frame" tabindex="0" aria-label="Learners matching the filters, scroll to see more"><div class="list" id="ln-list"><div class="skeleton"></div></div></div>
+      <div class="au-frame" tabindex="0" aria-label="Learners matching the filters, scroll to see more"><div class="list" id="ln-list"><div class="loading-dots" role="status" aria-label="Loading"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div></div></div>
     </section>
 
     <section class="glass span" id="followups">
@@ -304,7 +308,7 @@
       <h2>Who to contact now <span class="count" id="fu-count"></span></h2>
       <p>Built from rules: a failed payment (help within the hour), a purchase started but not paid (one reminder after a day), a course someone asked to be told about going live, a check-in a week after buying, and a new course for customers who ticked the offers box. Each opens a prefilled email; mark it done once sent.</p>
       <div class="row"><button class="btn sm" type="button" id="fu-refresh">Refresh the queue</button><span class="ok" id="fu-msg"></span></div>
-      <div class="list fu" id="fu-list"><div class="skeleton"></div></div>
+      <div class="list fu" id="fu-list"><div class="loading-dots" role="status" aria-label="Loading"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div></div>
     </section>
 
     <section class="glass span" id="audience">
@@ -332,24 +336,31 @@
         <label>Sort<select id="au-sort"><option value="recent">Most recent</option><option value="paid">Amount paid, high first</option><option value="oldest">First seen, oldest</option><option value="name">Name, A to Z</option></select></label>
       </div>
       <div class="au-bar"><span id="au-sum" class="fine"></span><span class="row"><button class="btn sm quiet" type="button" id="au-reset">Reset filters</button><button class="btn sm quiet" type="button" id="au-csv">Export CSV</button></span></div>
-      <div class="au-frame" tabindex="0" aria-label="People matching the filters, scroll to see more"><div class="list" id="au-list"><div class="skeleton"></div></div></div>
+      <div class="au-frame" tabindex="0" aria-label="People matching the filters, scroll to see more"><div class="list" id="au-list"><div class="loading-dots" role="status" aria-label="Loading"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div></div></div>
     </section>
 
     <section class="glass">
       <span class="eyebrow">Latest</span>
       <h2>Recent purchases</h2>
-      <div class="list" id="purchases"><div class="skeleton"></div></div>
+      <div class="list" id="purchases"><div class="loading-dots" role="status" aria-label="Loading"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div></div>
     </section>
 
     <section class="glass">
       <span class="eyebrow">Signals</span>
       <h2>Interest and delivery</h2>
       <p class="fine">Notify-me sign-ups per upcoming course, purchases by campaign, and WhatsApp delivery statuses in the last 24 hours.</p>
-      <div id="signals"><div class="skeleton"></div></div>
+      <div id="signals"><div class="loading-dots" role="status" aria-label="Loading"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div></div>
     </section>
   </main>
 </div>
 
+<script>
+  // A safety net: if the sign-in library is slow or blocked, show the sign-in card instead of loading for ever.
+  setTimeout(function () {
+    var l = document.getElementById("loadscreen");
+    if (!l.hidden && document.getElementById("dash").hidden) { l.hidden = true; document.getElementById("auth").hidden = false; }
+  }, 12000);
+</script>
 <script src="/assets/vendor/supabase-js-2.117.3.js"></script>
 <script>
   (function () {
@@ -360,7 +371,8 @@
     const rupees = (n) => "₹" + Number(n || 0).toLocaleString("en-IN");
     const err = (id, msg) => { const el = document.getElementById(id); el.textContent = msg || ""; el.hidden = !msg; };
     const login = $("#login");
-    const step = (name) => login.querySelectorAll("[data-step]").forEach((s) => { s.hidden = s.dataset.step !== name; });
+    const ready = () => { $("#loadscreen").hidden = true; };
+    const step = (name) => { ready(); $("#auth").hidden = false; login.querySelectorAll("[data-step]").forEach((s) => { s.hidden = s.dataset.step !== name; }); };
 
     // ---- sign in (email or WhatsApp code)
     let via = "email", email = "", phone = "";
@@ -413,7 +425,7 @@
       if (!user) return step("id");
       const { data: admin } = await sb.rpc("is_admin");
       if (admin !== true) { $("[data-who]").textContent = user.email || ("+" + user.phone); return step("denied"); }
-      $("#auth").hidden = true; $("#dash").hidden = false; $("#signout").hidden = false;
+      ready(); $("#auth").hidden = true; $("#dash").hidden = false; $("#signout").hidden = false;
       await Promise.all([loadStats(), loadCourses(), loadPurchases()]);
       await Promise.all([loadFollowups(), loadAudience(), loadSiteText(), loadFunnel(), loadLearners(), loadAds(), loadInbox()]);
       startInboxPolling();
@@ -531,7 +543,7 @@
     $("#find-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const q = $("#find").value.trim(); if (!q) return;
-      learnerBox.innerHTML = '<div class="skeleton" style="margin-top:12px"></div>';
+      learnerBox.innerHTML = '<div class="loading-dots" role="status" aria-label="Loading"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div>';
       const { data, error } = await sb.rpc("admin_find_learner", { p_identity: q });
       if (error) { learnerBox.innerHTML = '<p class="err">' + esc(error.message) + "</p>"; return; }
       paintLearner(data);

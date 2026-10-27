@@ -7,6 +7,7 @@
 <meta name="robots" content="noindex">
 <link rel="canonical" href="https://aiskillszone.com/learn/">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="../assets/ldrs/dot-pulse.js"></script>
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
@@ -94,7 +95,11 @@
   .soon .pill { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: #A5B4FC; border: 1px solid rgba(165,180,252,.4); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
   .muted { color: #8B93AD; }
   .empty { padding: 14px; border-radius: 10px; border: 1px dashed rgba(255,255,255,.16); color: #9AA3BD; font-size: 14.5px; }
-  .skeleton { height: 76px; border-radius: 12px; background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.1), rgba(255,255,255,.05)); background-size: 200% 100%; }
+  /* loading: the DotPulse loader (assets/ldrs) fills the screen while the page finds out who is signed in, and the
+     course list while it loads */
+  .loadscreen { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; color: #C7D2FE; pointer-events: none; }
+  .loadscreen[hidden] { display: none; }
+  .loading-dots { display: grid; place-items: center; min-height: 76px; color: #C7D2FE; }
   /* motion: entrances and step changes, only for people who have not asked for less motion */
   @media (prefers-reduced-motion: no-preference) {
     .rise { animation: rise 520ms cubic-bezier(.2,.8,.2,1) both; }
@@ -103,8 +108,6 @@
     [data-step].in { animation: stepin 320ms cubic-bezier(.2,.8,.2,1) both; }
     @keyframes stepin { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
     .card.in { animation: rise 420ms cubic-bezier(.2,.8,.2,1) both; }
-    .skeleton { animation: shimmer 1.4s linear infinite; }
-    @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
     .sky { animation: drift 28s ease-in-out infinite alternate; }
     @keyframes drift { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(-3%, 2%, 0) scale(1.06); } }
     .g-btn:active { transform: translateY(1px) scale(.99); }
@@ -116,11 +119,12 @@
 </head>
 <body>
 <div class="sky" aria-hidden="true"></div>
+<div class="loadscreen" id="loadscreen" role="status" aria-label="Loading your courses"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div>
 <div class="wrap">
   <nav><a class="brand" href="../">AI Skills Zone</a><span class="links"><a class="mail" href="../">All courses</a><a class="mail" href="mailto:help@aiskillszone.com">help@aiskillszone.com</a></span></nav>
   <main>
     <div class="col">
-      <section class="glass rise" data-i="1" id="login" aria-labelledby="login-title">
+      <section class="glass rise" data-i="1" id="login" aria-labelledby="login-title" hidden>
         <div data-step="email">
           <span class="g-eyebrow">Your courses</span>
           <h3 id="login-title">Open your course</h3>
@@ -151,20 +155,27 @@
         <div class="eyebrow-row"><span class="g-eyebrow">Signed in as <b data-who style="color:#fff"></b></span><button type="button" class="linkish" data-signout style="font-size:13px">Sign out</button></div>
         <h3 id="mine-title">Your courses</h3>
         <p class="g-err" id="mine-err" role="alert" hidden></p>
-        <div class="cards" id="mine-list"><div class="skeleton"></div></div>
+        <div class="cards" id="mine-list"><div class="loading-dots" role="status" aria-label="Loading your courses"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div></div>
         <p class="g-fine"><a href="../">All courses</a> · Questions or a changed email address: help@aiskillszone.com · <a href="../privacy.html">Privacy</a></p>
       </section>
     </div>
 
   </main>
 </div>
+<script>
+  // A safety net: if the sign-in library is slow or blocked, show the sign-in card instead of loading for ever.
+  setTimeout(function () {
+    var l = document.getElementById("loadscreen"), m = document.getElementById("mine");
+    if (!l.hidden && m.hidden) { l.hidden = true; document.getElementById("login").hidden = false; }
+  }, 12000);
+</script>
 <script src="/assets/vendor/supabase-js-2.117.3.js"></script>
 <script>
   (function () {
     const CFG = { supabaseUrl: "https://cxiezjegnnbkghbevqra.supabase.co", publishableKey: "sb_publishable_6owpYUznjQkw2VH3kvNKVA_Ay3VNhlW" };
     const sb = window.supabase.createClient(CFG.supabaseUrl, CFG.publishableKey);
     const $ = (s) => document.querySelector(s);
-    const login = $("#login"), mine = $("#mine");
+    const login = $("#login"), mine = $("#mine"), loadscreen = $("#loadscreen");
     const err = (id, msg) => { const el = document.getElementById(id); el.textContent = msg || ""; el.hidden = !msg; };
     const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
     const fmt = (n) => "₹" + Number(n).toLocaleString("en-IN");
@@ -274,7 +285,7 @@
         : await sb.auth.verifyOtp({ email, token, type: "email" });
       b.disabled = false; b.textContent = "Open my courses";
       if (error) return err("code-err", /expired|invalid/i.test(error.message) ? "That code did not match or has expired. Send a new one." : error.message);
-      if (safeNext) { location.replace(safeNext); return; }
+      if (safeNext) { login.hidden = true; loadscreen.hidden = false; location.replace(safeNext); return; }
       await showMine();
     });
     mine.querySelector("[data-signout]").addEventListener("click", async () => {
@@ -284,10 +295,11 @@
 
     async function showMine() {
       const { data: { user } } = await sb.auth.getUser();
-      if (!user) return;
+      if (!user) { loadscreen.hidden = true; login.hidden = false; return step("email"); }
       $("[data-who]").textContent = user.email || user.phone || "you";
-      login.hidden = true; mine.hidden = false;
+      loadscreen.hidden = true; login.hidden = true; mine.hidden = false;
       const list = $("#mine-list");
+      list.innerHTML = '<div class="loading-dots" role="status" aria-label="Loading your courses"><l-dot-pulse size="43" speed="1.3" color="currentColor"></l-dot-pulse></div>';
       const { data, error } = await sb.from("course_access").select("course_slug, granted_at").order("granted_at", { ascending: false });
       if (error) { list.innerHTML = '<p class="g-err">Could not load your courses: ' + esc(error.message) + "</p>"; return; }
       owned = new Set(data.map((r) => r.course_slug));
@@ -313,7 +325,7 @@
 
     loadCatalogue();
     sb.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session) return step("email");
+      if (!session) { loadscreen.hidden = true; login.hidden = false; return step("email"); }
       setCookie(session);
       if (safeNext && cookieWorks() && !recentBounce(safeNext)) { location.replace(safeNext); return; }
       await showMine();
