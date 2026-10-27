@@ -15,10 +15,37 @@ const COOKIE = "sb_access";
 const VIDEO = "/assets/video/";
 const MEDIA = /^video\//;   // lesson videos and posters inside a course: <course>/video/<id>.mp4 and .jpg
 
+// Security headers on everything this Worker answers (on the dev site that is every request). Static pages the
+// live site serves without running this code get the same headers from /_headers: keep the two lists in step.
+// Scripts: our own files (the Supabase library is pinned in /assets/vendor/) and Razorpay Checkout; inline
+// scripts and onclick= handlers are still allowed, so the gain is that no other site's script can load, the
+// pages cannot be framed, and plugins, <base> tricks and foreign form posts are blocked.
+const SECURITY = {
+  "Content-Security-Policy": [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://*.razorpay.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com data:",
+    "img-src 'self' data: blob: https:",
+    "media-src 'self' data: blob:",                    // lesson videos, and their subtitles as data: URLs
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.razorpay.com",
+    "frame-src https://www.youtube-nocookie.com https://*.razorpay.com",
+    "frame-ancestors 'none'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "upgrade-insecure-requests",
+  ].join("; "),
+  "Strict-Transport-Security": "max-age=31536000",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=(), usb=(), interest-cohort=()",
+};
+
 export default {
   async fetch(request, env) {
-    if (env.SITE_ENV === "dev") return devSite(request, env);
-    return serve(request, env);
+    return secure(env.SITE_ENV === "dev" ? await devSite(request, env) : await serve(request, env));
   },
 
   async scheduled(_event, env) {
@@ -26,6 +53,13 @@ export default {
     console.log("supabase keep-alive", res.status, await res.text());
   },
 };
+
+// A header a response already carries wins (course pages keep their stricter Referrer-Policy: same-origin).
+function secure(res) {
+  const headers = new Headers(res.headers);
+  for (const [name, value] of Object.entries(SECURITY)) if (!headers.has(name)) headers.set(name, value);
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
+}
 
 async function serve(request, env) {
     const url = new URL(request.url);
