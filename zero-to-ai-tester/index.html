@@ -138,18 +138,34 @@
   .market td.num { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 13.5px; white-space: nowrap; color: var(--ink); }
   .market .fine { margin-top: 16px; font-size: 13px; color: var(--muted); max-width: 80ch; }
   .market .fine a { color: var(--muted); }
+  .market .pay, .market .pay-key { display: none; }
   @media (max-width: 700px) {
     .market .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 18px; }
     .market .fact .n { font-size: 26px; }
     .market .tbl { border: 0; background: transparent; overflow: visible; }
     .market table, .market tbody, .market tr, .market td { display: block; min-width: 0; }
     .market thead { display: none; }
-    .market tr { background: var(--panel); border: 1px solid var(--rule); padding: 14px 16px 6px; margin-bottom: 12px; }
-    .market td { padding: 6px 0 10px; border-bottom: 0; }
-    .market td:first-child { font-size: 16px; padding-top: 0; padding-bottom: 8px; border-bottom: 1px solid var(--rule-2); margin-bottom: 4px; }
+    /* each role is a card: India and US pay side by side, a pay bar on one ₹0–80 L scale, then the path */
+    .market tr { display: grid; grid-template-columns: minmax(0, 1fr) 7.6em; column-gap: 14px; background: var(--panel); border: 1px solid var(--rule); border-radius: 14px; padding: 12px 14px 4px; margin-bottom: 10px; }
+    .market tr.you { background: var(--tint); } .market tr.you td { background: none; }
+    .market td { padding: 4px 0 8px; border-bottom: 0; }
+    .market td:first-child, .market td:last-child { grid-column: 1 / -1; }
+    .market td:last-child { font-size: 13.5px; line-height: 1.45; }
+    .market td:first-child { font-size: 16px; padding-top: 0; padding-bottom: 7px; border-bottom: 1px solid var(--rule-2); margin-bottom: 4px; }
+    .market .pay-key { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 0 0 12px; max-width: none; font-size: 12.5px; color: var(--muted); }
+    .market .pay-key i { display: inline-block; width: 18px; height: 8px; margin-right: 6px; border-radius: 4px; background: var(--accent); vertical-align: middle; }
+    .market .pay-key i.lt { opacity: .28; }
     .market td.num, .market td[data-label]:not(.num) { padding-left: 0; }
     .market td[data-label]:not(:first-child)::before { content: attr(data-label); display: block; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
-    .market td.num { white-space: normal; }
+    .market td.num { white-space: normal; font-family: "Archivo", sans-serif; font-weight: 800; font-size: 17px; line-height: 1.2; }
+    .market td.num:nth-child(2) { font-size: 20px; }
+    .market td.num .sub { font-family: "IBM Plex Sans", sans-serif; font-weight: 400; font-size: 12.5px; line-height: 1.35; margin-top: 4px; }
+    .market .pay { display: block; position: relative; height: 8px; margin: 10px 0 2px; border-radius: 4px; background: var(--rule-2); }
+    .market .pay::before, .market .pay::after { content: ""; position: absolute; top: 0; bottom: 0; min-width: 4px; border-radius: 4px; }
+    .market .pay::before { left: calc(var(--lo2, 0) * 1.25%); width: calc((var(--hi2, 0) - var(--lo2, 0)) * 1.25%); background: var(--accent); opacity: .28; }
+    .market .pay:not([style*="--hi2"])::before { content: none; }
+    .market .pay::after { left: calc(var(--lo) * 1.25%); width: calc((var(--hi) - var(--lo)) * 1.25%); background: var(--accent); }
+    .market tr.you .pay::before, .market tr.you .pay::after { background: var(--muted); }
   }
 
   /* problem: today vs AI */
@@ -177,7 +193,8 @@
   .market summary::before { content: "+ "; color: var(--muted); }
   .market details[open] summary::before { content: "– "; }
   .market details .tbl { margin-top: 0; }
-  @media (max-width: 700px) { .salary { overflow-x: auto; } .salary svg { min-width: 720px; } }
+  /* phones: the chart would need sideways scrolling, so the table shows as cards instead, open (see the script) */
+  @media (max-width: 700px) { .market .salary { display: none; } .market details { margin-top: 26px; border-top: 0; } .market details[open] > summary { display: none; } }
 
   .weeks { margin: 28px 0 0; }
   .weeks svg { display: block; width: 100%; height: auto; }
@@ -419,6 +436,7 @@
   @keyframes ctaglow { 50% { box-shadow: 0 0 0 6px rgba(234,88,12,.18); } }
   body:has(.glass-backdrop:not([hidden])) .stickybuy { display: none; }
   @media (max-width: 760px) { .stickybuy { display: flex; } }
+  @media (max-width: 359px) { .stickybuy { gap: 10px; padding-left: 12px; padding-right: 12px; } .stickybuy .btn { padding: 12px 14px; } }   /* a struck-through MRP still fits at 320px */
   /* roadmap lights up as it comes into view */
   .stage { position: relative; transition: opacity 500ms ease, transform 500ms ease; }
   .stage::before { content: ""; position: absolute; left: 0; top: 0; right: 0; height: 3px; background: var(--accent); transform: scaleX(0); transform-origin: left center; transition: transform 600ms ease; }
@@ -629,7 +647,7 @@
   .lp-price .aside ol { padding-left: 22px; margin: 0 0 16px; } .lp-price .aside li { margin: 6px 0; }
 
   /* reused sections inside bands */
-  .lp-band .final { margin: 0; border-radius: 20px; padding: 48px 20px; background: linear-gradient(160deg, #16244A, #0F1830); border: 1px solid rgba(255,255,255,.10); }
+  .lp-band > .lp-in > .final { margin: 0; border-radius: 20px; padding: 48px 20px; background: linear-gradient(160deg, #16244A, #0F1830); border: 1px solid rgba(255,255,255,.10); }   /* outranks the bands' "section { padding: 0 }" */
   .lp-band .final .btn.primary { background: linear-gradient(180deg, #FB923C, #EA580C); color: #fff; border: 0; box-shadow: 0 10px 30px rgba(234,88,12,.4); }
   .lp-tail { max-width: 1140px; margin: 0 auto; padding: 0 16px 90px; }
   .lp-tail footer { color: #8C9AB3; border-top-color: rgba(255,255,255,.10); }
@@ -663,8 +681,40 @@
     .lp-instr { grid-template-columns: 120px minmax(0, 1fr); gap: 32px; }
     .lp-instr .lp-mono { width: 120px; height: 120px; font-size: 54px; }
     .lp-price { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 40px; align-items: start; }
-    .lp-band .final { padding: 72px 56px; }
+    .lp-band > .lp-in > .final { padding: 72px 56px; }
   }
+  /* phones: the hero sentence as a short list */
+  .lp-hero .sub-list { display: none; list-style: none; margin: 0 0 24px; padding: 0; }
+  .lp-hero .sub-list li { display: flex; align-items: flex-start; gap: 12px; padding: 5px 0; font-size: 16.5px; line-height: 1.4; color: #C9D4E8; }
+  .lp-hero .sub-list b { color: #fff; font-weight: 600; }
+  .lp-hero .sub-list .tk { display: grid; place-items: center; width: 22px; height: 22px; margin-top: 1px; border-radius: 50%; flex: 0 0 auto; color: #FDBA74; background: rgba(249,115,22,.16); box-shadow: inset 0 0 0 1px rgba(249,115,22,.45); }
+  .lp-hero .sub-list .tk svg { width: 13px; height: 13px; }
+  @media (max-width: 639px) { .lp-hero .sub { display: none; } .lp-hero .sub-list { display: block; } }
+  @media (max-width: 389px) { .lp-stage .term { font-size: 11px; padding: 16px 14px 14px; } }
+  @media (max-width: 349px) { .lp-stage .term { font-size: 10px; } }
+
+  /* trust signals under the buy buttons */
+  .lp-trust.center { justify-content: center; }
+  .lp-light .lp-trust { color: var(--ink-2); } .lp-light .lp-trust svg { color: var(--pass); }
+
+  /* roadmap: phones fold each stage's modules behind a tap (the script closes them); wider screens always show them */
+  .stage .mods > summary { display: none; }
+  @media (max-width: 700px) {
+    .stages.rm .stage .mods > summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; cursor: pointer; list-style: none; font-size: 14.5px; font-weight: 600; color: #DCE6F7; border-top: 1px solid rgba(255,255,255,.07); }
+    .stages.rm .stage .mods > summary::-webkit-details-marker { display: none; }
+    .stages.rm .stage .mods > summary::after { content: "+"; font-size: 22px; font-weight: 500; line-height: 1; color: #FDBA74; }
+    .stages.rm .stage .mods[open] > summary::after { content: "–"; }
+    .stages.rm .stage .mods > summary:focus-visible { outline: 2px solid #93C5FD; outline-offset: 2px; }
+  }
+
+  /* defects: where each one lives, by colour and icon, matching the 6 / 4 / 2 counts beside the list */
+  .defects .d .where { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px 2px 7px; border-radius: 999px; font-size: 11.5px; line-height: 1.5; white-space: nowrap; border: 1px solid; }
+  .defects .d .where svg { width: 13px; height: 13px; flex: 0 0 auto; }
+  .defects .d .where.bot { color: #FCA5A5; background: rgba(248,113,113,.12); border-color: rgba(248,113,113,.4); }
+  .defects .d .where.agent { color: #FCD34D; background: rgba(251,191,36,.12); border-color: rgba(251,191,36,.4); }
+  .defects .d .where.release { color: #C4B5FD; background: rgba(167,139,250,.14); border-color: rgba(167,139,250,.45); }
+  .app-facts .fact:nth-child(1) .n { color: #F87171; } .app-facts .fact:nth-child(2) .n { color: #FBBF24; } .app-facts .fact:nth-child(3) .n { color: #A78BFA; }
+
   @media (prefers-reduced-motion: reduce) {
     .lp-btn.cta { animation: none; } .flip .face { transition: none; } .rv { opacity: 1; transform: none; transition: none; }
     .lp-card, .lp-btn { transition: none; }
@@ -690,14 +740,20 @@
       <div class="lp-badges"><span class="lp-badge"><i></i>For manual and functional testers</span><span class="lp-badge"><i></i>No coding needed to start</span><span class="lp-badge"><i></i>Lifetime access</span></div>
       <h1><span class="grad">Zero to AI Tester:</span>Test the AI products every company is shipping.</h1>
       <p class="sub">Twenty-three weeks from your first terminal command to a release assessment you present on video. Python from zero, test automation, then evaluating, testing and red-teaming AI products on a practice app with 12 hidden defects.</p>
+      <ul class="sub-list">
+        <li><span class="tk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span><b>23 weeks</b> from your first terminal command to a release assessment on video</span></li>
+        <li><span class="tk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span><b>Python from zero</b>, then test automation</span></li>
+        <li><span class="tk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span><b>Evaluate, test and red-team</b> AI products</span></li>
+        <li><span class="tk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span>A practice app with <b>12 hidden defects</b></span></li>
+      </ul>
       <div class="cta-row">
         <a class="lp-btn cta" href="#pricing" data-buy>Start the course · ₹1,499 <span class="arr" aria-hidden="true">→</span></a>
         <a class="lp-btn ghost" href="syllabus.html">See the full syllabus</a>
       </div>
       <div class="lp-trust">
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>One payment, lifetime access</span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Sign in by email or WhatsApp code</span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>UPI or card through Razorpay</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Secured by Razorpay, UPI or card</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>Instant access</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.7-4-4-6-4a4 4 0 0 0 0 8c2 0 4-1.3 6-4Zm0 0c2 2.7 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.3-6 4Z"/></svg>One payment, lifetime access</span>
       </div>
     </div>
     <div class="lp-stage">
@@ -856,18 +912,18 @@
       </div>
       <div class="defects">
         <div class="h"><span>planted defects</span><span>12 total</span></div>
-        <div class="d shown"><span class="id">01</span><span class="desc">Indexes last year's policy; six numbers wrong</span><span class="where">bot</span></div>
-        <div class="d"><span class="id">02</span><span class="desc">Retrieves one chunk so two-fact questions lose one</span><span class="where">bot</span></div>
-        <div class="d"><span class="id">03</span><span class="desc">No grounding rule, answers from general knowledge</span><span class="where">bot</span></div>
-        <div class="d"><span class="id">04</span><span class="desc">Never refuses, invents answers to off-topic questions</span><span class="where">bot</span></div>
-        <div class="d"><span class="id">05</span><span class="desc">A document paragraph carries an instruction it follows</span><span class="where">bot</span></div>
-        <div class="d"><span class="id">06</span><span class="desc">No length limit; slow and expensive answers</span><span class="where">bot</span></div>
-        <div class="d"><span class="id">07</span><span class="desc">Cancels bookings without asking the guest</span><span class="where">agent</span></div>
-        <div class="d"><span class="id">08</span><span class="desc">Fifty-step loop with no repeat guard</span><span class="where">agent</span></div>
-        <div class="d"><span class="id">09</span><span class="desc">Trusts instructions hidden in booking records</span><span class="where">agent</span></div>
-        <div class="d"><span class="id">10</span><span class="desc">Crashes on a text booking ID instead of erroring</span><span class="where">agent</span></div>
-        <div class="d"><span class="id">11</span><span class="desc">The policy contradicts itself on children's rates</span><span class="where">release</span></div>
-        <div class="d"><span class="id">12</span><span class="desc">A safety fix that refuses a third of real questions</span><span class="where">release</span></div>
+        <div class="d shown"><span class="id">01</span><span class="desc">Indexes last year's policy; six numbers wrong</span><span class="where bot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2Z"/></svg>bot</span></div>
+        <div class="d"><span class="id">02</span><span class="desc">Retrieves one chunk so two-fact questions lose one</span><span class="where bot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2Z"/></svg>bot</span></div>
+        <div class="d"><span class="id">03</span><span class="desc">No grounding rule, answers from general knowledge</span><span class="where bot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2Z"/></svg>bot</span></div>
+        <div class="d"><span class="id">04</span><span class="desc">Never refuses, invents answers to off-topic questions</span><span class="where bot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2Z"/></svg>bot</span></div>
+        <div class="d"><span class="id">05</span><span class="desc">A document paragraph carries an instruction it follows</span><span class="where bot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2Z"/></svg>bot</span></div>
+        <div class="d"><span class="id">06</span><span class="desc">No length limit; slow and expensive answers</span><span class="where bot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2Z"/></svg>bot</span></div>
+        <div class="d"><span class="id">07</span><span class="desc">Cancels bookings without asking the guest</span><span class="where agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9l-3.8 3.8Z"/></svg>agent</span></div>
+        <div class="d"><span class="id">08</span><span class="desc">Fifty-step loop with no repeat guard</span><span class="where agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9l-3.8 3.8Z"/></svg>agent</span></div>
+        <div class="d"><span class="id">09</span><span class="desc">Trusts instructions hidden in booking records</span><span class="where agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9l-3.8 3.8Z"/></svg>agent</span></div>
+        <div class="d"><span class="id">10</span><span class="desc">Crashes on a text booking ID instead of erroring</span><span class="where agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9l-3.8 3.8Z"/></svg>agent</span></div>
+        <div class="d"><span class="id">11</span><span class="desc">The policy contradicts itself on children's rates</span><span class="where release"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7Z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/></svg>release</span></div>
+        <div class="d"><span class="id">12</span><span class="desc">A safety fix that refuses a third of real questions</span><span class="where release"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7Z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/></svg>release</span></div>
         <div class="note">One is shown. The other eleven are yours to find. Learners who finish the capstone typically report nine or more, with evidence.</div>
       </div>
     </div>
@@ -883,19 +939,19 @@
   </div>
   <div class="rm-wrap">
     <div class="stages rm">
-      <div class="stage"><span class="eyebrow">Stage A · weeks 1 to 7</span><h3>Foundations</h3><ul>
+      <div class="stage"><span class="eyebrow">Stage A · weeks 1 to 7</span><h3>Foundations</h3><details class="mods" open><summary>Modules 0 to 4</summary><ul>
         <li><span>0 · Orientation and setup</span><span>3 h</span></li><li><span>1 · Command line and Git</span><span>6 h</span></li>
         <li><span>2 · Python from zero</span><span>24 h</span></li><li><span>3 · APIs, HTTP and data</span><span>8 h</span></li>
-        <li><span>4 · Test automation</span><span>14 h</span></li></ul><div class="hours">55 h · no AI yet, on purpose</div></div>
-      <div class="stage"><span class="eyebrow">Stage B · weeks 8 to 11</span><h3>AI fundamentals</h3><ul>
-        <li><span>5 · How LLMs work</span><span>14 h</span></li><li><span>6 · AI as your assistant</span><span>14 h</span></li></ul>
+        <li><span>4 · Test automation</span><span>14 h</span></li></ul></details><div class="hours">55 h · no AI yet, on purpose</div></div>
+      <div class="stage"><span class="eyebrow">Stage B · weeks 8 to 11</span><h3>AI fundamentals</h3><details class="mods" open><summary>Modules 5 and 6</summary><ul>
+        <li><span>5 · How LLMs work</span><span>14 h</span></li><li><span>6 · AI as your assistant</span><span>14 h</span></li></ul></details>
         <div class="hours">28 h · first API call, first variance report</div></div>
-      <div class="stage core"><span class="eyebrow">Stage C · weeks 12 to 19</span><h3>Testing AI systems</h3><ul>
+      <div class="stage core"><span class="eyebrow">Stage C · weeks 12 to 19</span><h3>Testing AI systems</h3><details class="mods" open><summary>Modules 7 to 9</summary><ul>
         <li><span>7 · Evaluating LLM apps</span><span>26 h</span></li><li><span>8 · RAG and agents</span><span>14 h</span></li>
-        <li><span>9 · Safety and security</span><span>14 h</span></li></ul><div class="hours">54 h · the part employers pay for</div></div>
-      <div class="stage"><span class="eyebrow">Stage D · weeks 20 to 23</span><h3>Capstone and career</h3><ul>
+        <li><span>9 · Safety and security</span><span>14 h</span></li></ul></details><div class="hours">54 h · the part employers pay for</div></div>
+      <div class="stage"><span class="eyebrow">Stage D · weeks 20 to 23</span><h3>Capstone and career</h3><details class="mods" open><summary>Modules 10 to 12</summary><ul>
         <li><span>10 · Classical ML basics</span><span>8 h</span></li><li><span>11 · Capstone</span><span>16 h</span></li>
-        <li><span>12 · Career transition</span><span>6 h</span></li></ul><div class="hours">30 h · release assessment, 50 interview answers</div></div>
+        <li><span>12 · Career transition</span><span>6 h</span></li></ul></details><div class="hours">30 h · release assessment, 50 interview answers</div></div>
     </div>
     <figure class="rm-poster rv">
       <picture><source srcset="../covers/zero-to-ai-tester.webp" type="image/webp"><img src="../covers/zero-to-ai-tester.jpg" width="896" height="1139" loading="lazy" alt="Zero to AI Tester course map: four stages over 23 weeks, 167 hours"></picture>
@@ -918,16 +974,17 @@
     </div>
     <figure class="salary"><svg viewBox="0 0 900 334" role="img" aria-label="Pay bands per year in India for six roles: manual QA 3 to 7 lakh, SDET 10 to 28 and up to 55 at product companies, AI test engineer 12 to 38 and 42 to 65 for specialists, LLM evaluation engineer 15 to 40, AI red team analyst 22 to 50 and up to 80 at lead level, prompt QA 4.6 to 6 and 25 to 60 with code." xmlns="http://www.w3.org/2000/svg"><line x1="270.0" y1="14" x2="270.0" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="270.0" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹0 L</text><line x1="422.5" y1="14" x2="422.5" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="422.5" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹20 L</text><line x1="575.0" y1="14" x2="575.0" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="575.0" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹40 L</text><line x1="727.5" y1="14" x2="727.5" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="727.5" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹60 L</text><line x1="880.0" y1="14" x2="880.0" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="880.0" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹80 L</text><text x="256" y="39" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">Manual / functional QA</text><text x="256" y="55" font-size="11" text-anchor="end" style="fill:var(--muted)">where you are now</text><rect x="376.8" y="27" width="45.8" height="14" rx="4" style="fill:var(--muted);fill-opacity:.14;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:3 3"><title>Manual / functional QA: up to ₹20 L at lead level</title></rect><rect x="292.9" y="27" width="30.5" height="14" rx="4" style="fill:var(--muted)"><title>Manual / functional QA: typical ₹3–7 L per year</title></rect><text x="430.5" y="38" font-size="11.5" style="fill:var(--ink-2)">₹3–7 L · up to ₹20 L at lead level</text><text x="256" y="83" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">SDET / automation engineer</text><rect x="498.8" y="71" width="190.6" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>SDET / automation engineer: ₹30–55 L at product companies</title></rect><rect x="346.2" y="71" width="137.2" height="14" rx="4" style="fill:var(--accent)"><title>SDET / automation engineer: typical ₹10–28 L per year</title></rect><text x="256" y="127" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">AI Test / AI Quality Engineer</text><rect x="590.2" y="115" width="175.4" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>AI Test / AI Quality Engineer: ₹42–65 L reported for specialists</title></rect><rect x="361.5" y="115" width="198.2" height="14" rx="4" style="fill:var(--accent)"><title>AI Test / AI Quality Engineer: typical ₹12–38 L per year</title></rect><text x="256" y="171" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">LLM Evaluation Engineer</text><rect x="384.4" y="159" width="190.6" height="14" rx="4" style="fill:var(--accent)"><title>LLM Evaluation Engineer: typical ₹15–40 L per year</title></rect><text x="256" y="215" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">AI Red Team Analyst</text><rect x="651.2" y="203" width="228.8" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>AI Red Team Analyst: ₹50–80 L at lead level</title></rect><rect x="437.8" y="203" width="213.5" height="14" rx="4" style="fill:var(--accent)"><title>AI Red Team Analyst: typical ₹22–50 L per year</title></rect><text x="256" y="259" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">Prompt QA / prompt engineer</text><rect x="460.6" y="247" width="266.9" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>Prompt QA / prompt engineer: ₹25–60 L only when paired with code</title></rect><rect x="305.1" y="247" width="10.7" height="14" rx="4" style="fill:var(--accent)"><title>Prompt QA / prompt engineer: typical ₹4.6–6 L per year</title></rect><text x="346.2" y="100" font-size="11.5" style="fill:var(--ink-2)">₹10–28 L · ₹30–55 L at product companies</text><text x="361.5" y="144" font-size="11.5" style="fill:var(--ink-2)">₹12–38 L · ₹42–65 L reported for specialists</text><text x="384.4" y="188" font-size="11.5" style="fill:var(--ink-2)">₹15–40 L</text><text x="437.8" y="232" font-size="11.5" style="fill:var(--ink-2)">₹22–50 L · ₹50–80 L at lead level</text><text x="305.1" y="276" font-size="11.5" style="fill:var(--ink-2)">₹4.6–6 L · ₹25–60 L only when paired with code</text><rect x="270" y="310" width="22" height="12" rx="3" style="fill:var(--accent)"/><text x="300" y="320" font-size="11.5" style="fill:var(--ink-2)">typical band</text><rect x="400" y="310" width="22" height="12" rx="3" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"/><text x="430" y="320" font-size="11.5" style="fill:var(--ink-2)">senior, product company, or specialist</text><rect x="690" y="310" width="22" height="12" rx="3" style="fill:var(--muted)"/><text x="720" y="320" font-size="11.5" style="fill:var(--ink-2)">where you are now</text></svg><figcaption>India, per year, September 2026. Hover a bar for the detail. The full table with US figures is below.</figcaption></figure>
     <details><summary>Full table: India and US pay, and what gets you there</summary>
+    <p class="pay-key" aria-hidden="true"><span>Bars: India pay per year, one scale from ₹0 to ₹80 L</span><span><i></i>typical</span><span><i class="lt"></i>senior, product company or specialist</span></p>
     <div class="tbl">
-      <table>
-        <thead><tr><th>Role</th><th>India, per year</th><th>United States</th><th>What gets you there</th></tr></thead>
-        <tbody>
-          <tr class="you"><td data-label="Role">Manual / functional QA</td><td class="num" data-label="India, per year">₹3–7 L<span class="sub">₹14–20 L at lead level</span></td><td class="num" data-label="United States">$55–110k</td><td data-label="What gets you there">Your starting point. Test design, exploration, and defect reporting all carry over.</td></tr>
-          <tr><td data-label="Role">SDET / automation engineer</td><td class="num" data-label="India, per year">₹10–28 L<span class="sub">₹30–55 L at product companies</span></td><td class="num" data-label="United States">$95–195k</td><td data-label="What gets you there">Stage A: Python, pytest, Playwright, CI.</td></tr>
-          <tr><td data-label="Role">AI Test Engineer / AI Quality Engineer</td><td class="num" data-label="India, per year">20–35% above SDET<span class="sub">₹42–65 L reported for specialists</span></td><td class="num" data-label="United States">$180–240k</td><td data-label="What gets you there">Stages A to C: eval suites, golden sets, rubrics, judges, a gate in CI.</td></tr>
-          <tr><td data-label="Role">LLM Evaluation Engineer</td><td class="num" data-label="India, per year">₹15–40 L+</td><td class="num" data-label="United States">$160k average</td><td data-label="What gets you there">Modules 7 and 8: promptfoo, DeepEval, RAGAS, Langfuse, retrieval and agent testing.</td></tr>
-          <tr><td data-label="Role">AI Red Team Analyst</td><td class="num" data-label="India, per year">₹22–50 L<span class="sub">₹50–80 L at lead level</span></td><td class="num" data-label="United States">$80–220k</td><td data-label="What gets you there">Module 9: prompt injection, leakage, guardrails, OWASP LLM Top 10, PyRIT and Garak.</td></tr>
-          <tr><td data-label="Role">Prompt QA / prompt engineer</td><td class="num" data-label="India, per year">₹4.6–6 L average<span class="sub">₹25–60 L when paired with code</span></td><td class="num" data-label="United States">$100k+</td><td data-label="What gets you there">Module 6, plus Stage A. Prompting without code is the one path that plateaus.</td></tr>
+      <table role="table">
+        <thead role="rowgroup"><tr role="row"><th role="columnheader">Role</th><th role="columnheader">India, per year</th><th role="columnheader">United States</th><th role="columnheader">What gets you there</th></tr></thead>
+        <tbody role="rowgroup">
+          <tr class="you" role="row"><td role="rowheader" data-label="Role">Manual / functional QA</td><td role="cell" class="num" data-label="India, per year">₹3–7 L<span class="sub">₹14–20 L at lead level</span><span class="pay" style="--lo:3;--hi:7;--lo2:14;--hi2:20" aria-hidden="true"></span></td><td role="cell" class="num" data-label="United States">$55–110k</td><td role="cell" data-label="What gets you there">Your starting point. Test design, exploration, and defect reporting all carry over.</td></tr>
+          <tr role="row"><td role="rowheader" data-label="Role">SDET / automation engineer</td><td role="cell" class="num" data-label="India, per year">₹10–28 L<span class="sub">₹30–55 L at product companies</span><span class="pay" style="--lo:10;--hi:28;--lo2:30;--hi2:55" aria-hidden="true"></span></td><td role="cell" class="num" data-label="United States">$95–195k</td><td role="cell" data-label="What gets you there">Stage A: Python, pytest, Playwright, CI.</td></tr>
+          <tr role="row"><td role="rowheader" data-label="Role">AI Test Engineer / AI Quality Engineer</td><td role="cell" class="num" data-label="India, per year">20–35% above SDET<span class="sub">₹42–65 L reported for specialists</span><span class="pay" style="--lo:12;--hi:38;--lo2:42;--hi2:65" aria-hidden="true"></span></td><td role="cell" class="num" data-label="United States">$180–240k</td><td role="cell" data-label="What gets you there">Stages A to C: eval suites, golden sets, rubrics, judges, a gate in CI.</td></tr>
+          <tr role="row"><td role="rowheader" data-label="Role">LLM Evaluation Engineer</td><td role="cell" class="num" data-label="India, per year">₹15–40 L+<span class="pay" style="--lo:15;--hi:40" aria-hidden="true"></span></td><td role="cell" class="num" data-label="United States">$160k average</td><td role="cell" data-label="What gets you there">Modules 7 and 8: promptfoo, DeepEval, RAGAS, Langfuse, retrieval and agent testing.</td></tr>
+          <tr role="row"><td role="rowheader" data-label="Role">AI Red Team Analyst</td><td role="cell" class="num" data-label="India, per year">₹22–50 L<span class="sub">₹50–80 L at lead level</span><span class="pay" style="--lo:22;--hi:50;--lo2:50;--hi2:80" aria-hidden="true"></span></td><td role="cell" class="num" data-label="United States">$80–220k</td><td role="cell" data-label="What gets you there">Module 9: prompt injection, leakage, guardrails, OWASP LLM Top 10, PyRIT and Garak.</td></tr>
+          <tr role="row"><td role="rowheader" data-label="Role">Prompt QA / prompt engineer</td><td role="cell" class="num" data-label="India, per year">₹4.6–6 L average<span class="sub">₹25–60 L when paired with code</span><span class="pay" style="--lo:4.6;--hi:6;--lo2:25;--hi2:60" aria-hidden="true"></span></td><td role="cell" class="num" data-label="United States">$100k+</td><td role="cell" data-label="What gets you there">Module 6, plus Stage A. Prompting without code is the one path that plateaus.</td></tr>
         </tbody>
       </table>
     </div>
@@ -947,6 +1004,7 @@
       <div data-content="instructor_bio" data-paras><p>I'm Chandirakumar M, a Lead AI Engineer with more than ten years of experience building and testing software. I wrote every lesson, lab and line of practice code in Zero to AI Tester. It is the path I wanted and could not find: one that starts at the terminal and ends at a release assessment.</p><p>I built it for testers who are told AI will replace them. I think the opposite: the people who already know how to design a test are the people AI teams need most.</p></div>
       <ul class="tools" aria-label="Tools you will use"><li>Python</li><li>pytest</li><li>Playwright</li><li>GitHub Actions</li><li>promptfoo</li><li>DeepEval</li><li>RAGAS</li><li>Langfuse</li><li>PyRIT</li><li>Garak</li></ul>
       <a class="lp-btn cta" href="#pricing" data-buy>Start the course · ₹1,499 <span class="arr" aria-hidden="true">→</span></a>
+      <div class="lp-trust"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Secured by Razorpay</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>Instant access</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.7-4-4-6-4a4 4 0 0 0 0 8c2 0 4-1.3 6-4Zm0 0c2 2.7 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.3-6 4Z"/></svg>Lifetime access</span></div>
     </div>
   </div>
  </div>
@@ -999,6 +1057,7 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Answer keys and rubrics</b> for every lesson and lab</span></li>
         </ul>
         <a class="lp-btn cta" href="#pricing" data-buy>Buy the course · ₹1,499 <span class="arr" aria-hidden="true">→</span></a>
+        <div class="lp-trust center"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Secured by Razorpay</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>Instant access</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.7-4-4-6-4a4 4 0 0 0 0 8c2 0 4-1.3 6-4Zm0 0c2 2.7 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.3-6 4Z"/></svg>Lifetime access</span></div>
         <p class="fine" style="margin-top:12px;font-size:13px;color:var(--muted)">Plus about $10 of AI credit you buy from the model provider.</p>
       </div>
       <div class="aside">
@@ -1104,6 +1163,7 @@
       <a class="btn primary" href="#pricing" data-buy>Buy the course · ₹1,499</a>
       <a class="btn ghost" href="syllabus.html">Read the syllabus first</a>
     </div>
+    <div class="lp-trust"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Secured by Razorpay</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>Instant access</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.7-4-4-6-4a4 4 0 0 0 0 8c2 0 4-1.3 6-4Zm0 0c2 2.7 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.3-6 4Z"/></svg>Lifetime access</span></div>
   </section>
  </div>
 </div>
@@ -1164,9 +1224,9 @@
     </div>
   </div>
 
-  <div class="stickybuy" id="stickybuy" aria-hidden="true">
+  <div class="stickybuy" id="stickybuy" aria-hidden="true" inert>
     <div><span class="sb-price" data-sticky-price>₹1,499</span><span class="sb-sub" data-sticky-sub>one payment · lifetime access</span></div>
-    <a class="btn signal" href="#pricing" data-buy>Buy <span class="arrow" aria-hidden="true">→</span></a>
+    <a class="btn signal" href="#pricing" data-buy>Start the course <span class="arrow" aria-hidden="true">→</span></a>
   </div>
 
   <footer>
@@ -1576,14 +1636,29 @@
       const update = () => {
         const anyVisible = Array.from(seen.values()).some(Boolean);
         const show = passedHero && !anyVisible;
-        bar.classList.toggle("show", show); bar.setAttribute("aria-hidden", String(!show));
+        bar.classList.toggle("show", show); bar.setAttribute("aria-hidden", String(!show)); bar.inert = !show;
       };
       const io2 = new IntersectionObserver((entries) => {
-        entries.forEach((e) => { seen.set(e.target, e.isIntersecting); if (e.target === heroCta && !e.isIntersecting && e.boundingClientRect.top < 0) passedHero = true; if (e.target === heroCta && e.isIntersecting) passedHero = false; });
+        entries.forEach((e) => seen.set(e.target, e.isIntersecting));
+        passedHero = heroCta.getBoundingClientRect().bottom < 0;   // also true on arrival through a link to a lower section
         update();
       }, { threshold: 0.05 });
       watch.forEach((el) => io2.observe(el));
     }
+  })();
+</script>
+<script>
+  // Phones: the pay table shows as cards in place of the wide chart, so it starts open, and each roadmap stage
+  // folds its module list behind a tap. Wider screens always show the module lists; the table keeps its toggle.
+  (function () {
+    const mq = matchMedia("(max-width: 700px)");
+    const pay = document.querySelector(".market details"), mods = document.querySelectorAll(".stage .mods");
+    const fit = () => {
+      if (pay && mq.matches) pay.open = true;
+      mods.forEach((d) => { d.open = !mq.matches; });
+    };
+    fit();
+    if (mq.addEventListener) mq.addEventListener("change", fit); else if (mq.addListener) mq.addListener(fit);
   })();
 </script>
 <script>
