@@ -37,6 +37,11 @@
   .course .facts b { display: block; margin-bottom: 2px; font-family: "Archivo", sans-serif; font-weight: 850; font-size: 22px; color: var(--sz-paper-ink); }
   .course .pricebox { display: grid; gap: 6px; margin: 0 0 18px; padding: 14px 16px; border-radius: 14px; background: #FFF7ED; border: 1px solid #FED7AA; }
   .course .pb-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+  .px0, .course .pb-row { transition: opacity 200ms ease; }
+  .price-wait .px0, .price-wait .course .pb-row { opacity: 0; }   /* until the live price is in: see the script in the head */
+  /* the discounted price rolls down on screen only (drawn from data-roll); the element's own text is the real price */
+  .rolling .real { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .rolling::after { content: attr(data-roll); }
   .course .pb-now { font-family: "Archivo", sans-serif; font-weight: 850; font-size: 30px; line-height: 1; color: var(--sz-paper-ink); font-variant-numeric: tabular-nums; }
   .course .pricebox .mrp { font-size: 16px; font-weight: 600; color: var(--sz-paper-muted); opacity: 1; }
   .course .pb-off { padding: 3px 10px; border-radius: 999px; font-style: normal; font-weight: 700; font-size: 13px; color: #fff; background: #EA580C; }
@@ -91,6 +96,12 @@
     .hm-final { padding: 72px 56px; }
   }
 </style>
+<script>
+  // The price written in this page is a fallback. It stays hidden until the live price arrives, or 3 seconds
+  // pass, so a visitor never watches one price turn into another.
+  document.documentElement.classList.add("price-wait");
+  setTimeout(function () { document.documentElement.classList.remove("price-wait"); }, 3000);
+</script>
 </head>
 <body class="sz">
 <nav class="sz-nav" aria-label="Site">
@@ -147,9 +158,9 @@
         <h3>Zero to AI Tester</h3>
         <p>From your first terminal command to a release assessment of an AI product you present on video. Python from zero, test automation, then evaluation, RAG and agent testing, and AI security, all practised on a deliberately broken AI app.</p>
         <div class="facts"><span><b>23</b> weeks</span><span><b>167</b> hours</span><span><b>7</b> portfolio projects</span></div>
-        <div class="pricebox"><div class="pb-row"><b class="pb-now">₹1,499</b><s class="mrp" hidden></s><em class="pb-off" hidden></em></div><span class="pb-sub">One payment · lifetime access · every update free</span></div>
+        <div class="pricebox"><div class="pb-row"><b class="pb-now">₹1,499</b> <s class="mrp" hidden></s> <em class="pb-off" hidden></em></div><span class="pb-sub">One payment · lifetime access · every update free</span></div>
         <div class="cta">
-          <a class="sz-btn cta primary" href="zero-to-ai-tester/?buy=1"><span>Buy and start · <span class="pb-btn">₹1,499</span></span><span class="arr" aria-hidden="true">→</span></a>
+          <a class="sz-btn cta primary" href="zero-to-ai-tester/?buy=1"><span>Buy and start<span class="px0"> · <span class="pb-btn">₹1,499</span></span></span><span class="arr" aria-hidden="true">→</span></a>
           <a class="sz-btn ghost" href="zero-to-ai-tester/">See the course</a>
         </div>
       </div>
@@ -304,13 +315,16 @@
       .then((r) => (r.ok ? r.json() : [])).then((rows) => {
         const p = rows[0]; if (!p) return;
         const rupees = (n) => "₹" + Number(n).toLocaleString("en-IN");
-        function countTo(el, from, to, ms) {
-          if (from === to || matchMedia("(prefers-reduced-motion: reduce)").matches) { el.textContent = rupees(to); el.classList.add("pop"); return; }
+        // The discounted price rolls down from the MRP, but only on screen: the element's own text is the real
+        // price from the first frame, so a screenshot tool, a crawler or a screen reader never reads it part-way.
+        function roll(el, from, to, ms) {
+          const done = () => { el.classList.remove("rolling"); el.removeAttribute("data-roll"); el.classList.add("pop"); };
+          if (!el.classList.contains("rolling")) return done();
           const t0 = performance.now();
           (function tick(now) {
             const k = Math.max(0, Math.min(1, (now - t0) / ms)), e = 1 - Math.pow(1 - k, 3);
-            el.textContent = rupees(Math.round(from + (to - from) * e));
-            if (k < 1) requestAnimationFrame(tick); else el.classList.add("pop");
+            el.dataset.roll = rupees(Math.round(from + (to - from) * e));
+            if (k < 1) requestAnimationFrame(tick); else done();
           })(t0);
         }
         const now = document.querySelector(".course .pb-now"), btn = document.querySelector(".course .pb-btn");
@@ -318,11 +332,16 @@
         if (p.discount_pct) {
           mrp.textContent = rupees(p.price_inr); mrp.hidden = false;
           off.textContent = p.discount_pct + "% off" + (p.discount_label ? " · " + p.discount_label : ""); off.hidden = false;
-          [now, btn].forEach((el, i) => setTimeout(() => countTo(el, p.price_inr, p.sale_price_inr, 900), 120 + i * 60));
+          const rolls = p.price_inr !== p.sale_price_inr && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+          [now, btn].forEach((el, i) => {
+            if (rolls) { el.innerHTML = '<span class="real">' + rupees(p.sale_price_inr) + "</span>"; el.dataset.roll = rupees(p.price_inr); el.classList.add("rolling"); }
+            else el.textContent = rupees(p.sale_price_inr);
+            setTimeout(() => roll(el, p.price_inr, p.sale_price_inr, 900), 120 + i * 60);
+          });
         } else {
           now.textContent = btn.textContent = rupees(p.sale_price_inr);
         }
-      }).catch(() => {});
+      }).catch(() => {}).then(() => document.documentElement.classList.remove("price-wait"));
     const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     let known = "";
     try { known = localStorage.getItem("zta:notify-email") || ""; } catch (e) {}

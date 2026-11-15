@@ -17,6 +17,12 @@
 <meta name="twitter:image" content="https://aiskillszone.com/covers/zero-to-ai-tester-share.jpg">
 <script src="../assets/ldrs/dot-pulse.js"></script>
 <style>body{margin:0;font-size:14px;font-family:system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<script>
+  // The prices written in this page are a fallback. They stay hidden until the live price arrives, or 3 seconds
+  // pass, so a visitor never watches one price turn into another.
+  document.documentElement.classList.add("price-wait");
+  setTimeout(function () { document.documentElement.classList.remove("price-wait"); }, 3000);
+</script>
 </head>
 <body>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -108,8 +114,7 @@
   .market .fine a { color: var(--muted); }
   .market .pay, .market .pay-key { display: none; }
   @media (max-width: 700px) {
-    .market .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 18px; }
-    .market .fact .n { font-size: 26px; }
+    .market .facts { display: none; }   /* phones get the .jump card instead */
     .market .tbl { border: 0; background: transparent; overflow: visible; }
     .market table, .market tbody, .market tr, .market td { display: block; min-width: 0; }
     .market thead { display: none; }
@@ -177,18 +182,23 @@
   .tier.featured { border: 2px solid var(--ink); }
   .tier .eyebrow { color: var(--muted); }
   .tier .price { font-family: "Archivo", sans-serif; font-weight: 850; font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
-  /* MRP struck through, discounted price counts down then pops */
+  /* MRP struck through; the discounted price rolls down on screen (drawn from data-roll) then pops. The element's
+     own text is always the real price: see roll() in the buy script. */
   .px { white-space: nowrap; }
-  s.mrp { text-decoration: none; position: relative; opacity: .72; font-weight: 500; margin-right: .25em; }
+  .px0, .tier .price { transition: opacity 200ms ease; }
+  .price-wait .px0, .price-wait .tier .price { opacity: 0; }   /* until the live price is in: see the script in the head */
+  s.mrp { text-decoration: none; position: relative; opacity: .72; font-weight: 500; }
   s.mrp::after { content: ""; position: absolute; left: -2px; right: -2px; top: 52%; height: .09em; min-height: 2px; background: currentColor; transform: scaleX(0); transform-origin: left center; animation: strike .45s .6s cubic-bezier(.2,.8,.2,1) forwards; }
   .sale { display: inline-block; font-variant-numeric: tabular-nums; }
+  .sale.rolling .real { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .sale.rolling::after { content: attr(data-roll); }
   .sale.pop { animation: pop .5s cubic-bezier(.2,.9,.3,1.4); }
   @keyframes strike { to { transform: scaleX(1); } }
   @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.14); } 100% { transform: scale(1); } }
   @media (prefers-reduced-motion: reduce) { s.mrp::after { animation: none; transform: scaleX(1); } .sale.pop { animation: none; } }
   .tier .price s.mrp { color: var(--muted); font-size: 22px; }
   .tier .deal { animation: pop .5s 1.15s; }
-  @media (max-width: 480px) { nav s.mrp { display: none; } }
+  @media (max-width: 480px) { nav s.mrp, .tier .lp-btn s.mrp { display: none; } }   /* the card's price line shows the MRP */
   .tier .deal { align-self: flex-start; padding: 6px 10px; border-radius: 4px; background: var(--signal); color: #fff; font-weight: 700; font-size: 13px; }
   .tier .price small { font-size: 14px; font-weight: 500; color: var(--muted); font-family: "IBM Plex Sans", sans-serif; }
   .tier ul { padding-left: 18px; margin: 6px 0 14px; color: var(--ink-2); font-size: 14.5px; }
@@ -384,6 +394,17 @@
     .app-facts .fact .n { font-size: 26px; } .app-facts .fact .l { font-size: 12.5px; line-height: 1.3; }
   }
 
+  /* market on phones: the pay jump in one card, in place of the stat tiles */
+  .jump { display: none; }
+  @media (max-width: 700px) {
+    .jump { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 4px 10px; margin-top: 22px; padding: 16px 16px 14px; border-radius: 16px; background: var(--panel); border: 1px solid var(--rule); box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 10px 30px rgba(15,23,42,.06); }
+    .jump .k { display: block; font-family: "IBM Plex Mono", Consolas, monospace; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+    .jump b { display: block; margin-top: 2px; font-family: "Archivo", sans-serif; font-weight: 850; font-size: clamp(21px, 6.6vw, 28px); line-height: 1.1; white-space: nowrap; color: var(--ink-2); }
+    .jump .to b { color: var(--signal); }
+    .jump .ar { font-size: 22px; color: var(--muted); }
+    .jump p { grid-column: 1 / -1; margin: 8px 0 0; padding-top: 10px; border-top: 1px solid var(--rule-2); max-width: none; font-size: 13.5px; line-height: 1.45; color: var(--ink-2); }
+  }
+
   /* market on phones: the chart as a short ladder, one scale, the table one tap away */
   .ladder { display: none; list-style: none; margin: 22px 0 0; padding: 0; }
   .ladder li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 12px; align-items: baseline; padding: 9px 0 10px; border-top: 1px solid var(--rule); }
@@ -398,7 +419,6 @@
   @media (max-width: 700px) {
     .lp-badges { display: none; }
     .why .k { display: none; }
-    .market .fact.wide { display: none; }
     .rm-lede { display: none; }
     .stages.rm .stage { padding: 14px 16px 12px; margin-bottom: 10px; }
     .stages.rm .stage .hours { margin-top: 8px; }
@@ -477,7 +497,27 @@
   .lp-hero .sub-list b { color: #fff; font-weight: 600; }
   .lp-hero .sub-list .tk { display: grid; place-items: center; width: 22px; height: 22px; margin-top: 1px; border-radius: 50%; flex: 0 0 auto; color: #FDBA74; background: rgba(249,115,22,.16); box-shadow: inset 0 0 0 1px rgba(249,115,22,.45); }
   .lp-hero .sub-list .tk svg { width: 13px; height: 13px; }
-  @media (max-width: 639px) { .lp-hero .sub { display: none; } .lp-hero .sub-list { display: block; } }
+  @media (max-width: 639px) {
+    .lp-hero .sub { display: none; } .lp-hero .sub-list { display: block; }
+    /* one button; the syllabus is a text link under it */
+    .lp-hero .cta-row { gap: 2px; }
+    .lp-hero .cta-row .lp-btn.ghost { min-height: 44px; padding: 8px 0; box-shadow: none; font-family: inherit; font-weight: 600; font-size: 15px; color: #C6D0E2; text-decoration: underline; text-underline-offset: 3px; }
+    .lp-hero .lp-trust { margin-top: 6px; }
+  }
+  @media (max-width: 359px) {   /* the narrowest phones: each buy button stays on one line with an offer running */
+    .lp-hero .cta-row .lp-btn.cta { font-size: 15px; padding-left: 12px; padding-right: 12px; gap: 6px; }
+    .lp-price .tier .lp-btn { padding-left: 12px; padding-right: 12px; }
+  }
+  @media (max-width: 700px) {
+    /* instructor: the monogram (a photo, once there is one) sits beside the name */
+    .lp-instr { grid-template-columns: 68px minmax(0, 1fr); gap: 0 14px; }
+    .lp-instr > div { display: contents; }
+    .lp-instr .lp-mono { grid-row: 1 / span 2; align-self: center; width: 68px; height: 68px; font-size: 30px; }
+    .lp-instr .lp-eyebrow { grid-column: 2; align-self: end; }
+    .lp-instr h2 { grid-column: 2; align-self: start; margin: 4px 0 0; font-size: 24px; }
+    .lp-instr .lp-role, .lp-instr [data-content="instructor_bio"], .lp-instr .tools { grid-column: 1 / -1; }
+    .lp-instr .lp-role { justify-self: start; margin: 16px 0 12px; }
+  }
 
   /* trust signals under the buy buttons */
   .lp-trust.center { justify-content: center; }
@@ -516,7 +556,7 @@
       <li><a href="#curriculum">Roadmap</a></li>
       <li><a href="#faq">FAQ</a></li>
     </ul>
-    <a class="lp-btn cta" href="#pricing" data-buy>Buy · ₹1,499</a>
+    <a class="lp-btn cta" href="#pricing" data-buy>Buy<span class="px0"> · ₹1,499</span></a>
   </div>
 </nav>
 <div class="lp-band lp-dark lp-hero">
@@ -524,15 +564,15 @@
   <header class="hero" id="top">
     <div>
       <div class="lp-badges"><span class="lp-badge"><i></i>For manual and functional testers</span><span class="lp-badge"><i></i>No coding needed to start</span><span class="lp-badge"><i></i>Lifetime access</span></div>
-      <h1><span class="grad">Zero to AI Tester:</span>Test the AI products every company is shipping.</h1>
+      <h1><span class="grad">Zero to AI Tester:</span> From manual QA to AI test engineer.</h1>
       <p class="sub">Twenty-three weeks from your first terminal command to a release assessment you present on video. Python from zero, test automation, then evaluating, testing and red-teaming AI products on a practice app with 12 hidden defects.</p>
       <ul class="sub-list">
         <li><span class="tk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span><b>23 weeks</b> from your first terminal command to a release assessment on video</span></li>
-        <li><span class="tk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span><b>Python from zero</b>, then test automation</span></li>
+        <li><span class="tk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span><b>No coding needed to start</b>: Python from zero, then test automation</span></li>
         <li><span class="tk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span><b>Evaluate, test and red-team</b> AI products on a practice app with <b>12 hidden defects</b></span></li>
       </ul>
       <div class="cta-row">
-        <a class="lp-btn cta" href="#pricing" data-buy>Start the course · ₹1,499 <span class="arr" aria-hidden="true">→</span></a>
+        <a class="lp-btn cta" href="#pricing" data-buy>Start the course<span class="px0"> · ₹1,499</span> <span class="arr" aria-hidden="true">→</span></a>
         <a class="lp-btn ghost" href="syllabus.html">See the full syllabus</a>
       </div>
       <div class="lp-trust">
@@ -547,10 +587,10 @@
     </figure>
   </header>
   <div class="lp-facts" aria-label="The course in numbers">
-    <div class="lp-fact"><b data-count="23">23</b><span>weeks, 7 h a week</span></div>
-    <div class="lp-fact"><b data-count="167">167</b><span>hours of lessons and labs</span></div>
-    <div class="lp-fact"><b data-count="7">7</b><span>GitHub portfolio projects</span></div>
-    <div class="lp-fact"><b data-count="50">50</b><span>interview answers</span></div>
+    <div class="lp-fact"><b>23</b><span>weeks, 7 h a week</span></div>
+    <div class="lp-fact"><b>167</b><span>hours of lessons and labs</span></div>
+    <div class="lp-fact"><b>7</b><span>GitHub portfolio projects</span></div>
+    <div class="lp-fact"><b>50</b><span>interview answers</span></div>
   </div>
  </div>
 </div>
@@ -609,10 +649,16 @@
     <h2>The roles exist, they are hiring in India, and they pay more than the one you have.</h2>
     <p class="lede">AI-testing titles are still a small slice of QA jobs, but the fastest-growing and best-paid slice. Most of the demand hides inside SDET and QA roles that now ask for LLM, RAG, or evaluation skills. Those are Stages A to C.</p>
     <div class="facts">
-      <div class="fact wide"><div class="n">10,000+</div><div class="l">"AI testing" listings on LinkedIn India, and as many again in the US</div></div>
+      <div class="fact"><div class="n">10,000+</div><div class="l">"AI testing" listings on LinkedIn India, and as many again in the US</div></div>
       <div class="fact"><div class="n">34%</div><div class="l">of QA job posts now mention AI, up from 9% in 2024</div></div>
-      <div class="fact wide"><div class="n">+49%</div><div class="l">median pay for QA roles that ask for LLM or agent skills versus those that do not (US)</div></div>
+      <div class="fact"><div class="n">+49%</div><div class="l">median pay for QA roles that ask for LLM or agent skills versus those that do not (US)</div></div>
       <div class="fact"><div class="n">1.5× to 3×</div><div class="l">what an AI-testing role pays in India compared with the manual-QA band</div></div>
+    </div>
+    <div class="jump">
+      <div><span class="k">Manual QA today</span><b>₹3–7 L</b></div>
+      <span class="ar" aria-hidden="true">→</span>
+      <div class="to"><span class="k">AI test engineer</span><b>₹12–38 L</b></div>
+      <p>Typical pay per year in India: 1.5× to 3× the manual-QA band. 34% of QA job posts now mention AI, up from 9% in 2024.</p>
     </div>
     <p class="pay-key" aria-hidden="true"><span>India, per year, on one scale from ₹0 to ₹80 L</span><span><i></i>typical</span><span><i class="lt"></i>senior, product company or specialist</span></p>
     <ul class="ladder" aria-label="Pay bands per year in India">
@@ -698,6 +744,7 @@
     <details><summary>How much time does it really take?</summary><p><strong>About seven hours a week for 23 weeks.</strong> Two weekday evenings for lessons and one weekend block for the lab. Already write Python? Skip Modules 2 and 3 and finish in about 19.</p></details>
     <details><summary>I have never written code. Can I really do this?</summary><p><strong>Yes. That is who it is written for.</strong> Module 2 teaches Python from the first line with every example about testing. You will be writing test code by week four and driving a browser by week six.</p></details>
     <details><summary>What do I need, and what does it cost beyond the course?</summary><p><strong>A Windows or Mac laptop with 8 GB of RAM or more, and about ten dollars of AI credit from the model provider.</strong> Every command is shown for both systems; Module 0 installs VS Code, Python and Git and checks them for you. Every script prints what it spent, and every other tool in the course is free and open source.</p></details>
+    <details><summary>Which tools will I learn?</summary><p><strong>Python, pytest, Playwright, GitHub Actions, the Claude API, promptfoo, DeepEval, RAGAS, Langfuse, and Claude Code with the Playwright MCP server.</strong> Garak, PyRIT, and Great Expectations as a survey. The principles come first, because the tools will change.</p></details>
     <details><summary>Is there a certificate? What about ISTQB?</summary><p><strong>No certificate, on purpose.</strong> You leave with a public portfolio of seven projects and a recorded release assessment, which is what interviews are built around. Module 10 maps the course onto the ISTQB CT-AI syllabus if an employer filters on it.</p></details>
     <details><summary>Do I attack real systems in the security module?</summary><p><strong>No. Only the practice app on your own machine and a sandbox API built for testing.</strong> The module opens with the authorisation rule and the terms require it.</p></details>
     <details><summary>What if I get stuck?</summary><p><strong>Every checkpoint has an answer key and every lab a rubric.</strong> Module 0 teaches the fifteen-minute rule and a four-line "what I ran, what happened" template. Beyond that, email works.</p></details>
@@ -722,7 +769,7 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Career transition kit:</b> 50 interview answers, resume rewrite, portfolio README</span></li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>The practice app</b> with 12 planted defects, datasets and templates</span></li>
         </ul>
-        <a class="lp-btn cta" href="#pricing" data-buy>Buy the course · ₹1,499 <span class="arr" aria-hidden="true">→</span></a>
+        <a class="lp-btn cta" href="#pricing" data-buy>Buy the course<span class="px0"> · ₹1,499</span> <span class="arr" aria-hidden="true">→</span></a>
         <div class="lp-trust center"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Secured by Razorpay</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>Instant access</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.7-4-4-6-4a4 4 0 0 0 0 8c2 0 4-1.3 6-4Zm0 0c2 2.7 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.3-6 4Z"/></svg>Lifetime access</span></div>
         <p class="fine" style="margin-top:12px;font-size:13px;color:var(--muted)">Plus about $10 of AI credit you buy from the model provider.</p>
       </div>
@@ -742,7 +789,7 @@
       <ol class="g-steps" aria-label="Checkout steps"><li>Details</li><li>Verify</li><li>Pay</li></ol>
       <div data-step="details">
         <span class="g-eyebrow">Zero to AI Tester · lifetime access</span>
-        <h3 id="buy-title">₹1,499 once. Yours for life.</h3>
+        <h3 id="buy-title"><span class="px0">₹1,499</span> once. Yours for life.</h3>
         <p class="g-sub">First a 6-digit code confirms you, by email or WhatsApp, then Razorpay takes the payment, then the course opens. No password, ever.</p>
         <form id="buy-form" novalidate>
           <label>Name<input id="buy-name" name="name" autocomplete="name" maxlength="80" placeholder="As it should appear on the receipt" required></label>
@@ -793,7 +840,7 @@
   </div>
 
   <div class="stickybuy" id="stickybuy" aria-hidden="true" inert>
-    <div><span class="sb-price" data-sticky-price>₹1,499</span><span class="sb-sub" data-sticky-sub>one payment · lifetime access</span></div>
+    <div><span class="sb-price px0" data-sticky-price>₹1,499</span><span class="sb-sub" data-sticky-sub>one payment · lifetime access</span></div>
     <a class="btn signal" href="#pricing" data-buy>Start the course <span class="arrow" aria-hidden="true">→</span></a>
   </div>
 
@@ -848,32 +895,38 @@
     };
     // Live price. The list price and any discount come from the course_prices view, the same source the
     // create-order function charges from, so the page and Razorpay never disagree. The ₹1,499 written in
-    // the markup is only the fallback if this fetch fails.
+    // the markup is only the fallback if this fetch fails, and it stays hidden until the fetch settles.
     const PRICE = { list: 1499, sale: 1499, pct: 0, label: "" };
     const rupees = (n) => "₹" + Number(n).toLocaleString("en-IN");
     const payLabel = () => "Pay " + rupees(PRICE.sale);
-    function countTo(el, from, to, ms) {
-      if (from === to || matchMedia("(prefers-reduced-motion: reduce)").matches) { el.textContent = rupees(to); el.classList.add("pop"); return; }
+    // The discounted price rolls down from the MRP, but only on screen: the element's own text is the real price
+    // from the first frame, and the moving figure is drawn by CSS from data-roll. A screenshot tool, a crawler
+    // or a screen reader that looks part-way through still reads the price a buyer pays.
+    function roll(el, from, to, ms) {
+      const done = () => { el.classList.remove("rolling"); el.removeAttribute("data-roll"); el.classList.add("pop"); };
+      if (!el.classList.contains("rolling")) return done();
       const t0 = performance.now();
       (function tick(now) {
         const k = Math.max(0, Math.min(1, (now - t0) / ms)), e = 1 - Math.pow(1 - k, 3);
-        el.textContent = rupees(Math.round(from + (to - from) * e));
-        if (k < 1) requestAnimationFrame(tick); else el.classList.add("pop");
+        el.dataset.roll = rupees(Math.round(from + (to - from) * e));
+        if (k < 1) requestAnimationFrame(tick); else done();
       })(t0);
     }
     function paintPrice() {
-      const sale = rupees(PRICE.sale), start = rupees(PRICE.pct ? PRICE.list : PRICE.sale);
-      // Buttons and the modal title: MRP struck through, then the discounted price counts down into place.
-      const html = PRICE.pct ? '<span class="px"><s class="mrp">' + rupees(PRICE.list) + '</s><b class="sale">' + start + "</b></span>" : sale;
+      const sale = rupees(PRICE.sale), list = rupees(PRICE.list);
+      const rolls = PRICE.pct && PRICE.list !== PRICE.sale && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const saleTag = rolls ? '<b class="sale rolling" data-roll="' + list + '"><span class="real">' + sale + "</span></b>" : '<b class="sale">' + sale + "</b>";
+      // Buttons and the modal title: MRP struck through, then the discounted price.
+      const html = PRICE.pct ? '<span class="px"><s class="mrp">' + list + "</s> " + saleTag + "</span>" : sale;
       document.querySelectorAll("[data-buy], #buy-title, [data-sticky-price]").forEach((el) => { el.innerHTML = el.innerHTML.replace("₹1,499", html); });
       const sbSub = document.querySelector("[data-sticky-sub]");
       if (sbSub && PRICE.pct) sbSub.textContent = PRICE.pct + "% off · " + (PRICE.label || "limited offer");
       document.querySelectorAll(".bill text").forEach((el) => { el.textContent = el.textContent.replace("₹1,499", sale); });
       const tier = document.querySelector(".tier .price");
-      if (tier) tier.innerHTML = (PRICE.pct ? '<s class="mrp">' + rupees(PRICE.list) + "</s>" : "") + '<b class="sale">' + start + "</b> <small>one-time</small>";
+      if (tier) tier.innerHTML = (PRICE.pct ? '<s class="mrp">' + list + "</s> " : "") + saleTag + " <small>one-time</small>";
       const payDeal = document.querySelector("[data-pay-deal]");
       if (payDeal) { payDeal.hidden = !PRICE.pct; payDeal.textContent = PRICE.pct ? "MRP " + rupees(PRICE.list) + " · " + PRICE.pct + "% off" + (PRICE.label ? " · " + PRICE.label : "") + " · you pay " + sale : ""; }
-      document.querySelectorAll(".sale").forEach((el, i) => setTimeout(() => countTo(el, PRICE.list, PRICE.sale, 900), 120 + i * 60));
+      document.querySelectorAll(".sale").forEach((el, i) => setTimeout(() => roll(el, PRICE.list, PRICE.sale, 900), 120 + i * 60));
       let deal = document.querySelector(".tier .deal");
       if (PRICE.pct && tier) {
         if (!deal) { deal = document.createElement("div"); deal.className = "deal"; tier.insertAdjacentElement("afterend", deal); }
@@ -884,7 +937,8 @@
     fetch(PAY.supabaseUrl + "/rest/v1/course_prices?slug=eq." + PAY.course + "&select=price_inr,sale_price_inr,discount_pct,discount_label", { headers: { apikey: PAY.publishableKey } })
       .then((r) => (r.ok ? r.json() : []))
       .then((rows) => { const p = rows[0]; if (!p) return; Object.assign(PRICE, { list: p.price_inr, sale: p.sale_price_inr, pct: p.discount_pct, label: p.discount_label || "" }); paintPrice(); })
-      .catch(() => {});
+      .catch(() => {})
+      .then(() => document.documentElement.classList.remove("price-wait"));
     const fn = (name) => PAY.supabaseUrl + "/functions/v1/" + name;
     const modal = document.getElementById("buy");
     if (!modal) return;
@@ -1096,9 +1150,9 @@
   })();
 </script>
 <script>
-  // The four stages light up one after another as the curriculum scrolls into view, and each stage's
-  // hour total counts up. The sticky buy bar shows on phones once the hero's buttons have scrolled away
-  // and hides again whenever another Buy button or the footer is on screen.
+  // The four stages light up one after another as the curriculum scrolls into view. The sticky buy bar shows
+  // on phones once the hero's buttons have scrolled away and hides again whenever another Buy button or the
+  // footer is on screen.
   (function () {
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const wrap = document.querySelector(".stages");
@@ -1107,14 +1161,7 @@
       const io = new IntersectionObserver((entries) => {
         if (!entries.some((e) => e.isIntersecting)) return;
         io.disconnect();
-        wrap.querySelectorAll(".stage").forEach((st, i) => setTimeout(() => {
-          st.classList.add("lit");
-          const h = st.querySelector(".hours"), m = h && h.textContent.match(/^(\d+)/);
-          if (h && m && !reduce) {
-            const to = +m[1], rest = h.textContent.slice(m[0].length), t0 = performance.now();
-            (function tick(now) { const k = Math.max(0, Math.min(1, (now - t0) / 700)); h.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))) + rest; if (k < 1) requestAnimationFrame(tick); })(t0);
-          }
-        }, reduce ? 0 : i * 320));
+        wrap.querySelectorAll(".stage").forEach((st, i) => setTimeout(() => st.classList.add("lit"), reduce ? 0 : i * 320));
       }, { threshold: 0.2 });
       io.observe(wrap);
     }
@@ -1150,19 +1197,12 @@
   })();
 </script>
 <script>
-  // Landing behaviour: count-up numbers, reveal on scroll.
+  // Landing behaviour: reveal on scroll. Numbers are never counted up: a screenshot or a crawler that catches a
+  // count part-way records a wrong figure (a review tool read "6 weeks, 45 hours" off this page that way).
   (function () {
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!("IntersectionObserver" in window)) { document.querySelectorAll(".rv").forEach((el) => el.classList.add("in")); return; }
     const rv = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); rv.unobserve(e.target); } }), { threshold: 0.12 });
     document.querySelectorAll(".rv").forEach((el, i) => { el.style.transitionDelay = (i % 3) * 80 + "ms"; rv.observe(el); });
-    const cnt = new IntersectionObserver((es) => es.forEach((e) => {
-      if (!e.isIntersecting) return; cnt.unobserve(e.target);
-      const el = e.target, to = +el.dataset.count; if (reduce || document.hidden) { el.textContent = to; return; }
-      const t0 = performance.now();
-      (function tick(now) { const k = Math.max(0, Math.min(1, (now - t0) / 900)); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(tick); })(t0);
-    }), { threshold: 0.5 });
-    document.querySelectorAll("[data-count]").forEach((el) => cnt.observe(el));
   })();
 </script>
 <script>
