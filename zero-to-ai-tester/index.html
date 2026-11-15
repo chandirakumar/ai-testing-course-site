@@ -541,6 +541,42 @@
   .defects .d .where.release { color: #C4B5FD; background: rgba(167,139,250,.14); border-color: rgba(167,139,250,.45); }
   .app-facts .fact:nth-child(1) .n { color: #F87171; } .app-facts .fact:nth-child(2) .n { color: #FBBF24; } .app-facts .fact:nth-child(3) .n { color: #A78BFA; }
 
+  /* phones, shorter again: no pay list for each role (the one-card pay jump stays), the roadmap as four compact
+     cards that open on a tap, and tighter cards, questions and price list */
+  @media (max-width: 700px) {
+    .lp-band:not(.lp-hero) { padding: 32px 0; }
+    .why { gap: 8px; margin-top: 18px; }
+    .why li { padding: 12px 14px 11px; border-radius: 14px; }
+    .why h3 { margin: 0 0 4px; font-size: 16.5px; }
+    .why p { font-size: 14px; line-height: 1.45; }
+    .why .taught { margin-top: 5px; font-size: 12px; }
+    .market .lede, .market .pay-key, .market .ladder, .market .pay-table { display: none; }
+    .rm-wrap { margin-top: 20px; }
+    .stages.rm .stage { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 3px 10px; padding: 12px 46px 12px 14px; margin-bottom: 8px; }
+    .stages.rm .stage::after { top: 30px; }
+    .stages.rm .stage .eyebrow { margin: 0; font-size: 10.5px; }
+    .stages.rm .stage .hours { grid-column: 2; grid-row: 1; margin: 0; padding: 2px 8px; font-size: 11.5px; }
+    .stages.rm .stage .hn { display: none; }
+    .stages.rm .stage h3 { grid-column: 1 / -1; margin: 0; font-size: 17px; line-height: 1.25; }
+    .stages.rm .stage .mods { grid-column: 1 / -1; margin-right: -32px; }
+    /* the whole card is the toggle; an open module list sits above it, so a tap on the list leaves it open */
+    .stages.rm .stage .mods > summary { position: absolute; inset: 0; min-height: 0; border: 0; border-radius: 16px; font-size: 0; }
+    .stages.rm .stage .mods > summary::after { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 22px; }
+    .stages.rm .stage .mods[open] > summary::after { top: 38px; }
+    .stages.rm .stage .mods ul { position: relative; z-index: 1; margin-top: 8px; }
+    .rm-more { margin-top: 12px; }
+    .lp-instr .tools { display: none; }   /* the FAQ lists the tools */
+    .faq details { padding: 12px 0; }
+    .faq summary { font-size: 16px; line-height: 1.35; }
+    .lp-price { margin-top: 20px; }
+    .lp-price .tier { padding: 18px 16px; }
+    .lp-price .tier .price { font-size: 38px; }
+    .lp-price .tier li { padding: 6px 0; font-size: 14.5px; line-height: 1.4; }
+    .lp-price .aside > b, .lp-price .aside > p:first-of-type { display: none; }   /* syllabus and FAQ links are above; "all sales are final" stays */
+    #app .lede { font-size: 16px; }
+    .lp-instr p { font-size: 15.5px; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .lp-btn.cta { animation: none; } .rv { opacity: 1; transform: none; transition: none; }
     .lp-btn { transition: none; }
@@ -670,7 +706,7 @@
       <li><span class="r">Prompt QA / prompt engineer</span><span class="n">₹4.6–6 L</span><span class="pay" style="--lo:4.6;--hi:6;--lo2:25;--hi2:60" aria-hidden="true"></span></li>
     </ul>
     <figure class="salary"><svg viewBox="0 0 900 334" role="img" aria-label="Pay bands per year in India for six roles: manual QA 3 to 7 lakh, SDET 10 to 28 and up to 55 at product companies, AI test engineer 12 to 38 and 42 to 65 for specialists, LLM evaluation engineer 15 to 40, AI red team analyst 22 to 50 and up to 80 at lead level, prompt QA 4.6 to 6 and 25 to 60 with code." xmlns="http://www.w3.org/2000/svg"><line x1="270.0" y1="14" x2="270.0" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="270.0" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹0 L</text><line x1="422.5" y1="14" x2="422.5" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="422.5" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹20 L</text><line x1="575.0" y1="14" x2="575.0" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="575.0" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹40 L</text><line x1="727.5" y1="14" x2="727.5" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="727.5" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹60 L</text><line x1="880.0" y1="14" x2="880.0" y2="276" style="stroke:var(--rule-2);stroke-width:1"/><text x="880.0" y="294" font-size="11" text-anchor="middle" style="fill:var(--muted)">₹80 L</text><text x="256" y="39" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">Manual / functional QA</text><text x="256" y="55" font-size="11" text-anchor="end" style="fill:var(--muted)">where you are now</text><rect x="376.8" y="27" width="45.8" height="14" rx="4" style="fill:var(--muted);fill-opacity:.14;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:3 3"><title>Manual / functional QA: up to ₹20 L at lead level</title></rect><rect x="292.9" y="27" width="30.5" height="14" rx="4" style="fill:var(--muted)"><title>Manual / functional QA: typical ₹3–7 L per year</title></rect><text x="430.5" y="38" font-size="11.5" style="fill:var(--ink-2)">₹3–7 L · up to ₹20 L at lead level</text><text x="256" y="83" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">SDET / automation engineer</text><rect x="498.8" y="71" width="190.6" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>SDET / automation engineer: ₹30–55 L at product companies</title></rect><rect x="346.2" y="71" width="137.2" height="14" rx="4" style="fill:var(--accent)"><title>SDET / automation engineer: typical ₹10–28 L per year</title></rect><text x="256" y="127" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">AI Test / AI Quality Engineer</text><rect x="590.2" y="115" width="175.4" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>AI Test / AI Quality Engineer: ₹42–65 L reported for specialists</title></rect><rect x="361.5" y="115" width="198.2" height="14" rx="4" style="fill:var(--accent)"><title>AI Test / AI Quality Engineer: typical ₹12–38 L per year</title></rect><text x="256" y="171" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">LLM Evaluation Engineer</text><rect x="384.4" y="159" width="190.6" height="14" rx="4" style="fill:var(--accent)"><title>LLM Evaluation Engineer: typical ₹15–40 L per year</title></rect><text x="256" y="215" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">AI Red Team Analyst</text><rect x="651.2" y="203" width="228.8" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>AI Red Team Analyst: ₹50–80 L at lead level</title></rect><rect x="437.8" y="203" width="213.5" height="14" rx="4" style="fill:var(--accent)"><title>AI Red Team Analyst: typical ₹22–50 L per year</title></rect><text x="256" y="259" font-size="13" text-anchor="end" style="fill:var(--ink);font-weight:600">Prompt QA / prompt engineer</text><rect x="460.6" y="247" width="266.9" height="14" rx="4" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"><title>Prompt QA / prompt engineer: ₹25–60 L only when paired with code</title></rect><rect x="305.1" y="247" width="10.7" height="14" rx="4" style="fill:var(--accent)"><title>Prompt QA / prompt engineer: typical ₹4.6–6 L per year</title></rect><text x="346.2" y="100" font-size="11.5" style="fill:var(--ink-2)">₹10–28 L · ₹30–55 L at product companies</text><text x="361.5" y="144" font-size="11.5" style="fill:var(--ink-2)">₹12–38 L · ₹42–65 L reported for specialists</text><text x="384.4" y="188" font-size="11.5" style="fill:var(--ink-2)">₹15–40 L</text><text x="437.8" y="232" font-size="11.5" style="fill:var(--ink-2)">₹22–50 L · ₹50–80 L at lead level</text><text x="305.1" y="276" font-size="11.5" style="fill:var(--ink-2)">₹4.6–6 L · ₹25–60 L only when paired with code</text><rect x="270" y="310" width="22" height="12" rx="3" style="fill:var(--accent)"/><text x="300" y="320" font-size="11.5" style="fill:var(--ink-2)">typical band</text><rect x="400" y="310" width="22" height="12" rx="3" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:3 3"/><text x="430" y="320" font-size="11.5" style="fill:var(--ink-2)">senior, product company, or specialist</text><rect x="690" y="310" width="22" height="12" rx="3" style="fill:var(--muted)"/><text x="720" y="320" font-size="11.5" style="fill:var(--ink-2)">where you are now</text></svg><figcaption>India, per year, September 2026. Hover a bar for the detail. The full table with US figures is below.</figcaption></figure>
-    <details><summary>Full table: India and US pay, and what gets you there</summary>
+    <details class="pay-table"><summary>Full table: India and US pay, and what gets you there</summary>
     <div class="tbl">
       <table role="table">
         <thead role="rowgroup"><tr role="row"><th role="columnheader">Role</th><th role="columnheader">India, per year</th><th role="columnheader">United States</th><th role="columnheader">What gets you there</th></tr></thead>
@@ -704,16 +740,16 @@
       <div class="stage"><span class="eyebrow">Stage A · weeks 1 to 7</span><h3>Foundations</h3><details class="mods" open><summary>Modules 0 to 4</summary><ul>
         <li><span>0 · Orientation and setup</span><span>3 h</span></li><li><span>1 · Command line and Git</span><span>6 h</span></li>
         <li><span>2 · Python from zero</span><span>24 h</span></li><li><span>3 · APIs, HTTP and data</span><span>8 h</span></li>
-        <li><span>4 · Test automation</span><span>14 h</span></li></ul></details><div class="hours">55 h · no AI yet, on purpose</div></div>
+        <li><span>4 · Test automation</span><span>14 h</span></li></ul></details><div class="hours">55 h<span class="hn"> · no AI yet, on purpose</span></div></div>
       <div class="stage"><span class="eyebrow">Stage B · weeks 8 to 11</span><h3>AI fundamentals</h3><details class="mods" open><summary>Modules 5 and 6</summary><ul>
         <li><span>5 · How LLMs work</span><span>14 h</span></li><li><span>6 · AI as your assistant</span><span>14 h</span></li></ul></details>
-        <div class="hours">28 h · first API call, first variance report</div></div>
+        <div class="hours">28 h<span class="hn"> · first API call, first variance report</span></div></div>
       <div class="stage core"><span class="eyebrow">Stage C · weeks 12 to 19</span><h3>Testing AI systems</h3><details class="mods" open><summary>Modules 7 to 9</summary><ul>
         <li><span>7 · Evaluating LLM apps</span><span>26 h</span></li><li><span>8 · RAG and agents</span><span>14 h</span></li>
-        <li><span>9 · Safety and security</span><span>14 h</span></li></ul></details><div class="hours">54 h · the part employers pay for</div></div>
+        <li><span>9 · Safety and security</span><span>14 h</span></li></ul></details><div class="hours">54 h<span class="hn"> · the part employers pay for</span></div></div>
       <div class="stage"><span class="eyebrow">Stage D · weeks 20 to 23</span><h3>Capstone and career</h3><details class="mods" open><summary>Modules 10 to 12</summary><ul>
         <li><span>10 · Classical ML basics</span><span>8 h</span></li><li><span>11 · Capstone</span><span>16 h</span></li>
-        <li><span>12 · Career transition</span><span>6 h</span></li></ul></details><div class="hours">30 h · release assessment, 50 interview answers</div></div>
+        <li><span>12 · Career transition</span><span>6 h</span></li></ul></details><div class="hours">30 h<span class="hn"> · release assessment, 50 interview answers</span></div></div>
     </div>
   </div>
   <p class="rm-more"><a href="syllabus.html">Read the full syllabus</a>, every lesson and lab on one page.</p>
