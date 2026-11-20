@@ -599,8 +599,7 @@
   .stages.rm .stage li { border-top-color: rgba(255,255,255,.07); color: #C9D4E8; }
   .stages.rm .stage .hours { display: inline-block; margin-top: 12px; padding: 4px 10px; border-radius: 999px; font-size: 12px; color: #FDBA74; background: rgba(249,115,22,.12); }
   .stages.rm .stage.lit .hours { color: #FDBA74; }
-  .rm-poster { margin: 0; } .rm-poster img { display: block; width: 100%; height: auto; border-radius: 16px; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 30px 70px rgba(0,0,0,.45); }
-  .rm-poster figcaption { font-size: 13px; color: #A9B6CC; margin-top: 10px; } .rm-poster a { color: #93C5FD; }
+  .rm-more { margin: 18px 0 0; max-width: none; text-align: center; font-size: 14.5px; color: #A9B6CC; } .rm-more a { color: #93C5FD; }
 
   /* instructor */
   .lp-instr { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: start; }
@@ -656,8 +655,7 @@
     .flips { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .mocks { grid-template-columns: 1.1fr .9fr; }
     .projlist { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .rm-wrap { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 48px; }
-    .rm-poster { position: sticky; top: 84px; }
+    .rm-wrap { grid-template-columns: minmax(0, 820px); justify-content: center; }
     .lp-instr { grid-template-columns: 120px minmax(0, 1fr); gap: 32px; }
     .lp-instr .lp-mono { width: 120px; height: 120px; font-size: 54px; }
     .lp-price { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 40px; align-items: start; }
@@ -895,11 +893,8 @@
         <li><span>10 · Classical ML basics</span><span>8 h</span></li><li><span>11 · Capstone</span><span>16 h</span></li>
         <li><span>12 · Career transition</span><span>6 h</span></li></ul><div class="hours">30 h · release assessment, 50 interview answers</div></div>
     </div>
-    <figure class="rm-poster rv">
-      <picture><source srcset="../covers/zero-to-ai-tester.webp" type="image/webp"><img src="../covers/zero-to-ai-tester.jpg" width="896" height="1139" loading="lazy" alt="Zero to AI Tester course map: four stages over 23 weeks, 167 hours"></picture>
-      <figcaption>The whole course on one page. <a href="syllabus.html">Read the full syllabus</a>.</figcaption>
-    </figure>
   </div>
+  <p class="rm-more"><a href="syllabus.html">Read the full syllabus</a>, every lesson and lab on one page.</p>
  </div>
 </div>
 <div class="lp-band lp-light">
