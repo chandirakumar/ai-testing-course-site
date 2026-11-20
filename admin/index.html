@@ -907,7 +907,7 @@
       const when = (iso) => iso ? new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "2-digit" }) : "";
       const LABEL = { customer: "customer", abandoned: "started, not paid", failed: "payment failed", interested: "interested", verified: "signed in only" };
       $("#au-list").innerHTML = rows.length ? rows.map((r) => {
-        const tags = stageOf(r).map((s) => '<span class="tag ' + s + '">' + LABEL[s] + "</span>").join("") + (r.consent ? '<span class="tag consent">consent</span>' : "");
+        const tags = stageOf(r).map((s) => '<span class="tag ' + s + '">' + LABEL[s] + "</span>").join("") + (r.consent ? '<span class="tag consent">consent</span>' : "") + (r.wa_reminder ? '<span class="tag consent">WhatsApp reminder OK</span>' : "");
         const courses = [].concat((r.paid_courses || []).map((c) => "paid " + titleOf(c)), (r.interested || []).map((c) => "wants " + titleOf(c)),
           (r.abandoned || []).map((c) => "left " + titleOf(c)), (r.failed || []).map((c) => "failed " + titleOf(c))).join(" · ");
         const paid = Number(r.paid_inr || 0);
@@ -955,6 +955,8 @@
         body: "Hi,\n\nYou asked to be told when {course} launches. It is live today: {link}\n\nChandirakumar M\nAI Skills Zone" },
       welcome_check_in:   { label: "One week in, check in", subject: "How is {course} going?",
         body: "Hi {name},\n\nYou are a week into {course}. How is it going? If a lesson is unclear or something is broken, reply here and I will fix it.\n\nChandirakumar M\nAI Skills Zone" },
+      whatsapp_reminder:  { label: "Asked for a WhatsApp reminder", subject: "WhatsApp template: checkout reminder", wa: true,
+        body: "Hi {name}, you started buying {course} on AI Skills Zone but didn't finish, so nothing was charged. Tap below to pick up where you left off. You asked for this one reminder at checkout, and it's the only one we'll send.\n\n[Finish buying] {buy}" },
       next_course:        { label: "New course for a customer (consented)", subject: "A new course at AI Skills Zone",
         body: "Hi {name},\n\nYou said you would like to hear about new courses. {course} is now open: {link}\n\nReply to this email if you would rather not get these.\n\nChandirakumar M\nAI Skills Zone" },
     };
@@ -976,9 +978,27 @@
         return '<div class="item" data-id="' + esc(f.id) + '"><span class="who">' + esc(f.name || f.identity) + ' <span class="tag">' + esc(k.label) + '</span></span>' +
           '<span class="meta">' + esc(f.identity) + " · " + esc(f.course_slug) + " · due " + new Date(f.due_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) + "</span>" +
           '<div class="msg">' + esc(subject) + "\n\n" + esc(body) + "</div>" +
-          '<div class="row">' + (isEmail ? '<a class="btn sm" href="' + mail + '">Open email</a>' : '<span class="fine">No email on file; contact by WhatsApp only for service help.</span>') +
-          '<button class="btn sm quiet" type="button" data-close="done">Done</button><button class="btn sm quiet" type="button" data-close="skipped">Skip</button></div></div>';
+          '<div class="row">' + (k.wa ? '<button class="btn sm" type="button" data-wa-send>Send on WhatsApp</button>'
+            : isEmail ? '<a class="btn sm" href="' + mail + '">Open email</a>' : '<span class="fine">No email on file; contact by WhatsApp only for service help.</span>') +
+          '<button class="btn sm quiet" type="button" data-close="done">Done</button><button class="btn sm quiet" type="button" data-close="skipped">Skip</button>' +
+          '<span class="fine" data-fu-msg></span></div></div>';
       }).join("");
+      const gone = (item) => {
+        item.remove(); const left = box.querySelectorAll("[data-id]").length; $("#fu-count").textContent = left ? left + " due" : "";
+        if (!left) box.innerHTML = '<p class="fine">All done.</p>';
+      };
+      box.querySelectorAll("[data-wa-send]").forEach((b) => b.addEventListener("click", async () => {
+        const item = b.closest("[data-id]"), msg = item.querySelector("[data-fu-msg]"); b.disabled = true; msg.style.color = ""; msg.textContent = "Sending…";
+        try {
+          const { data: { session } } = await sb.auth.getSession();
+          const res = await fetch(CFG.supabaseUrl + "/functions/v1/wa-reminder", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (session && session.access_token) }, body: JSON.stringify({ followup_id: item.dataset.id }) });
+          const out = await res.json().catch(() => ({}));
+          if (res.ok) { msg.textContent = "Sent."; setTimeout(() => gone(item), 900); return; }
+          msg.textContent = out.message || "Not sent."; msg.style.color = "#F87171";
+          if (res.status === 409) { item.querySelectorAll("button").forEach((x) => { x.disabled = true; }); setTimeout(() => gone(item), 2500); return; }   // closed: skipped or already sent
+        } catch (e) { msg.textContent = "Not sent: " + e.message; msg.style.color = "#F87171"; }
+        b.disabled = false;
+      }));
       box.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", async () => {
         const item = b.closest("[data-id]"); b.disabled = true;
         const patch = b.dataset.close === "done" ? { done_at: new Date().toISOString() } : { skipped_at: new Date().toISOString() };

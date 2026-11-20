@@ -825,8 +825,9 @@
           <label>Name<input id="buy-name" name="name" autocomplete="name" maxlength="80" placeholder="As it should appear on the receipt" required></label>
           <label>Email<input id="buy-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="Your receipt goes here" required></label>
           <label>Mobile number (WhatsApp)<input id="buy-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="10-digit mobile, gets your code" required></label>
-          <p class="g-fine" style="margin:-4px 0 12px">Your 6-digit code comes to this mobile number on WhatsApp, and the receipt goes to the email. The number also gets your purchase confirmation, nothing else. If you start a purchase and do not finish it, or a payment fails, we may email you once to help. By continuing you agree to the <a href="../terms.html">terms</a> and the <a href="../privacy.html">privacy policy</a>.</p>
+          <p class="g-fine" style="margin:-4px 0 12px">Your 6-digit code comes to this mobile number on WhatsApp, and the receipt goes to the email. The number also gets your purchase confirmation, and one reminder only if you tick the box for it below. If you start a purchase and do not finish it, or a payment fails, we may email you once to help. By continuing you agree to the <a href="../terms.html">terms</a> and the <a href="../privacy.html">privacy policy</a>.</p>
           <label class="g-check"><input type="checkbox" id="buy-offers"> Email me about new courses and offers. Optional; reply to any email to stop.</label>
+          <label class="g-check"><input type="checkbox" id="buy-wa"> Remind me once on WhatsApp if I don't finish buying. Optional.</label>
           <p class="g-err" id="buy-err" hidden></p>
           <button class="g-btn" type="submit" id="buy-next">Send code to WhatsApp</button>
           <div class="g-row"><span class="g-secure"><i></i>Payment by Razorpay</span><span>Receipt by email</span></div>
@@ -1114,6 +1115,9 @@
       const { data: owns } = await client().rpc("has_course", { course: PAY.course });
       track("verified");
       if (owns === true) return show("owned");
+      // Keep the start, so the one reminder the fine print mentions can reach someone who stops before paying.
+      client().rpc("record_checkout_start", { p_course: PAY.course, p_name: buyer.name, p_email: buyer.email,
+        p_wa_reminder: !!($("#buy-wa") && $("#buy-wa").checked), p_utm: window.ztaUtm() }).then(() => {}, () => {});
       toPay();
     });
 
