@@ -363,8 +363,6 @@
   .lp-fact { padding: 10px 4px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.10); text-align: center; }
   .lp-fact b { display: block; font-family: "Archivo", sans-serif; font-weight: 850; font-size: 24px; line-height: 1; color: #fff; font-variant-numeric: tabular-nums; }
   .lp-fact span { display: block; margin-top: 4px; font-size: 11px; line-height: 1.25; color: #A9B6CC; }
-  .lp-poster { display: none; margin: 0; }
-  .lp-poster img { display: block; width: 100%; height: auto; border-radius: 16px; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 30px 70px rgba(0,0,0,.45); }
   .lp-chip { max-width: 480px; margin-top: 18px; }
 
   /* why: three short cards */
@@ -483,8 +481,7 @@
     .lp-in { padding: 0 28px; }
     .lp-nav ul { display: flex; }
     .lp-hero { padding: 64px 0 84px; }
-    .lp-hero .hero { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 56px; }
-    .lp-poster { display: block; width: min(100%, 400px); justify-self: end; }
+    .lp-hero .hero { grid-template-columns: minmax(0, 820px); }   /* one column: the hero has no picture */
     .why { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
     .rm-wrap { grid-template-columns: minmax(0, 820px); justify-content: center; }
     .lp-instr { grid-template-columns: 120px minmax(0, 1fr); gap: 32px; }
@@ -618,9 +615,6 @@
       </div>
       <a class="lp-chip" href="#instructor"><span class="lp-mono" aria-hidden="true">CM</span><span><small>Every lesson written and tested by</small><b><span data-content="instructor_name">Chandirakumar M</span></b><small data-content="instructor_title">Lead AI Engineer · 10+ years in software</small></span></a>
     </div>
-    <figure class="lp-poster">
-      <picture><source srcset="../covers/zero-to-ai-tester.webp" type="image/webp"><img src="../covers/zero-to-ai-tester.jpg" width="896" height="1139" loading="lazy" alt="Zero to AI Tester course map: four stages over 23 weeks, 167 hours"></picture>
-    </figure>
   </header>
   <div class="lp-facts" aria-label="The course in numbers">
     <div class="lp-fact"><b>23</b><span>weeks, 7 h a week</span></div>
